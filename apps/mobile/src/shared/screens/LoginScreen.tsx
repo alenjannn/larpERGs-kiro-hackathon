@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { useDemoRole } from '../context/DemoRoleContext';
 import { colors, spacing } from '../theme';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
@@ -12,6 +13,7 @@ import { ROLE_META, type DemoRole } from '../config/demo';
 export default function LoginScreen() {
   const router = useRouter();
   const { signInWithPassword, signUp, setDemoRole } = useAuth();
+  const { selectRole } = useDemoRole();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,6 +37,7 @@ export default function LoginScreen() {
         setErrorMsg(error.message);
       } else {
         setDemoRole('patient');
+        selectRole('patient');
         router.replace(ROLE_META.patient.href);
       }
     } else {
@@ -45,6 +48,7 @@ export default function LoginScreen() {
       } else {
         const destRole = userRole || 'patient';
         setDemoRole(destRole);
+        selectRole(destRole);
         router.replace(ROLE_META[destRole].href);
       }
     }
@@ -52,6 +56,7 @@ export default function LoginScreen() {
 
   const handleDemoAccess = (role: DemoRole) => {
     setDemoRole(role);
+    selectRole(role);
     router.replace(ROLE_META[role].href);
   };
 
@@ -118,6 +123,9 @@ export default function LoginScreen() {
             />
           ))}
         </View>
+        <TouchableOpacity onPress={() => router.navigate('/demo')} style={styles.fullDemoBtn}>
+          <Text style={styles.fullDemoText}>📋 Open Full Persona & Reset Dashboard →</Text>
+        </TouchableOpacity>
       </Card>
     </ScrollView>
   );
@@ -142,4 +150,6 @@ const styles = StyleSheet.create({
   demoDesc: { fontSize: 13, color: colors.muted, marginBottom: spacing.md },
   demoButtonsRow: { flexDirection: 'row', gap: spacing.xs },
   demoBtn: { flex: 1 },
+  fullDemoBtn: { marginTop: spacing.md, alignItems: 'center', paddingVertical: spacing.xs },
+  fullDemoText: { color: colors.primary, fontSize: 13, fontWeight: '600' },
 });

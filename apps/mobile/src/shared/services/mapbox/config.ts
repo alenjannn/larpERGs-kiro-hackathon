@@ -21,13 +21,16 @@ export interface MapViewProps {
 export const METRO_MANILA_CENTER: LatLng = { latitude: 14.5995, longitude: 120.9842 };
 export const DEFAULT_ZOOM = 13;
 
+/** Single configurable demo centre (EXPO_PUBLIC_DEMO_MAP_CENTER). */
+export const DEMO_MAP_CENTER: LatLng = env.demoMapCenter;
+
 export const MOCK_FACILITY: MapMarker = {
   id: 'facility-1',
   title: 'Demo Rural Health Unit',
   subtitle: 'Test health facility (DEMO DATA)',
   kind: 'facility',
-  latitude: 14.5995,
-  longitude: 120.9842,
+  latitude: DEMO_MAP_CENTER.latitude,
+  longitude: DEMO_MAP_CENTER.longitude,
 };
 
 export const MARKER_COLORS: Record<MapMarker['kind'], string> = {

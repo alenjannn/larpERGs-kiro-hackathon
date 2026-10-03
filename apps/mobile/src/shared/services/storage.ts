@@ -48,7 +48,23 @@ export interface LocalStorage {
   /** Small key/value cache so screens can render last-known data while offline. */
   getCache<T>(key: string): Promise<T | null>;
   setCache<T>(key: string, value: T): Promise<void>;
+  /** Namespaced `tuloy:v1:*` value. Unparsable data reads as null; callers validate the shape. */
+  getItem<T>(key: LocalV1Key): Promise<T | null>;
+  /** Persists a `tuloy:v1:*` value. Throws on quota/access errors (never a silent in-memory fallback). */
+  setItem<T>(key: LocalV1Key, value: T): Promise<void>;
+  removeItem(key: LocalV1Key): Promise<void>;
+  /**
+   * Reset demo data: clears `tuloy:v1:*` plus the legacy queue/cache
+   * (web: `tuloy_offline_records`, `tuloy_cache:*`; native: local_sync_queue, kv_cache, kv_v1).
+   * Other keys are untouched. Throws with what failed.
+   */
+  clearDemoData(): Promise<{ cleared: number }>;
 }
+
+export const LOCAL_V1_PREFIX = 'tuloy:v1:';
+export type LocalV1Key = `tuloy:v1:${string}`;
+
+export { LocalStorageUnavailableError } from './storage/errors';
 
 export function createStorage(): LocalStorage {
   if (Platform.OS === 'web') {

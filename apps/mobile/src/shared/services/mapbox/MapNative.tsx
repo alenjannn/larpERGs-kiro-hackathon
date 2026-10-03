@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { DEFAULT_ZOOM, getMapboxToken, MARKER_COLORS, METRO_MANILA_CENTER, type MapViewProps } from './config';
+import { DEFAULT_ZOOM, DEMO_MAP_CENTER, getMapboxToken, MARKER_COLORS, type MapViewProps } from './config';
 import MockMap from './MockMap';
 
 type RNMapbox = typeof import('@rnmapbox/maps').default;
@@ -18,7 +18,7 @@ try {
   console.warn('Mapbox native module unavailable:', error);
 }
 
-export default function MapNative({ markers, center = METRO_MANILA_CENTER, zoom = DEFAULT_ZOOM }: MapViewProps) {
+export default function MapNative({ markers, center = DEMO_MAP_CENTER, zoom = DEFAULT_ZOOM }: MapViewProps) {
   const token = getMapboxToken();
   if (!Mapbox || !token) {
     return <MockMap markers={markers} reason={loadError ?? 'Missing EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN — showing mock map.'} />;

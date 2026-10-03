@@ -1,0 +1,1 @@
+Fix every item in docs/final-audit.md, highest severity first. Changes are additive. Do not rename tables, columns or routes. Run the typecheck after each fix and tick items off in the file.

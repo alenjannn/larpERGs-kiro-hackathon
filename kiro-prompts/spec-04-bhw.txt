@@ -1,0 +1,39 @@
+Spec name: 04-bhw-workspace
+
+Extend the existing BHW workspace (My Patients, offline register and visit, Sync Now). Add Today and the combined Patient Visit, and align every status with status.ts. Do not break the existing Sync Now flow. Demo persona: Liza Mendoza (DEMO).
+
+Requirements as user stories with EARS acceptance criteria. Cover at least:
+
+B-1 Today queue.
+As a BHW, I want one list of who needs help today so that I can plan my visits.
+- THE SYSTEM SHALL list owned work items from: received help requests, appointments needing attendance confirmation, follow-ups due or overdue, and open barriers. Each item SHALL show one next action and a due date when one applies.
+- THE SYSTEM SHALL separate "attendance not yet confirmed" from "confirmed missed".
+- WHEN a help request is acknowledged THE SYSTEM SHALL set coordination_status 'acknowledged' and record acknowledged_at.
+
+B-2 Assisted registration offline.
+As a BHW, I want to register a patient without signal so that onboarding isn't blocked.
+- WHEN registering offline THE SYSTEM SHALL save with a client UUID and show "Saved on this device · Waiting to send".
+- THE SYSTEM SHALL support patients without smartphones (has_smartphone = false).
+- Patient QR is a stretch. If built, the QR SHALL contain only a patient reference, never health data.
+
+B-3 Patient Visit (one save).
+As a BHW, I want to record measurements, outcome, barrier and next action together so that I don't enter data twice.
+- THE SYSTEM SHALL offer contact outcomes: contacted, could not reach, patient-reported attendance, clinic-confirmed attendance, rescheduled, help needed.
+- THE SYSTEM SHALL offer barriers: transport, unavailable appointment, laboratory access, document help, medicine access.
+- WHEN saved THE SYSTEM SHALL write one local record with the BHW sync flags.
+- IF a value is left blank THEN THE SYSTEM SHALL store null.
+
+B-4 Sync center (existing).
+As a BHW, I want to see what is still on my phone so that I know what hasn't reached the RHU.
+- THE SYSTEM SHALL show counts per status (Waiting to send, Sending, Synced, Send failed, Needs review), using StatusChip.
+- WHEN Sync Now is tapped while offline THE SYSTEM SHALL explain that a connection is needed and keep all items.
+- WHEN Sync Now succeeds THE SYSTEM SHALL flip items to "Synced" only after a server confirmation, and SHALL be idempotent on repeat taps.
+
+B-5 Map of my patients.
+As a BHW, I want to see my patients on a map so that I can plan a route.
+- THE SYSTEM SHALL plot assigned patients from synthetic coordinates, with markers whose status is shown by icon and text label, not colour alone.
+- IF the Mapbox token is missing or the device is offline THEN THE SYSTEM SHALL show the mock map or "Map needs a connection" plus the list, without crashing.
+
+Language rule: never use "non-compliant". "No response" is not evidence of non-adherence.
+
+If this spec adds or changes any SQL, also create supabase/apply_spec4.sql: one script I can paste into the Supabase SQL Editor to apply only this spec's new changes to my existing database. It must be safe to run twice. If no SQL changes are needed, say so and do not create the file.

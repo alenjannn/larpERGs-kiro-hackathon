@@ -1,0 +1,38 @@
+Spec name: 05-admin-rhu-workspace
+
+Extend the existing Admin dashboard into the brief's RHU workspace. Coordinator persona: Carmen Reyes (DEMO). Clinician persona: Dr. Ramon Santos (DEMO), reached via [Demo as Clinician], labelled "Simulated role — no real authentication".
+
+Requirements as user stories with EARS acceptance criteria. Cover at least:
+
+A-1 Needs Attention (coordinator home).
+As a coordinator, I want to see only exceptions so that I act where care is stuck.
+- THE SYSTEM SHALL list: unassigned help requests and patients, results awaiting review longer than 3 days, blocked barriers older than 7 days, and BHWs inactive more than 3 days. Each item SHALL show its age and one action.
+- THE SYSTEM SHALL show the existing live field-records feed tagged "synced from field".
+
+A-2 Assignments and BHW management.
+As a coordinator, I want to create BHW accounts and assign work so that every task has an owner.
+- WHEN a coordinator creates a BHW THE SYSTEM SHALL save it with admin_id.
+- WHEN a patient or help request is assigned or reassigned THE SYSTEM SHALL update its owner and remove it from the unassigned list.
+- THE SYSTEM SHALL NOT display a public ranking of BHWs.
+
+A-3 Summary metrics.
+As a coordinator, I want honest operational metrics so that I can see follow-through.
+- THE SYSTEM SHALL show four metrics as defined in brief §6: first-checkup completion, confirmed follow-up attendance, clinical review completion and task ownership coverage. Each SHALL show its period, its cohort and an "unknown" count, using MetricTile.
+- WHEN a metric is selected THE SYSTEM SHALL list the underlying cases.
+- The follow-up breakdown (unknown, confirmed missed, rescheduled, completed) SHALL sum to the denominator.
+- THE SYSTEM SHALL NOT label anything as prevalence, population screening coverage or NCD control.
+
+A-4 Clinical Review (clinician mode only).
+As a clinician, I want a restricted review queue so that I can release care plans.
+- WHILE clinician mode is off THE SYSTEM SHALL hide clinical documents and the release action.
+- WHEN a clinician releases a plan THE SYSTEM SHALL set status 'released' and released_at, and the plan SHALL appear on the patient's Care Plan after their next online load.
+- THE SYSTEM SHALL NOT display unvalidated risk probabilities or diagnosis labels.
+
+A-5 Demo clinic inbox view.
+As a coordinator, I want to see incoming help requests so that I can confirm delivery and ownership.
+- THE SYSTEM SHALL list help_requests with created-on-device time, received time and coordination status.
+- WHEN the same request is flushed repeatedly THE SYSTEM SHALL still show a single row.
+
+Layout: tables and queues first, with a usable narrow-screen card view.
+
+If this spec adds or changes any SQL, also create supabase/apply_spec5.sql: one script I can paste into the Supabase SQL Editor to apply only this spec's new changes to my existing database. It must be safe to run twice. If no SQL changes are needed, say so and do not create the file.

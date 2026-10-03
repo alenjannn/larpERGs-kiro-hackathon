@@ -1,11 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
-import { ROLE_META } from '../config/demo';
+import { ROLE_META, type DemoRole } from '../config/demo';
 import { colors, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
 
 /** Authenticated role header showing current role & logout action. */
-export default function DemoQuickSwitchHeader() {
+export default function DemoQuickSwitchHeader({ onSwitch }: { onSwitch?: (role: DemoRole) => void } = {}) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, role, signOut } = useAuth();

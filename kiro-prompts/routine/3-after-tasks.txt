@@ -1,0 +1,1 @@
+Execute all tasks in tasks.md in order without stopping for approval. After each task, run the TypeScript typecheck and fix any errors before starting the next task. Mark each task complete as you go. Only stop if you are blocked by something you cannot do yourself (e.g. Supabase dashboard access or a missing env var) and tell me exactly what to do.

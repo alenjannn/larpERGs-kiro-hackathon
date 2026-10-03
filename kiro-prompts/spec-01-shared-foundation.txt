@@ -1,0 +1,27 @@
+Spec name: 01-shared-foundation
+
+Using docs/audit.md, build the shared foundation every role depends on. Changes are additive only.
+
+Scope:
+A. Migration(s) adding what tech.md §4 lists as missing: admin_role, clinics, appointments, care_plans, help_requests (client-generated id PK), is_seed columns, the help_requests auto-assign trigger, and the reset_demo_data() security-definer RPC. Keep RLS enabled with permissive hackathon policies matching the existing style. Regenerate supabase/setup.sql via scripts/build-setup-sql.mjs.
+B. seed.sql with fixed UUIDs and the personas in product.md §7. Every name ends in "(DEMO)".
+   - Clinics: 3 synthetic clinics; one with yakap_accreditation 'unknown' and an old last_verified_at.
+   - Map coordinates: generate synthetic patient coordinates as small offsets (±0.01°) around a single configurable demo centre (EXPO_PUBLIC_DEMO_MAP_CENTER, default a fictional barangay centre), labelled "approximate DEMO location". Never use real household addresses.
+   - Records: at least 3 dated BP readings for Juana across 3 months, one glucose with test type and unit, and one patient with no readings.
+C. src/shared/theme.ts tokens and src/shared/status.ts: the four-group status dictionary with EN/FIL labels, icon names and token colours. Mark the FIL labels "needs native-speaker review".
+D. Shared components listed in tech.md §6, each with a usage example screen at /dev/components (web only, hidden from the launcher).
+E. DemoRoleContext, ConnectivityContext and SyncContext per tech.md §3. Update the launcher to [Demo as Admin] [Demo as Clinician] [Demo as BHW] [Demo as Patient] plus a "Reset demo data" button (calls the RPC and clears local tuloy:v1:* keys after a confirm sheet).
+
+Write requirements as user stories with EARS acceptance criteria. Include at least:
+- As a demo presenter, I want to reset demo data so that every run starts identically.
+  WHEN Reset demo data is confirmed THE SYSTEM SHALL restore all seed rows, delete non-seed rows and clear local tuloy:v1:* storage.
+  WHEN the reset finishes THE SYSTEM SHALL return to the launcher showing "Demo data reset".
+- As any user, I want statuses to be unambiguous so that "saved", "received" and "reviewed" are never confused.
+  WHERE a status is displayed THE SYSTEM SHALL render text and an icon from status.ts, never colour alone.
+- As a patient, I want missing readings to look missing so that I am not misled.
+  IF a measurement value is null THEN THE SYSTEM SHALL display "No reading" and SHALL NOT display 0.
+- As a metric reader, I want counts with percentages so that small numbers are not misleading.
+  WHEN a metric denominator is 0 THE SYSTEM SHALL display "No cases".
+  OTHERWISE THE SYSTEM SHALL display "<n> of <d> (<p>%)".
+
+Also create supabase/apply_foundation.sql: one script I can paste into the Supabase SQL Editor to apply only the new changes and seed to my existing database. It must be safe to run twice.

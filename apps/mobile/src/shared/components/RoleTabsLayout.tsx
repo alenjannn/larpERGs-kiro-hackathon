@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { Tabs, useRouter, Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import RoleHeader from './RoleHeader';
 import DemoQuickSwitchHeader from './DemoQuickSwitchHeader';
 import { ROLE_META, type DemoRole } from '../config/demo';
 import { colors, radius, spacing } from '../theme';
@@ -56,7 +57,7 @@ export default function RoleTabsLayout({ role, tabs }: { role: DemoRole; tabs: R
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
-      <DemoQuickSwitchHeader />
+      <RoleHeader />
       <View style={styles.body}>
         <Tabs
           screenOptions={{

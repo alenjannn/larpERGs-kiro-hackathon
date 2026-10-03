@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import type { LocalRecord, LocalStorage, NewLocalRecord, SyncEntity, SyncStatus } from '../storage';
+import type { LocalRecord, LocalStorage, LocalV1Key, NewLocalRecord, SyncEntity, SyncStatus } from '../storage';
 
 interface QueueRow {
   local_id: string;
@@ -44,7 +44,44 @@ export default class StorageNative implements LocalStorage {
         key   TEXT PRIMARY KEY NOT NULL,
         value TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS kv_v1 (
+        key   TEXT PRIMARY KEY NOT NULL,
+        value TEXT NOT NULL
+      );
     `);
+  }
+
+  // --- tuloy:v1:* (Spec 01) ---
+
+  async getItem<T>(key: LocalV1Key): Promise<T | null> {
+    const row = await this.getDb().getFirstAsync<{ value: string }>('SELECT value FROM kv_v1 WHERE key = ?', [key]);
+    if (!row) return null;
+    try {
+      return JSON.parse(row.value) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  async setItem<T>(key: LocalV1Key, value: T): Promise<void> {
+    await this.getDb().runAsync('INSERT OR REPLACE INTO kv_v1 (key, value) VALUES (?, ?)', [key, JSON.stringify(value)]);
+  }
+
+  async removeItem(key: LocalV1Key): Promise<void> {
+    await this.getDb().runAsync('DELETE FROM kv_v1 WHERE key = ?', [key]);
+  }
+
+  /** Native kv_cache keys have no prefix (e.g. "bhw:<id>"), so the whole table is legacy cache. */
+  async clearDemoData(): Promise<{ cleared: number }> {
+    const db = this.getDb();
+    let cleared = 0;
+    await db.withTransactionAsync(async () => {
+      for (const table of ['local_sync_queue', 'kv_cache', 'kv_v1']) {
+        const result = await db.runAsync(`DELETE FROM ${table}`);
+        cleared += result.changes;
+      }
+    });
+    return { cleared };
   }
 
   async saveRecord(record: NewLocalRecord): Promise<void> {

@@ -84,6 +84,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setDemoRole = (newRole: DemoRole) => {
     setRole(newRole);
+    setUser({
+      id: `demo-${newRole}`,
+      email: `${newRole}@demo.tuloy.health`,
+      app_metadata: { role: newRole },
+      user_metadata: { role: newRole, is_demo: true },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+    } as unknown as User);
   };
 
   return (

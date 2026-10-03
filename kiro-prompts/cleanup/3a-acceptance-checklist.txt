@@ -1,0 +1,1 @@
+Give me the brief §7.5 acceptance tests 1–10 as a step-by-step manual checklist for the exported build (npx serve dist) using Chrome DevTools Offline, with the expected result for each step. Save it as docs/acceptance-results.md with blank pass/fail columns.
