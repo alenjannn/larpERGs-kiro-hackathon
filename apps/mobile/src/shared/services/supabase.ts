@@ -22,7 +22,11 @@ export class SupabaseConfigError extends Error {
 export const supabase: SupabaseClient | null = env.supabaseConfigError
   ? null
   : createClient(env.supabaseUrl, env.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      auth: {
+        persistSession: typeof window !== 'undefined',
+        autoRefreshToken: typeof window !== 'undefined',
+        detectSessionInUrl: typeof window !== 'undefined',
+      },
     });
 
 export const isSupabaseConfigured = supabase !== null;
