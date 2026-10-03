@@ -14,7 +14,7 @@ import {
 } from '../../../shared/services/api';
 import { currentEpoch } from '../../../shared/services/resetEpoch';
 import { getStorage, type LocalV1Key } from '../../../shared/services/storage';
-import { toUserMessage } from '../../../shared/services/supabase';
+import { supabase, toUserMessage } from '../../../shared/services/supabase';
 import type { Admin, Appointment, BHW, CarePlan, Clinic, HealthRecord, Patient } from '../../../shared/types/db.types';
 
 /** Last successful online load of the patient's Home data (Spec 02, OC-13). */
@@ -183,6 +183,33 @@ export function usePatientSnapshot(patientId?: string): SnapshotState & { reload
   );
 
   useEffect(() => onReconnect(() => void reload()), [onReconnect, reload]);
+
+  // Performance-optimized Realtime Listener:
+  // Only listens when mounted, and filtered specifically for this patient's records.
+  useEffect(() => {
+    const client = supabase;
+    if (!client || !id) return;
+
+    const channel = client
+      .channel(`patient_records:${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'records',
+          filter: `patient_id=eq.${id}`,
+        },
+        () => {
+          void reload();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void client.removeChannel(channel);
+    };
+  }, [id, reload]);
 
   return { ...state, reload };
 }
