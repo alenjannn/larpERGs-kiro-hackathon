@@ -26,6 +26,8 @@
   "devDependencies": {
     "@types/mapbox-gl": "^2.7.21",
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -34,7 +36,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "typecheck": "tsc --noEmit",
-    "export:web": "expo export --platform web && node scripts/build-sw.mjs"
+    "export:web": "expo export --platform web && node scripts/build-sw.mjs",
+    "lint": "expo lint"
   },
   "private": true
 }
