@@ -1,8 +1,8 @@
-import { DEMO_PATIENT_ID } from '../../../shared/config/demo';
-import { useAsyncData } from '../../../shared/hooks/useAsyncData';
-import { fetchRecords } from '../../../shared/services/api';
+import type { AsyncData } from '../../../shared/hooks/useAsyncData';
 import type { HealthRecord } from '../../../shared/types/db.types';
 import type { PatientHealth } from '../types/patient.types';
+import type { SnapshotMeta } from './usePatientData';
+import { usePatientSnapshot } from './usePatientSnapshot';
 
 export function groupRecords(all: HealthRecord[], now = Date.now()): PatientHealth {
   const appointments = all.filter((r) => r.record_type === 'appointment');
@@ -18,7 +18,18 @@ export function groupRecords(all: HealthRecord[], now = Date.now()): PatientHeal
   };
 }
 
-/** Records the patient's BHW created for them (visits, updates, appointments). */
-export function useHealthRecords(patientId: string = DEMO_PATIENT_ID) {
-  return useAsyncData(async () => groupRecords(await fetchRecords({ patientId })), [patientId]);
+/** Records the patient's BHW created for them, read from the patient snapshot (works offline). */
+export function useHealthRecords(patientId?: string): AsyncData<PatientHealth> & SnapshotMeta {
+  const s = usePatientSnapshot(patientId);
+  const snap = s.snapshot;
+  return {
+    data: snap ? groupRecords(snap.records) : null,
+    error: snap ? null : s.error,
+    loading: s.loading && !snap,
+    reload: s.reload,
+    status: s.status,
+    fromCache: s.fromCache,
+    lastUpdatedAt: snap?.last_updated_at ?? null,
+    staleReason: snap ? s.error : null,
+  };
 }

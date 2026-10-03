@@ -5,6 +5,8 @@ import { useConnectivity } from '../context/ConnectivityContext';
 import { useDemoRole } from '../context/DemoRoleContext';
 import { useSync } from '../context/SyncContext';
 import { resetDemoData } from '../services/api';
+import { notify as notifyOutbox, outbox } from '../services/outbox';
+import { bumpEpoch } from '../services/resetEpoch';
 import { getStorage } from '../services/storage';
 import { toUserMessage } from '../services/supabase';
 
@@ -36,8 +38,13 @@ export function useDemoReset() {
       return false;
     }
 
+    // Anything started before the reset (outbox flush, snapshot load) must not write afterwards.
+    bumpEpoch();
+    outbox.stopForReset();
+
     try {
       await (await getStorage()).clearDemoData();
+      notifyOutbox();
     } catch (e) {
       console.error('Clearing local demo data failed:', e);
       setError(

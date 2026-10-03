@@ -3,15 +3,21 @@ import { usePathname, useRouter } from 'expo-router';
 import { ROLE_META, type DemoRole } from '../config/demo';
 import { colors, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
+import { useDemoRole } from '../context/DemoRoleContext';
+import { useEffectiveRole } from '../hooks/useEffectiveRole';
 
 /** Authenticated role header showing current role & logout action. */
 export default function DemoQuickSwitchHeader({ onSwitch }: { onSwitch?: (role: DemoRole) => void } = {}) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, role, signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const { resetRole } = useDemoRole();
+  const { role, isDemoPersona } = useEffectiveRole();
 
+  // Logout also forgets the saved demo persona, so a reload stays on /login (OC-15.3).
   const handleLogout = async () => {
     await signOut();
+    resetRole();
     router.replace('/login');
   };
 
@@ -28,9 +34,9 @@ export default function DemoQuickSwitchHeader({ onSwitch }: { onSwitch?: (role: 
             </Text>
           </View>
         )}
-        {user ? (
-          <Pressable onPress={handleLogout} style={[styles.button, styles.logoutBtn]}>
-            <Text style={styles.logoutText}>🚪 Logout ({user.email})</Text>
+        {user || isDemoPersona ? (
+          <Pressable onPress={handleLogout} accessibilityRole="button" style={[styles.button, styles.logoutBtn]}>
+            <Text style={styles.logoutText}>🚪 Logout ({user?.email ?? 'demo persona'})</Text>
           </Pressable>
         ) : (
           <Pressable onPress={() => router.navigate('/login')} style={[styles.button, styles.loginBtn]}>

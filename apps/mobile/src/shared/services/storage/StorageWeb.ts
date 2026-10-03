@@ -16,16 +16,31 @@ function read(key: string): string | null {
   return memoryStore.get(key) ?? null;
 }
 
+/**
+ * Legacy queue/cache write. The memory fallback is only for environments with
+ * no localStorage at all (static pre-render). When real storage rejects the
+ * write (quota, blocked), the error is surfaced instead of keeping the data in
+ * memory only, where a refresh would silently lose it (Spec 02, OC-8.4).
+ */
 function write(key: string, value: string): void {
+  let storage: Storage | null = null;
   try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(key, value);
-      return;
-    }
+    if (typeof window !== 'undefined' && window.localStorage) storage = window.localStorage;
   } catch {
-    // Quota exceeded or blocked storage; keep the data for this session at least.
+    // Accessing localStorage itself throws when storage is blocked.
+    throw new LocalStorageUnavailableError('Browser storage is blocked, so nothing can be saved on this device.');
   }
-  memoryStore.set(key, value);
+  if (!storage) {
+    memoryStore.set(key, value);
+    return;
+  }
+  try {
+    storage.setItem(key, value);
+  } catch (error) {
+    throw new LocalStorageUnavailableError(
+      `Could not save on this device (browser storage is full or blocked): ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
 }
 
 /** window.localStorage, or a visible error when the browser blocks it. */
@@ -40,7 +55,13 @@ function browserStorage(): Storage {
 
 export default class StorageWeb implements LocalStorage {
   async initDB(): Promise<void> {
-    if (read(QUEUE_KEY) === null) write(QUEUE_KEY, '[]');
+    if (read(QUEUE_KEY) !== null) return;
+    try {
+      write(QUEUE_KEY, '[]');
+    } catch (error) {
+      // Not fatal: an absent queue reads as empty. The failure surfaces on the first real save.
+      console.warn('Could not initialise the offline queue:', error);
+    }
   }
 
   async saveRecord(record: NewLocalRecord): Promise<void> {
@@ -120,6 +141,27 @@ export default class StorageWeb implements LocalStorage {
 
   async removeItem(key: LocalV1Key): Promise<void> {
     browserStorage().removeItem(key);
+  }
+
+  async listItems<T>(prefix: LocalV1Key): Promise<{ key: LocalV1Key; value: T }[]> {
+    const storage = browserStorage();
+    // Collect first, then read: keeps iteration stable if another tab writes meanwhile.
+    const keys: string[] = [];
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key !== null && key.startsWith(prefix)) keys.push(key);
+    }
+    const items: { key: LocalV1Key; value: T }[] = [];
+    for (const key of keys) {
+      const raw = storage.getItem(key);
+      if (raw === null) continue;
+      try {
+        items.push({ key: key as LocalV1Key, value: JSON.parse(raw) as T });
+      } catch {
+        console.warn(`Skipping unreadable saved item ${key}`);
+      }
+    }
+    return items;
   }
 
   async clearDemoData(): Promise<{ cleared: number }> {

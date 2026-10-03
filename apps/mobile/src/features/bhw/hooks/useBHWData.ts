@@ -1,9 +1,10 @@
 import { DEMO_BHW_ID } from '../../../shared/config/demo';
+import { useDemoRole } from '../../../shared/context/DemoRoleContext';
 import { useAsyncData } from '../../../shared/hooks/useAsyncData';
-import { fetchAdmin, fetchBHW, fetchPatients, fetchRecords } from '../../../shared/services/api';
+import { fetchAdmin, fetchBHW, fetchHelpRequests, fetchPatients, fetchRecords } from '../../../shared/services/api';
 import { getStorage } from '../../../shared/services/storage';
 import { toUserMessage } from '../../../shared/services/supabase';
-import type { Admin, BHW, HealthRecord, NewHealthRecord, NewPatient, Patient } from '../../../shared/types/db.types';
+import type { Admin, BHW, HealthRecord, HelpRequestWithPatient, NewHealthRecord, NewPatient, Patient } from '../../../shared/types/db.types';
 import type { BHWData, BHWPatient, BHWRecord } from '../types/bhw.types';
 
 interface CachedBHWData {
@@ -11,13 +12,20 @@ interface CachedBHWData {
   admin: Admin | null;
   patients: Patient[];
   records: HealthRecord[];
+  /** Added in Spec 02; older caches have none. */
+  helpRequests?: HelpRequestWithPatient[];
   cachedAt: string;
 }
 
+/** Help requests in the BHW's Today queue: owned and still open. */
+const TODAY_STATUSES = ['assigned', 'acknowledged', 'blocked'] as const;
+
 /**
- * Online: loads the BHW's assignment (from Admin) and assigned patients from
- * Supabase and caches them locally. Offline: falls back to the cache. Items
- * still in the offline queue are merged in and flagged `pendingSync`.
+ * Online: loads the BHW's assignment (from Admin), assigned patients and
+ * received help requests from Supabase and caches them locally. Offline:
+ * falls back to the cache. Items in the local queue (pending or already
+ * synced but not yet in the cache) are merged in, so nothing saved on this
+ * device disappears after Sync Now and a reload (OC-8.3).
  */
 export async function loadBHWData(bhwId: string): Promise<BHWData> {
   const storage = await getStorage();
@@ -26,21 +34,32 @@ export async function loadBHWData(bhwId: string): Promise<BHWData> {
   let fetchError: string | null = null;
 
   try {
-    const [bhw, patients, records] = await Promise.all([
+    const [bhw, patients, records, helpRequests] = await Promise.all([
       fetchBHW(bhwId),
       fetchPatients(bhwId),
       fetchRecords({ bhwId, limit: 100 }),
+      fetchHelpRequests({ assignedBhwId: bhwId, statuses: [...TODAY_STATUSES] }),
     ]);
     const admin = bhw ? await fetchAdmin(bhw.admin_id) : null;
-    fresh = { bhw, admin, patients, records, cachedAt: new Date().toISOString() };
-    await storage.setCache(cacheKey, fresh);
+    fresh = { bhw, admin, patients, records, helpRequests, cachedAt: new Date().toISOString() };
   } catch (error) {
     console.warn('BHW data fetch failed, using offline cache:', error);
     fetchError = toUserMessage(error, 'Could not load the latest data.');
   }
 
+  // A failed cache write must not hide fresh data; it is reported instead (OC-8.4).
+  let cacheError: string | null = null;
+  if (fresh) {
+    try {
+      await storage.setCache(cacheKey, fresh);
+    } catch (error) {
+      console.warn('Could not save the BHW offline copy:', error);
+      cacheError = `Could not save an offline copy on this device: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  }
+
   const base = fresh ?? (await storage.getCache<CachedBHWData>(cacheKey));
-  const queue = await storage.getPendingRecords();
+  const queue = await storage.getAllRecords();
 
   const patients: BHWPatient[] = (base?.patients ?? []).map((p) => ({ ...p, pendingSync: false }));
   const known = new Set(patients.map((p) => p.id));
@@ -58,16 +77,17 @@ export async function loadBHWData(bhwId: string): Promise<BHWData> {
       ...p,
       local_id: item.local_id,
       created_at: item.created_at,
-      pendingSync: true,
+      pendingSync: item.sync_status !== 'synced',
     });
     known.add(p.id);
   }
   patients.sort((a, b) => a.full_name.localeCompare(b.full_name));
 
   const records: BHWRecord[] = (base?.records ?? []).map((r) => ({ ...r, pendingSync: false }));
-  const syncedLocalIds = new Set(records.map((r) => r.local_id).filter(Boolean));
-  for (const item of queue) {
-    if (item.entity !== 'record' || syncedLocalIds.has(item.local_id)) continue;
+  const cachedLocalIds = new Set(records.map((r) => r.local_id).filter(Boolean));
+  // Queue is newest first; unshift in reverse keeps newest at the top.
+  for (const item of [...queue].reverse()) {
+    if (item.entity !== 'record' || cachedLocalIds.has(item.local_id)) continue;
     const r = item.payload as unknown as NewHealthRecord;
     records.unshift({
       id: item.local_id,
@@ -82,21 +102,35 @@ export async function loadBHWData(bhwId: string): Promise<BHWData> {
       source: 'offline_sync',
       local_id: item.local_id,
       created_at: item.created_at,
-      pendingSync: true,
+      pendingSync: item.sync_status !== 'synced',
     });
   }
+
+  // One row per request id (OC-5.5).
+  const seen = new Set<string>();
+  const helpRequests = (base?.helpRequests ?? []).filter((h) => !seen.has(h.id) && !!seen.add(h.id));
 
   return {
     bhw: base?.bhw ?? null,
     admin: base?.admin ?? null,
     patients,
     records,
+    helpRequests,
     fromCache: !fresh && !!base,
     cachedAt: base?.cachedAt ?? null,
     fetchError,
+    cacheError,
   };
 }
 
-export function useBHWData(bhwId: string = DEMO_BHW_ID) {
-  return useAsyncData(() => loadBHWData(bhwId), [bhwId]);
+/** The current BHW: the demo persona when the role is BHW. */
+export function useCurrentBHWId(): string {
+  const { role, personaId } = useDemoRole();
+  return role === 'bhw' && personaId ? personaId : DEMO_BHW_ID;
+}
+
+export function useBHWData(bhwId?: string) {
+  const current = useCurrentBHWId();
+  const id = bhwId ?? current;
+  return useAsyncData(() => loadBHWData(id), [id]);
 }

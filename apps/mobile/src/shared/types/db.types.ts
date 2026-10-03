@@ -176,6 +176,11 @@ export interface HelpRequest {
   is_seed: boolean;
 }
 
+/** Exactly the columns the patient outbox sends (Spec 02, OC-11.3). Server sets the rest. */
+export type HelpRequestInsert = Pick<HelpRequest, 'id' | 'patient_id' | 'reason' | 'message' | 'created_on_device_at'>;
+export type HelpRequestRow = Omit<HelpRequest, 'is_seed'>;
+export type HelpRequestWithPatient = HelpRequestRow & { patient: { full_name: string } | null };
+
 export type NewBHW = Pick<BHW, 'admin_id' | 'full_name' | 'barangay'> & Partial<Pick<BHW, 'email' | 'phone'>>;
 
 export type NewPatient = Pick<Patient, 'id' | 'bhw_id' | 'full_name'> &

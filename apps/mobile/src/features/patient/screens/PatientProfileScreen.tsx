@@ -8,6 +8,7 @@ import { formatDate } from '../../../shared/utils/date';
 import { ageFromBirthDate } from '../../../shared/utils/format';
 import { colors, spacing } from '../../../shared/theme';
 import CareTeamCard from '../components/CareTeamCard';
+import SnapshotStatus from '../components/SnapshotStatus';
 import { usePatientData } from '../hooks/usePatientData';
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -20,13 +21,14 @@ function Field({ label, value }: { label: string; value: string }) {
 }
 
 export default function PatientProfileScreen() {
-  const { data, error, loading, reload } = usePatientData();
+  const { data, error, loading, reload, status, lastUpdatedAt, staleReason } = usePatientData();
   const p = data?.patient;
   const age = ageFromBirthDate(p?.birth_date);
 
   return (
     <Screen title="Profile" subtitle="Your registered information" refreshing={loading && !!data} onRefresh={reload}>
       {loading && !data ? <LoadingSpinner /> : null}
+      <SnapshotStatus status={status} lastUpdatedAt={lastUpdatedAt} staleReason={staleReason} />
       {error ? <Notice tone="error" message={error} /> : null}
       {p ? (
         <Card title={p.full_name} right={<DemoBadge />}>
