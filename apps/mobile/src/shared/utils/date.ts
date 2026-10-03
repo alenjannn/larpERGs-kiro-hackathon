@@ -40,3 +40,28 @@ export function parseYMD(text: string): Date | null {
   const date = new Date(y, m - 1, d);
   return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null;
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function toDate(iso: string | null | undefined): Date | null {
+  if (!iso) return null;
+  const d = parseYMD(iso) ?? new Date(iso);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/** "04 Oct 2026", independent of device locale. Null/invalid → "—". */
+export function formatDateDMY(iso: string | null | undefined): string {
+  const d = toDate(iso);
+  if (!d) return '—';
+  return `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** "04 Oct 2026, 9:15 AM" in local time, independent of device locale. Null/invalid → "—". */
+export function formatDateTimeDMY(iso: string | null | undefined): string {
+  const d = toDate(iso);
+  if (!d) return '—';
+  const h = d.getHours();
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${formatDateDMY(iso)}, ${hour12}:${minutes} ${h < 12 ? 'AM' : 'PM'}`;
+}

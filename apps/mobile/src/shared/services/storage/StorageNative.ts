@@ -19,4 +19,8 @@ export default class StorageNative implements LocalStorage {
   clearSynced = async () => unavailable();
   getCache = async <T,>(): Promise<T | null> => unavailable();
   setCache = async () => unavailable();
+  getItem = async <T,>(): Promise<T | null> => unavailable();
+  setItem = async () => unavailable();
+  removeItem = async () => unavailable();
+  clearDemoData = async (): Promise<{ cleared: number }> => unavailable();
 }

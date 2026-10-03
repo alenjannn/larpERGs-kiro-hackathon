@@ -1,0 +1,1 @@
+List every user-facing string about sending, receiving, reviewing, diagnosis, emergencies, YAKAP enrollment or free services. Fix any that break the status dictionary or the product.md §3 non-negotiables. Confirm Filipino labels are marked for native-speaker review.

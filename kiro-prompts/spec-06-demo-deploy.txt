@@ -1,0 +1,29 @@
+Spec name: 06-demo-hardening-deploy
+
+Make the single Vercel link demo-ready.
+
+Scope:
+- Verify the vercel.json and expo export flow with the service worker.
+- Add cache headers so the service worker and HTML aren't cached stale.
+- Document the env vars.
+- Update the README "Demo script" to the combined ~4-minute script in product.md §7, adding the brief's §9.1 offline steps.
+- Add a "DEMO DATA" footer on every role.
+- Add a pre-demo checklist at docs/demo-checklist.md: reset data; load each role once online; confirm the service worker is installed; test DevTools Offline; then go back online.
+- Run a final pass of every Spec 02 acceptance test and record the results in docs/acceptance-results.md as pass/fail, with notes.
+
+Requirements as user stories with EARS acceptance criteria, including:
+- As a judge, I want one link that opens the launcher so that I can try any role.
+  WHEN the Vercel URL is opened THE SYSTEM SHALL show the Demo Quick-Switch Launcher.
+- As a presenter, I want the offline journey to work on the deployed link so that the demo matches the brief.
+  WHEN the deployed app has loaded once AND DevTools is set Offline AND the page is reloaded THE SYSTEM SHALL render Patient Home from cache.
+
+Definition of complete (brief §9.2). All of these must hold:
+1. The end-to-end scenario runs with synthetic records.
+2. All demo records persist across refresh.
+3. All offline acceptance tests pass.
+4. Each help request appears once in both the inbox and the BHW queue.
+5. Every status uses the shared dictionary and offline branding.
+6. The demo includes one offline help request with a retry and one unknown-attendance case.
+7. No deferred capability is presented as working.
+
+If this spec adds or changes any SQL, also create supabase/apply_spec6.sql: one script I can paste into the Supabase SQL Editor to apply only this spec's new changes to my existing database. It must be safe to run twice. If no SQL changes are needed, say so and do not create the file.

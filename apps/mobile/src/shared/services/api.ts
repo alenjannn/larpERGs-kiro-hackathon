@@ -97,6 +97,23 @@ export async function fetchRecords(filter: { patientId?: string; bhwId?: string;
   return unwrap(await query.order('created_at', { ascending: false }).limit(filter.limit ?? 200)) ?? [];
 }
 
+// --- demo reset ---------------------------------------------------------------
+
+export interface ResetDemoDataResult {
+  deleted: Record<string, number>;
+  reset_at: string;
+}
+
+/**
+ * Calls the security-definer reset_demo_data() RPC: deletes every non-seed row
+ * and restores the DEMO seed, placing seeded patients around `center`.
+ */
+export async function resetDemoData(center: { latitude: number; longitude: number }): Promise<ResetDemoDataResult> {
+  return unwrap(
+    await requireSupabase().rpc('reset_demo_data', { center_lat: center.latitude, center_lng: center.longitude })
+  ) as ResetDemoDataResult;
+}
+
 /** Idempotent insert used by offline sync (keyed by local_id). */
 export async function upsertRecordFromOffline(record: NewHealthRecord): Promise<void> {
   unwrap(

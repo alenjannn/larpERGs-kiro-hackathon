@@ -36,7 +36,9 @@ export default function BHWMapScreen() {
       <Card title="Legend">
         <View style={styles.legendRow}>
           <View style={[styles.dot, { backgroundColor: MARKER_COLORS.facility }]} />
-          <Text style={styles.legendText}>{MOCK_FACILITY.title} (Metro Manila 14.5995° N, 120.9842° E)</Text>
+          <Text style={styles.legendText}>
+            {MOCK_FACILITY.title} (demo centre {MOCK_FACILITY.latitude.toFixed(4)}°, {MOCK_FACILITY.longitude.toFixed(4)}°)
+          </Text>
         </View>
         <View style={styles.legendRow}>
           <View style={[styles.dot, { backgroundColor: MARKER_COLORS.patient }]} />

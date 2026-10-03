@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { DEFAULT_ZOOM, getMapboxToken, MARKER_COLORS, METRO_MANILA_CENTER, type MapMarker, type MapViewProps } from './config';
+import { DEFAULT_ZOOM, DEMO_MAP_CENTER, getMapboxToken, MARKER_COLORS, type MapMarker, type MapViewProps } from './config';
 
 // Web-only map. Never imports @rnmapbox/maps.
 // - With a pk.* token: interactive mapbox-gl JS map (loaded lazily in the browser,
@@ -18,7 +18,7 @@ function ensureMapboxCss(version: string) {
 }
 
 function osmEmbedUrl(markers: MapMarker[]): string {
-  const focus = markers.find((m) => m.kind === 'facility') ?? markers[0] ?? { ...METRO_MANILA_CENTER };
+  const focus = markers.find((m) => m.kind === 'facility') ?? markers[0] ?? { ...DEMO_MAP_CENTER };
   const lats = markers.map((m) => m.latitude).concat(focus.latitude);
   const lngs = markers.map((m) => m.longitude).concat(focus.longitude);
   const pad = 0.006;
@@ -86,7 +86,7 @@ function MapboxGlMap({ markers, center, zoom, token, onFail }: Required<MapViewP
   );
 }
 
-export default function MapWeb({ markers, center = METRO_MANILA_CENTER, zoom = DEFAULT_ZOOM }: MapViewProps) {
+export default function MapWeb({ markers, center = DEMO_MAP_CENTER, zoom = DEFAULT_ZOOM }: MapViewProps) {
   const token = getMapboxToken();
   const [failure, setFailure] = useState<string | null>(null);
 

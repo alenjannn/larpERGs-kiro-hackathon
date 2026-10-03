@@ -1,0 +1,19 @@
+Spec name: 00-audit-alignment
+
+Do not change any code in this spec. Produce docs/audit.md only.
+
+Read the existing project (apps/mobile, supabase/migrations, seed.sql, setup.sql, scripts/) and compare it to the steering files and docs/product-brief.md.
+
+Report:
+1. Actual schema: every table, column, type, FK, RLS policy and existing trigger/RPC. Then a table: steering tech.md §4 field → exists / missing / differs (with the real name).
+2. storage.ts and storage.native.ts: current API, key naming, how sync status is stored, and the current sync flag values.
+3. sync.ts: order, idempotency method, error handling, and whether any automatic trigger exists.
+4. Routes and screens that exist per role, compared with structure.md.
+5. Existing shared components, theme, state management and contexts.
+6. Mapbox setup on web and native, plus the fallback behavior.
+7. Whether a service worker or web manifest exists, and whether the exported web build can reopen offline today.
+8. Seed data: personas and whether IDs are fixed.
+9. A gap list ranked by the brief's priority, where offline-first core = highest, with the smallest additive change for each gap.
+10. Conflicts between the README, steering and the brief, each with a recommended resolution.
+
+Requirements format: user stories with EARS acceptance criteria, e.g. "WHEN the audit completes THE SYSTEM SHALL list every gap with a proposed additive change".

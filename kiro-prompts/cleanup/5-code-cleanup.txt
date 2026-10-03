@@ -1,0 +1,1 @@
+Remove dead code, unused imports, leftover debug logs and duplicate components. Make sure screens never import supabase directly and that expo-sqlite and @rnmapbox/maps are absent from the web bundle. Don't change behavior.

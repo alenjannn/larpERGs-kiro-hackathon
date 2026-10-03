@@ -1,4 +1,5 @@
-import type { LocalRecord, LocalStorage, NewLocalRecord } from '../storage';
+import type { LocalRecord, LocalStorage, LocalV1Key, NewLocalRecord } from '../storage';
+import { isDemoDataKey, LocalStorageUnavailableError } from './errors';
 
 const QUEUE_KEY = 'tuloy_offline_records';
 const CACHE_PREFIX = 'tuloy_cache:';
@@ -25,6 +26,16 @@ function write(key: string, value: string): void {
     // Quota exceeded or blocked storage; keep the data for this session at least.
   }
   memoryStore.set(key, value);
+}
+
+/** window.localStorage, or a visible error when the browser blocks it. */
+function browserStorage(): Storage {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+  } catch {
+    // Accessing localStorage throws when storage is blocked (sandboxed iframe, privacy settings).
+  }
+  throw new LocalStorageUnavailableError('Browser storage is not available, so nothing can be saved on this device.');
 }
 
 export default class StorageWeb implements LocalStorage {
@@ -82,6 +93,58 @@ export default class StorageWeb implements LocalStorage {
 
   async setCache<T>(key: string, value: T): Promise<void> {
     write(CACHE_PREFIX + key, JSON.stringify(value));
+  }
+
+  // --- tuloy:v1:* (Spec 01). No in-memory fallback: failures are visible. ---
+
+  async getItem<T>(key: LocalV1Key): Promise<T | null> {
+    const raw = browserStorage().getItem(key);
+    if (raw === null) return null;
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  async setItem<T>(key: LocalV1Key, value: T): Promise<void> {
+    const storage = browserStorage();
+    try {
+      storage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      throw new LocalStorageUnavailableError(
+        `Could not save on this device (browser storage is full or blocked): ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  async removeItem(key: LocalV1Key): Promise<void> {
+    browserStorage().removeItem(key);
+  }
+
+  async clearDemoData(): Promise<{ cleared: number }> {
+    for (const key of Array.from(memoryStore.keys())) {
+      if (isDemoDataKey(key)) memoryStore.delete(key);
+    }
+    const storage = browserStorage();
+    // Collect first: removing while iterating shifts the indexes.
+    const keys: string[] = [];
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key !== null && isDemoDataKey(key)) keys.push(key);
+    }
+    const failed: string[] = [];
+    for (const key of keys) {
+      try {
+        storage.removeItem(key);
+      } catch {
+        failed.push(key);
+      }
+    }
+    if (failed.length) {
+      throw new LocalStorageUnavailableError(`Could not clear ${failed.length} saved item(s) on this device: ${failed.join(', ')}`);
+    }
+    return { cleared: keys.length };
   }
 
   private update(id: string, changes: Partial<LocalRecord>): void {

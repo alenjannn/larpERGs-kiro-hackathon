@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import type { HealthRecord } from '../types/db.types';
 import { formatDateTime, timeAgo } from '../utils/date';
-import { formatBP, isElevatedBP, RECORD_TYPE_LABEL } from '../utils/format';
+import { formatBP, isElevatedBP, recordTypeLabel } from '../utils/format';
 import { colors, spacing } from '../theme';
 
 interface Props {
@@ -24,7 +24,7 @@ export default function RecordListItem({ record, context, pendingSync }: Props) 
     <View style={styles.row}>
       <View style={styles.main}>
         <Text style={styles.type}>
-          {RECORD_TYPE_LABEL[record.record_type]}
+          {recordTypeLabel(record.record_type)}
           {pendingSync ? '  ⏳ pending sync' : record.source === 'offline_sync' ? '  📶 synced from field' : ''}
         </Text>
         <Text style={styles.title}>{record.title}</Text>

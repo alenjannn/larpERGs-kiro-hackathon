@@ -19,7 +19,7 @@ export default function BHWSyncScreen() {
   return (
     <Screen
       title="Sync"
-      subtitle="Upload records collected in the field to Supabase"
+      subtitle="Send field records to the demo server"
       refreshing={sync.loading && sync.items.length > 0}
       onRefresh={sync.reloadQueue}
     >
@@ -47,6 +47,7 @@ export default function BHWSyncScreen() {
         <SyncStatus items={sync.items} />
       </Card>
       <Text style={styles.footnote}>Tip: turn on airplane mode / DevTools “Offline”, add records, then come back online and tap Sync Now.</Text>
+      <Text style={styles.footnote}>Sync Now sends records to the demo server only. Full cloud sync is deferred.</Text>
     </Screen>
   );
 }

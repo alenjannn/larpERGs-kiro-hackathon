@@ -1,0 +1,60 @@
+Spec name: 02-offline-first-core
+
+This is Tuloy's main feature. Implement the brief's §7 required offline journey on Expo Web (exported PWA) first, then confirm native parity with SQLite.
+
+Scope:
+1. Offline app shell: web manifest, plus a service worker that precaches the exported dist/ (registered only in production web builds), with an "update available — reload" prompt when a new version is deployed.
+2. Patient read cache: patient_snapshot written on every successful online load; Patient Home, YAKAP step, care plan and care team read from the snapshot when offline, with LastUpdated and OfflineBanner.
+3. Help-request outbox (src/shared/services/outbox.ts):
+   - Client UUID, persisted before confirmation.
+   - Statuses pending/sending/synced/failed/conflict.
+   - Single-flight flush, backoff 2s/5s/15s/60s, reset of stale 'sending' items on load.
+   - Upsert with ignoreDuplicates plus read-back by id before marking synced.
+   - Triggers: app start, offline→online, visibility/foreground, manual Try again.
+4. Help-request UI: "I need help" on Home and on every NextStepCard; reason picker (transport, need another date, lab access, document help, medicine access, other) and optional message; urgent-care guidance text; "My requests" list with StatusChip and created-on-device time.
+5. Inbox and queue: help_requests is the demo clinic inbox; the BHW Today queue and Admin Needs Attention read from it.
+6. Persistence: confirm every demo record type (patients, records, appointments, help requests, care plans) is written to persistent local storage and survives refresh on web and app restart on native. Do not add send queues for other record types beyond the existing BHW Sync Now.
+7. Deferred, and must be stated in UI copy where relevant: background sending while closed, cloud sync of all records, cross-device conflict resolution, backup/restore.
+
+User stories with EARS acceptance criteria. Use these and make each one testable:
+
+OC-1 As a patient, I want Tuloy to open without internet after I've used it once so that I can still see my next care step.
+- WHEN the production web app has been loaded online once AND the device is offline AND the user reloads THE SYSTEM SHALL render the app and Patient Home without a browser error page.
+- WHILE offline THE SYSTEM SHALL show OfflineBanner and the snapshot's "Last updated <date, time>".
+- IF no snapshot exists THEN THE SYSTEM SHALL show "Connect once to load your information".
+
+OC-2 As a patient, I want to ask for help while offline so that my request is not lost.
+- WHEN the patient submits a help request offline THE SYSTEM SHALL persist it locally before showing confirmation.
+- WHEN the request is persisted THE SYSTEM SHALL show "Saved on this device" and then the chip "Waiting to send".
+
+OC-3 As a patient, I want my request to survive a refresh so that I don't have to re-enter it.
+- WHEN the app is refreshed or reopened while offline THE SYSTEM SHALL list the request as "Waiting to send" with its original reason, message and created time.
+
+OC-4 As a patient, I want my request to be sent automatically when I'm back online so that I don't have to remember.
+- WHEN connectivity changes from offline to online WHILE the app is open THE SYSTEM SHALL start a flush within 5 seconds.
+- WHEN the server read-back confirms the row THE SYSTEM SHALL show "Received in demo clinic inbox".
+- THE SYSTEM SHALL NOT show "Received" before the read-back confirms the row.
+
+OC-5 As the care team, I want each request exactly once so that nobody does duplicate work.
+- WHEN a request is flushed any number of times (repeated Try again, double tap, connectivity toggled during sending, reload mid-send) THE SYSTEM SHALL result in exactly one help_requests row and exactly one BHW Today item.
+
+OC-6 As a patient, I want to know when sending failed so that I can retry.
+- IF a flush attempt fails THEN THE SYSTEM SHALL keep the request, show "Not sent yet. Try again." with a Try again action, and record _last_error.
+- IF the server holds the same id with different content THEN THE SYSTEM SHALL mark it "Needs review" and SHALL NOT overwrite either copy.
+
+OC-7 As a BHW, I want received help requests in my Today queue so that I can act.
+- WHEN a help request is received for a patient assigned to me THE SYSTEM SHALL show it in Today with patient, reason, created-on-device time and received time as separate fields.
+- IF the patient is unassigned THEN THE SYSTEM SHALL show the request in Admin Needs Attention as "unassigned".
+
+OC-8 As a demo presenter, I want all demo records to persist so that a refresh never breaks the demo.
+- WHEN any workspace is refreshed THE SYSTEM SHALL show all locally created records unchanged.
+
+OC-9 As a patient, I want honest help-request wording so that I know it isn't an emergency line.
+- WHERE the help-request form is shown THE SYSTEM SHALL display urgent-care guidance.
+- THE SYSTEM SHALL NOT state or imply live monitoring or a guaranteed response time.
+
+Design.md must include a sequence diagram of save → pending → sending → read-back → synced, and the failure and conflict branches.
+
+Tasks.md must end with a manual test script that reproduces brief §7.5 tests 1–10 on `npx serve dist`, using Chrome DevTools Offline. Note that the service worker is not active under `expo start`.
+
+If this spec adds or changes any SQL, also create supabase/apply_spec2.sql: one script I can paste into the Supabase SQL Editor to apply only this spec's new changes to my existing database. It must be safe to run twice. If no SQL changes are needed, say so and do not create the file.

@@ -45,10 +45,40 @@ function getSupabaseConfigError(): string | null {
   return null;
 }
 
+const demoMapCenterRaw = (process.env.EXPO_PUBLIC_DEMO_MAP_CENTER ?? '').trim();
+
+export interface DemoMapCenter {
+  latitude: number;
+  longitude: number;
+}
+
+/**
+ * Default demo centre: the existing demo facility point, labelled with the
+ * fictional "Brgy. Demo San Isidro". Synthetic patients are offset from it.
+ */
+export const DEFAULT_DEMO_CENTER: DemoMapCenter = { latitude: 14.5995, longitude: 120.9842 };
+
+/** Parses "lat,lng". Bounds match the SQL check in reset_demo_data(). */
+export function parseDemoMapCenter(raw: string): DemoMapCenter | null {
+  const parts = raw.split(',').map((p) => p.trim());
+  if (parts.length !== 2 || parts.some((p) => p === '')) return null;
+  const [latitude, longitude] = parts.map(Number);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (Math.abs(latitude) > 89 || Math.abs(longitude) > 179) return null;
+  return { latitude, longitude };
+}
+
+const parsedDemoMapCenter = demoMapCenterRaw ? parseDemoMapCenter(demoMapCenterRaw) : null;
+
 export const env = {
   supabaseUrl,
   supabaseAnonKey,
   mapboxToken,
   supabaseConfigError: getSupabaseConfigError(),
   hasMapboxToken: mapboxToken.startsWith('pk.'),
+  demoMapCenter: parsedDemoMapCenter ?? DEFAULT_DEMO_CENTER,
+  demoMapCenterWarning:
+    demoMapCenterRaw && !parsedDemoMapCenter
+      ? `EXPO_PUBLIC_DEMO_MAP_CENTER "${demoMapCenterRaw}" is not a valid "lat,lng". Using the default demo centre.`
+      : null,
 };

@@ -1,0 +1,1 @@
+Audit the whole codebase against docs/product-brief.md and the three steering files. Write docs/final-audit.md listing every gap or violation, grouped as: offline journey (brief §7.1), non-negotiables (product.md §3), status dictionary, schema, and per-role features. Rank by severity. Do not edit code yet.

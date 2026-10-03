@@ -6,7 +6,7 @@ import { colors, spacing } from '../theme';
 const ROLES: DemoRole[] = ['admin', 'bhw', 'patient'];
 
 /** Persistent role switcher shown at the top of every role layout. */
-export default function DemoQuickSwitchHeader() {
+export default function DemoQuickSwitchHeader({ onSwitch }: { onSwitch?: (role: DemoRole) => void } = {}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -24,7 +24,10 @@ export default function DemoQuickSwitchHeader() {
               key={role}
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
-              onPress={() => router.navigate(meta.href)}
+              onPress={() => {
+                onSwitch?.(role);
+                router.navigate(meta.href);
+              }}
               style={[styles.button, active && { backgroundColor: meta.color, borderColor: meta.color }]}
             >
               <Text style={[styles.buttonText, active && styles.activeText]}>
