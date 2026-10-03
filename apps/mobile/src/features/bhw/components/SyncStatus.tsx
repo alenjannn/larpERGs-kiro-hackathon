@@ -1,20 +1,21 @@
 import { StyleSheet, Text, View } from 'react-native';
+import EmptyState from '../../../shared/components/EmptyState';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import type { LocalRecord, SyncEntity } from '../../../shared/services/storage';
-import { legacyQueueStatusKeys } from '../../../shared/status';
-import { formatDateTime } from '../../../shared/utils/date';
+import { formatDateTimeDMY } from '../../../shared/utils/date';
 import { colors, spacing } from '../../../shared/theme';
+import { fieldQueueStatusKeys } from '../fieldQueueStatus';
 
 const ENTITY_LABEL: Record<SyncEntity, string> = {
-  patient: '🧑 Patient',
-  record: '📋 Record',
-  connection_test: '🧪 Test',
+  patient: 'Patient',
+  record: 'Record',
+  connection_test: 'Test',
 };
 
-/** Lists every item in the offline queue with its status (text + icon from status.ts). */
-export default function SyncStatus({ items }: { items: LocalRecord[] }) {
+/** Every item in the offline queue with its status chips from status.ts (B-4.2). */
+export default function SyncStatus({ items, syncing }: { items: LocalRecord[]; syncing: boolean }) {
   if (items.length === 0) {
-    return <Text style={styles.empty}>The offline queue is empty.</Text>;
+    return <EmptyState title="Nothing saved on this device yet" message="Patients and visits you save offline appear here." icon="device" />;
   }
   return (
     <View>
@@ -25,11 +26,11 @@ export default function SyncStatus({ items }: { items: LocalRecord[] }) {
               {ENTITY_LABEL[item.entity] ?? item.entity} · {item.message}
             </Text>
             <Text style={styles.meta}>
-              Saved {formatDateTime(item.created_at)}
-              {item.synced_at ? ` · sent ${formatDateTime(item.synced_at)}` : ''}
+              Saved on this device {formatDateTimeDMY(item.created_at)}
+              {item.synced_at ? ` · synced ${formatDateTimeDMY(item.synced_at)}` : ''}
             </Text>
             {item.last_error ? <Text style={styles.error}>{item.last_error}</Text> : null}
-            <StatusChipRow statuses={legacyQueueStatusKeys(item.sync_status)} />
+            <StatusChipRow statuses={fieldQueueStatusKeys(item, syncing)} />
           </View>
         </View>
       ))}
@@ -43,5 +44,4 @@ const styles = StyleSheet.create({
   message: { fontSize: 14, color: colors.text },
   meta: { fontSize: 12, color: colors.muted },
   error: { fontSize: 12, color: colors.danger },
-  empty: { fontSize: 13, color: colors.muted },
 });
