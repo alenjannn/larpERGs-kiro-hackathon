@@ -23,6 +23,8 @@ interface Props {
   bhwId: string;
   onSave: (item: NewLocalRecord) => Promise<boolean>;
   onDone: () => void;
+  /** Record types to offer. Visits use the Patient Visit screen (Spec 04), so My Patients passes the others. */
+  types?: RecordType[];
 }
 
 function inRange(value: number | null, min: number, max: number): boolean {
@@ -30,8 +32,8 @@ function inRange(value: number | null, min: number, max: number): boolean {
 }
 
 /** Log a visit / health update / appointment. Always saved offline first. */
-export default function RecordForm({ patient, bhwId, onSave, onDone }: Props) {
-  const [type, setType] = useState<RecordType>('visit');
+export default function RecordForm({ patient, bhwId, onSave, onDone, types = Object.keys(RECORD_TYPE_LABEL) as RecordType[] }: Props) {
+  const [type, setType] = useState<RecordType>(types[0] ?? 'visit');
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [systolic, setSystolic] = useState('');
@@ -91,7 +93,7 @@ export default function RecordForm({ patient, bhwId, onSave, onDone }: Props) {
     <View style={styles.form}>
       <Text style={styles.heading}>New record for {patient.full_name}</Text>
       <ChipGroup
-        options={(Object.keys(RECORD_TYPE_LABEL) as RecordType[]).map((v) => ({ value: v, label: RECORD_TYPE_LABEL[v] }))}
+        options={types.map((v) => ({ value: v, label: RECORD_TYPE_LABEL[v] }))}
         value={type}
         onChange={(v) => {
           setType(v);

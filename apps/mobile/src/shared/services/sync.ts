@@ -9,6 +9,8 @@
 
 import { getStorage, type LocalRecord, type SyncEntity } from './storage';
 import { upsertConnectionTestFromOffline, upsertPatientFromOffline, upsertRecordFromOffline } from './api';
+// Spec 04 (B-4.4): read back after each upsert; "synced" only once the server row is confirmed.
+import { confirmPatientOnServer, confirmRecordOnServer, SyncReadBackError } from './apiBhw';
 import { isNetworkError, isSchemaMissingError, isSupabaseConfigured, toUserMessage } from './supabase';
 import { env } from '../config/env';
 import type { NewHealthRecord, NewPatient } from '../types/db.types';
@@ -31,12 +33,14 @@ async function pushItem(item: LocalRecord): Promise<void> {
       const patient = item.payload as unknown as NewPatient;
       if (!patient.id || !patient.full_name) throw new Error('Invalid offline patient payload');
       await upsertPatientFromOffline({ ...patient, local_id: item.local_id });
+      await confirmPatientOnServer(patient);
       return;
     }
     case 'record': {
       const record = item.payload as unknown as NewHealthRecord;
       if (!record.patient_id || !record.record_type || !record.title) throw new Error('Invalid offline record payload');
       await upsertRecordFromOffline({ ...record, local_id: item.local_id });
+      await confirmRecordOnServer({ ...record, local_id: item.local_id });
       return;
     }
     case 'connection_test':
@@ -71,7 +75,10 @@ export async function syncPendingRecords(): Promise<SyncResult> {
         result.error = toUserMessage(error);
         break;
       }
-      await storage.markFailed(item.local_id, toUserMessage(error, 'Server rejected this item'));
+      await storage.markFailed(
+        item.local_id,
+        error instanceof SyncReadBackError ? error.message : toUserMessage(error, 'Server rejected this item')
+      );
       result.failed++;
     }
   }

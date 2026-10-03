@@ -37,6 +37,7 @@ export default function OfflineTest({ sync, onSynced }: { sync: OfflineSync; onS
       </View>
       {sync.storageError ? <Notice tone="error" message={sync.storageError} /> : null}
       {sync.actionError ? <Notice tone="error" message={sync.actionError} /> : null}
+      {sync.offlineNotice ? <Notice tone="info" message={sync.offlineNotice} /> : null}
       <SyncResultNotice result={sync.lastResult} />
     </Card>
   );
