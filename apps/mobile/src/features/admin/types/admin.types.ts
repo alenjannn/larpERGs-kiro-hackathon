@@ -1,4 +1,4 @@
-import type { Admin, BHW, HealthRecord, HelpRequestWithPatient, Patient } from '../../../shared/types/db.types';
+import type { Admin, Appointment, BHW, HealthRecord, HelpRequestWithPatient, Patient } from '../../../shared/types/db.types';
 
 /** Field activity for one BHW, derived from their patients and records. */
 export interface BHWActivity {
@@ -9,25 +9,14 @@ export interface BHWActivity {
   lastActivityAt: string | null;
 }
 
-export interface HealthMetrics {
-  activeBHWs: number;
-  totalBHWs: number;
-  totalPatients: number;
-  unassignedPatients: number;
-  visitsLast7Days: number;
-  upcomingAppointments: number;
-  /** Patients whose most recent BP reading is >= 140/90. */
-  elevatedBPPatients: number;
-}
-
 export interface AdminData {
   admin: Admin | null;
   bhws: BHW[];
   patients: Patient[];
   records: HealthRecord[];
+  appointments: Appointment[];
   activity: BHWActivity[];
-  metrics: HealthMetrics;
-  /** Demo clinic inbox (latest 50, newest received first). */
+  /** Demo clinic inbox (latest 200, newest received first, one row per id). */
   helpRequests: HelpRequestWithPatient[];
   /** True when the server could not be reached and the offline copy is shown. */
   fromCache: boolean;

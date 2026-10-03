@@ -1,54 +1,83 @@
-import { StyleSheet, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
+import Button from '../../../shared/components/Button';
+import Card from '../../../shared/components/Card';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
-import StatTile from '../../../shared/components/StatTile';
-import { formatBP } from '../../../shared/utils/format';
-import { spacing } from '../../../shared/theme';
+import { useConnectivity } from '../../../shared/context/ConnectivityContext';
+import { colors, typography } from '../../../shared/theme';
+import BPTrendChart from '../components/BPTrendChart';
+import ClearbookEntryList from '../components/ClearbookEntryList';
+import ClearbookEntrySheet from '../components/ClearbookEntrySheet';
 import HealthRecordCard from '../components/HealthRecordCard';
+import LatestMeasurements from '../components/LatestMeasurements';
+import MeasurementHistory from '../components/MeasurementHistory';
 import SnapshotStatus from '../components/SnapshotStatus';
-import { useHealthRecords } from '../hooks/useHealthRecords';
-import { usePatientData } from '../hooks/usePatientData';
+import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
+import { useClearbookEntries } from '../hooks/useClearbookEntries';
+import { groupRecords } from '../hooks/useHealthRecords';
+import { useCurrentPatientId, usePatientSnapshot } from '../hooks/usePatientSnapshot';
+import { mergeRecords } from '../logic/clearbook';
 
+/**
+ * My Health (P-2, P-3): dated measurements with units, a BP trend of real
+ * readings only, history, and lab values the patient entered from paper.
+ * No interpretation and no score. The clearbook works without a snapshot.
+ */
 export default function PatientHealthScreen() {
-  const health = useHealthRecords();
-  const profile = usePatientData();
-  const bhwName = profile.data?.bhw?.full_name;
-  const data = health.data;
-  const latestWithBP = data?.visits.find((v) => formatBP(v));
+  const patientId = useCurrentPatientId();
+  const snap = usePatientSnapshot(patientId);
+  const { isOnline } = useConnectivity();
+  const s = snap.snapshot;
+  const entries = useClearbookEntries(patientId, s?.patient?.bhw_id ?? null, () => void snap.reload());
+  const [adding, setAdding] = useState(false);
+
+  const records = useMemo(() => mergeRecords(s?.records ?? [], entries.entries), [s, entries.entries]);
+  const updates = useMemo(() => (s ? groupRecords(s.records).updates : []), [s]);
+  const bhwName = s?.bhw?.full_name;
 
   return (
     <Screen
-      title="My Health"
-      subtitle="Records created by your BHW during visits (DEMO DATA)"
-      refreshing={health.loading && !!data}
-      onRefresh={health.reload}
+      title={PATIENT_COPY.tabs.health}
+      subtitle={`${PATIENT_COPY_FIL.tabs.health} · Readings with their dates and units (DEMO DATA)`}
+      refreshing={snap.loading && !!s}
+      onRefresh={() => void snap.reload()}
     >
-      {health.loading && !data ? <LoadingSpinner /> : null}
-      <SnapshotStatus status={health.status} lastUpdatedAt={health.lastUpdatedAt} staleReason={health.staleReason} />
-      {health.error ? <Notice tone="error" message={health.error} /> : null}
+      {snap.loading && !s ? <LoadingSpinner /> : null}
+      <SnapshotStatus status={snap.status} lastUpdatedAt={s?.last_updated_at ?? null} staleReason={s ? snap.error : null} />
+      {!s && snap.error ? <Notice tone="error" message={snap.error} /> : null}
 
-      {data ? (
+      {s || entries.entries.length > 0 ? (
         <>
-          <View style={styles.stats}>
-            <StatTile label="Latest blood pressure" value={latestWithBP ? formatBP(latestWithBP)! : '—'} />
-            <StatTile label="Home visits" value={data.visits.length} />
-            <StatTile label="Upcoming appointments" value={data.upcomingAppointments.length} />
-          </View>
-          <HealthRecordCard title="🏠 Home visits & vitals" records={data.visits} bhwName={bhwName} emptyText="No visits recorded yet." />
-          <HealthRecordCard title="📋 Health updates" records={data.updates} bhwName={bhwName} emptyText="No health updates yet." />
-          <HealthRecordCard
-            title="📅 Past appointments"
-            records={data.pastAppointments}
-            bhwName={bhwName}
-            emptyText="No past appointments."
-          />
+          <LatestMeasurements records={records} />
+          <BPTrendChart records={records} />
+          <MeasurementHistory records={records} />
         </>
       ) : null}
+
+      <Card title={PATIENT_COPY.labsYouEntered} subtitle={PATIENT_COPY_FIL.labsYouEntered}>
+        <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
+        <Button title={PATIENT_COPY.addLab} onPress={() => setAdding(true)} />
+        <ClearbookEntryList
+          entries={entries.entries}
+          serverRecords={s?.records ?? []}
+          isOnline={isOnline}
+          loading={entries.loading}
+          error={entries.error}
+          onShare={(id) => void entries.share(id)}
+        />
+      </Card>
+
+      {s ? (
+        <HealthRecordCard title="📋 Health updates" records={updates} bhwName={bhwName} emptyText="No health updates yet." />
+      ) : null}
+
+      <ClearbookEntrySheet visible={adding} entries={entries.entries} save={entries.save} onClose={() => setAdding(false)} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  muted: { fontSize: typography.body, color: colors.muted, lineHeight: typography.lineHeight },
 });

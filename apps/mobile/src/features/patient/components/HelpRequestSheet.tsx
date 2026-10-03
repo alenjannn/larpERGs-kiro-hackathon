@@ -28,6 +28,10 @@ interface Props {
   /** Live outbox items, so the saved state follows the request's status. */
   items: OutboxItem[];
   onClose: () => void;
+  /** Preselected reason, applied when the sheet opens with an empty form (Spec 03, "I need another date"). */
+  initialReason?: HelpReason | null;
+  /** Prefilled, editable message, applied with initialReason. */
+  initialMessage?: string;
 }
 
 /** Urgent-care guidance: guidance, not an error, so navy on a surface, never red (OC-9). */
@@ -49,7 +53,7 @@ export function UrgentCareBox() {
  * double tap on Submit stores one request (OC-2.4). Confirmation appears only
  * after the request is persisted and read back (OC-2.1).
  */
-export default function HelpRequestSheet({ visible, patientId, items, onClose }: Props) {
+export default function HelpRequestSheet({ visible, patientId, items, onClose, initialReason, initialMessage }: Props) {
   const { isOnline } = useConnectivity();
   const draftId = useRef(newId());
   const sheetRef = useRef<View>(null);
@@ -72,6 +76,13 @@ export default function HelpRequestSheet({ visible, patientId, items, onClose }:
 
   const closeRef = useRef(close);
   closeRef.current = close;
+
+  // Presets apply once per opening, only to an empty form.
+  useEffect(() => {
+    if (!visible) return;
+    if (initialReason) setReason((r) => r ?? initialReason);
+    if (initialMessage) setMessage((m) => (m ? m : initialMessage.slice(0, MESSAGE_MAX_LENGTH)));
+  }, [visible]); // presets are read at open time only
 
   // Web: Escape closes; focus moves into the sheet once when it opens.
   useEffect(() => {

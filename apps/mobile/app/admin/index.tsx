@@ -1,3 +1,3 @@
-import AdminDashboardScreen from '../../src/features/admin/screens/AdminDashboardScreen';
+import NeedsAttentionScreen from '../../src/features/admin/screens/NeedsAttentionScreen';
 
-export default AdminDashboardScreen;
+export default NeedsAttentionScreen;

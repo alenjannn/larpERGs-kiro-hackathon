@@ -1,12 +1,12 @@
 import { DEMO_ADMIN_ID } from '../../../shared/config/demo';
 import { useAsyncData } from '../../../shared/hooks/useAsyncData';
 import { fetchAdmin, fetchBHWs, fetchHelpRequests, fetchPatients, fetchRecords } from '../../../shared/services/api';
+import { fetchAllAppointments } from '../../../shared/services/apiAdmin';
 import { getStorage } from '../../../shared/services/storage';
 import { toUserMessage } from '../../../shared/services/supabase';
-import type { Admin, BHW, HealthRecord, HelpRequestWithPatient, Patient } from '../../../shared/types/db.types';
+import type { Admin, Appointment, BHW, HealthRecord, HelpRequestWithPatient, Patient } from '../../../shared/types/db.types';
 import { isWithinDays } from '../../../shared/utils/date';
-import { isElevatedBP } from '../../../shared/utils/format';
-import type { AdminData, BHWActivity, HealthMetrics } from '../types/admin.types';
+import type { AdminData, BHWActivity } from '../types/admin.types';
 
 export function computeActivity(bhws: BHW[], patients: Patient[], records: HealthRecord[], now = Date.now()): BHWActivity[] {
   return bhws.map((bhw) => {
@@ -22,45 +22,32 @@ export function computeActivity(bhws: BHW[], patients: Patient[], records: Healt
   });
 }
 
-export function computeMetrics(bhws: BHW[], patients: Patient[], records: HealthRecord[], now = Date.now()): HealthMetrics {
-  const bhwIds = new Set(bhws.map((b) => b.id));
-  const latestBP = new Map<string, HealthRecord>();
-  for (const r of records) {
-    if (r.systolic != null && r.diastolic != null && !latestBP.has(r.patient_id)) latestBP.set(r.patient_id, r);
-  }
-  return {
-    activeBHWs: bhws.filter((b) => b.status === 'active').length,
-    totalBHWs: bhws.length,
-    totalPatients: patients.length,
-    unassignedPatients: patients.filter((p) => !p.bhw_id || !bhwIds.has(p.bhw_id)).length,
-    visitsLast7Days: records.filter((r) => r.record_type === 'visit' && isWithinDays(r.created_at, 7, now)).length,
-    upcomingAppointments: records.filter(
-      (r) => r.record_type === 'appointment' && r.scheduled_at && new Date(r.scheduled_at).getTime() >= now && r.status !== 'missed'
-    ).length,
-    elevatedBPPatients: [...latestBP.values()].filter(isElevatedBP).length,
-  };
-}
-
 interface CachedAdminData {
   admin: Admin | null;
   bhws: BHW[];
   patients: Patient[];
   records: HealthRecord[];
   helpRequests: HelpRequestWithPatient[];
+  /** Missing in caches written before Spec 05. */
+  appointments?: Appointment[];
   cachedAt: string;
 }
 
-function build(base: CachedAdminData, fromCache: boolean, fetchError: string | null): AdminData {
+function uniqueById<T extends { id: string }>(rows: T[] | undefined): T[] {
   const seen = new Set<string>();
+  return (rows ?? []).filter((r) => !seen.has(r.id) && !!seen.add(r.id));
+}
+
+function build(base: CachedAdminData, fromCache: boolean, fetchError: string | null): AdminData {
   return {
     admin: base.admin,
     bhws: base.bhws,
     patients: base.patients,
     records: base.records,
-    // One row per request id (OC-5.5).
-    helpRequests: (base.helpRequests ?? []).filter((h) => !seen.has(h.id) && !!seen.add(h.id)),
+    appointments: uniqueById(base.appointments),
+    // One row per request id (OC-5.5, A-5.2).
+    helpRequests: uniqueById(base.helpRequests),
     activity: computeActivity(base.bhws, base.patients, base.records),
-    metrics: computeMetrics(base.bhws, base.patients, base.records),
     fromCache,
     cachedAt: base.cachedAt,
     fetchError,
@@ -72,14 +59,15 @@ async function loadAdminData(adminId: string): Promise<AdminData> {
   const storage = await getStorage();
   const cacheKey = `admin:${adminId}`;
   try {
-    const [admin, bhws, patients, records, helpRequests] = await Promise.all([
+    const [admin, bhws, patients, records, helpRequests, appointments] = await Promise.all([
       fetchAdmin(adminId),
       fetchBHWs(adminId),
       fetchPatients(),
       fetchRecords({ limit: 500 }),
-      fetchHelpRequests({ limit: 50 }),
+      fetchHelpRequests({ limit: 200 }),
+      fetchAllAppointments(),
     ]);
-    const fresh: CachedAdminData = { admin, bhws, patients, records, helpRequests, cachedAt: new Date().toISOString() };
+    const fresh: CachedAdminData = { admin, bhws, patients, records, helpRequests, appointments, cachedAt: new Date().toISOString() };
     let cacheError: string | null = null;
     try {
       await storage.setCache(cacheKey, fresh);
@@ -96,7 +84,7 @@ async function loadAdminData(adminId: string): Promise<AdminData> {
   }
 }
 
-/** System-wide view for the Admin: their BHWs, all patients and all field records. */
+/** System-wide view for the RHU coordinator: their BHWs, all patients, field records, appointments and help requests. */
 export function useAdminData(adminId: string = DEMO_ADMIN_ID) {
   return useAsyncData(() => loadAdminData(adminId), [adminId]);
 }

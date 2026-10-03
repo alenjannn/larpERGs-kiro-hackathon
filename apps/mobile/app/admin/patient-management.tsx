@@ -1,3 +1,3 @@
-import AdminPatientsScreen from '../../src/features/admin/screens/AdminPatientsScreen';
+import AssignmentsScreen from '../../src/features/admin/screens/AssignmentsScreen';
 
-export default AdminPatientsScreen;
+export default AssignmentsScreen;
