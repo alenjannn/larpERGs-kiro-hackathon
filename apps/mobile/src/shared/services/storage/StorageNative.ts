@@ -22,5 +22,6 @@ export default class StorageNative implements LocalStorage {
   getItem = async <T,>(): Promise<T | null> => unavailable();
   setItem = async () => unavailable();
   removeItem = async () => unavailable();
+  listItems = async <T,>(): Promise<{ key: `tuloy:v1:${string}`; value: T }[]> => unavailable();
   clearDemoData = async (): Promise<{ cleared: number }> => unavailable();
 }

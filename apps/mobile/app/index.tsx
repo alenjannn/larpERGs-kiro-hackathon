@@ -1,11 +1,12 @@
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
-import { useAuth } from '../src/shared/context/AuthContext';
+import { useEffectiveRole } from '../src/shared/hooks/useEffectiveRole';
 import { ROLE_META } from '../src/shared/config/demo';
 import { colors } from '../src/shared/theme';
 
 export default function Index() {
-  const { user, role, loading } = useAuth();
+  // Auth role, or the saved demo persona (Spec 02, K1).
+  const { role, loading } = useEffectiveRole();
 
   if (loading) {
     return (
@@ -15,7 +16,7 @@ export default function Index() {
     );
   }
 
-  if (!user || !role) {
+  if (!role) {
     return <Redirect href="/login" />;
   }
 

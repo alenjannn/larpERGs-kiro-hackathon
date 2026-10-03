@@ -1,4 +1,4 @@
-import type { Admin, BHW, HealthRecord, Patient } from '../../../shared/types/db.types';
+import type { Admin, BHW, HealthRecord, HelpRequestWithPatient, Patient } from '../../../shared/types/db.types';
 
 /** Field activity for one BHW, derived from their patients and records. */
 export interface BHWActivity {
@@ -27,4 +27,10 @@ export interface AdminData {
   records: HealthRecord[];
   activity: BHWActivity[];
   metrics: HealthMetrics;
+  /** Demo clinic inbox (latest 50, newest received first). */
+  helpRequests: HelpRequestWithPatient[];
+  /** True when the server could not be reached and the offline copy is shown. */
+  fromCache: boolean;
+  cachedAt: string | null;
+  fetchError: string | null;
 }

@@ -1,5 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { subscribeForeground } from '../services/foreground';
+import { outbox, setOutboxOnlineGetter } from '../services/outbox';
 import { emptyCounts, flushAll, getTotalCounts, type QueueCounts } from '../services/syncQueues';
+import { useConnectivity } from './ConnectivityContext';
 
 export interface SyncValue {
   /** Items per status across every registered queue. */
@@ -12,11 +15,21 @@ export interface SyncValue {
 
 const SyncContext = createContext<SyncValue | null>(null);
 
-// No automatic triggers in Spec 01; Spec 02 wires reconnect/foreground flushes.
+/**
+ * Queue counts plus the help-request outbox triggers (Spec 02, OC-4):
+ * app start once online, offline → online (restarts an in-flight send),
+ * foreground/visibility while online. Submit and Try again are triggered by
+ * the outbox and the UI. Nothing is sent while the app is closed (deferred).
+ */
 export function SyncProvider({ children }: { children: ReactNode }) {
+  const { isOnline, onReconnect } = useConnectivity();
   const [counts, setCounts] = useState<QueueCounts>(emptyCounts);
   const [isFlushing, setIsFlushing] = useState(false);
   const mounted = useRef(true);
+  const onlineRef = useRef<boolean | null>(isOnline);
+  const startedRef = useRef(false);
+
+  onlineRef.current = isOnline;
 
   const refreshCounts = useCallback(async () => {
     const next = await getTotalCounts();
@@ -25,18 +38,57 @@ export function SyncProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     mounted.current = true;
+    setOutboxOnlineGetter(() => onlineRef.current);
     void refreshCounts();
     return () => {
       mounted.current = false;
     };
   }, [refreshCounts]);
 
+  // Outbox events drive isFlushing and (debounced) counts.
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const unsubscribe = outbox.subscribe((event) => {
+      if (event === 'flush-start') setIsFlushing(true);
+      if (event === 'flush-end') setIsFlushing(false);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        void refreshCounts();
+      }, 250);
+    });
+    return () => {
+      unsubscribe();
+      if (timer) clearTimeout(timer);
+    };
+  }, [refreshCounts]);
+
+  // App start: the first time connectivity is known to be online.
+  useEffect(() => {
+    if (isOnline === true && !startedRef.current) {
+      startedRef.current = true;
+      void outbox.flush();
+    }
+  }, [isOnline]);
+
+  // Offline → online: start at once, aborting and restarting any stuck attempt (OC-4.1).
+  useEffect(() => onReconnect(() => void outbox.flush({ restart: true })), [onReconnect]);
+
+  // Foreground / visibility while online.
+  useEffect(
+    () =>
+      subscribeForeground(() => {
+        if (onlineRef.current === true) void outbox.flush();
+      }),
+    []
+  );
+
   const flush = useCallback(async () => {
     setIsFlushing(true);
     try {
       await flushAll();
     } finally {
-      if (mounted.current) setIsFlushing(false);
+      if (mounted.current) setIsFlushing(outbox.isFlushing());
       await refreshCounts();
     }
   }, [refreshCounts]);

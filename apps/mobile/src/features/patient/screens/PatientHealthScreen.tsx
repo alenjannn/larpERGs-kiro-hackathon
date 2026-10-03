@@ -6,6 +6,7 @@ import StatTile from '../../../shared/components/StatTile';
 import { formatBP } from '../../../shared/utils/format';
 import { spacing } from '../../../shared/theme';
 import HealthRecordCard from '../components/HealthRecordCard';
+import SnapshotStatus from '../components/SnapshotStatus';
 import { useHealthRecords } from '../hooks/useHealthRecords';
 import { usePatientData } from '../hooks/usePatientData';
 
@@ -24,6 +25,7 @@ export default function PatientHealthScreen() {
       onRefresh={health.reload}
     >
       {health.loading && !data ? <LoadingSpinner /> : null}
+      <SnapshotStatus status={health.status} lastUpdatedAt={health.lastUpdatedAt} staleReason={health.staleReason} />
       {health.error ? <Notice tone="error" message={health.error} /> : null}
 
       {data ? (
