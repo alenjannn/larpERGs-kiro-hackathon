@@ -1,0 +1,79 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Build & Verify (CI)
+  # -------------------------------------------------------------
+  verify-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/mobile
+        run: npm ci
+
+      - name: Verify Supabase SQL Setup concatenation
+        run: |
+          node scripts/build-setup-sql.mjs
+          git diff --exit-code supabase/setup.sql || (echo "Error: supabase/setup.sql is out of sync with migrations or seed.sql. Run 'node scripts/build-setup-sql.mjs' and commit." && exit 1)
+
+      - name: Run TypeScript typecheck
+        working-directory: apps/mobile
+        run: npm run typecheck
+
+      - name: Build Expo Web PWA Export
+        working-directory: apps/mobile
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
+          EXPO_PUBLIC_MAPBOX_TOKEN: ${{ secrets.EXPO_PUBLIC_MAPBOX_TOKEN || 'placeholder' }}
+        run: npm run export:web
+
+      - name: Upload Web Build Artifact for Deployment
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/mobile/dist
+
+  # -------------------------------------------------------------
+  # Job 2: Deploy Web PWA to GitHub Pages (CD)
+  # -------------------------------------------------------------
+  deploy-github-pages:
+    needs: verify-and-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
