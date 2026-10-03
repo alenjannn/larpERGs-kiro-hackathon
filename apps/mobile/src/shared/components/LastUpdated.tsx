@@ -9,5 +9,5 @@ export default function LastUpdated({ at }: { at: string | null | undefined }) {
 }
 
 const styles = StyleSheet.create({
-  text: { fontSize: typography.caption, color: colors.muted },
+  text: { fontSize: typography?.caption ?? 13, color: colors?.muted ?? '#475569' },
 });
