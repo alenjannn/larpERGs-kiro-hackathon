@@ -37,12 +37,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setRole(extractRole(session?.user ?? null));
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setRole(extractRole(session?.user ?? null));
+        setLoading(false);
+      })
+      // Never an endless spinner (OC-15.4): fall back to "no session".
+      .catch((error: unknown) => {
+        console.warn('Could not read the auth session:', error);
+        setLoading(false);
+      });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);

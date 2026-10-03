@@ -5,9 +5,10 @@ import RoleHeader from './RoleHeader';
 import DemoQuickSwitchHeader from './DemoQuickSwitchHeader';
 import { ROLE_META, type DemoRole } from '../config/demo';
 import { colors, radius, spacing } from '../theme';
-import { useAuth } from '../context/AuthContext';
+import { useEffectiveRole } from '../hooks/useEffectiveRole';
 import Notice from './Notice';
 import Button from './Button';
+import OfflineBanner from './OfflineBanner';
 
 export interface RoleTab {
   /** Route file name inside the role folder (e.g. "index", "health"). */
@@ -19,7 +20,8 @@ export interface RoleTab {
 /** Quick-Switch header + bottom tabs + Strict Authentication Guard. */
 export default function RoleTabsLayout({ role, tabs }: { role: DemoRole; tabs: RoleTab[] }) {
   const router = useRouter();
-  const { user, role: userRole, loading } = useAuth();
+  // Guard: auth role, or the saved demo persona (K1). See the security note in useEffectiveRole.
+  const { role: userRole, loading } = useEffectiveRole();
 
   // 1. Show loading spinner while checking auth session
   if (loading) {
@@ -31,7 +33,7 @@ export default function RoleTabsLayout({ role, tabs }: { role: DemoRole; tabs: R
   }
 
   // 2. Strict Authentication Guard: If user is NOT logged in, redirect directly to /login
-  if (!user || !userRole) {
+  if (!userRole) {
     return <Redirect href="/login" />;
   }
 
@@ -58,6 +60,7 @@ export default function RoleTabsLayout({ role, tabs }: { role: DemoRole; tabs: R
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <RoleHeader />
+      <OfflineBanner />
       <View style={styles.body}>
         <Tabs
           screenOptions={{

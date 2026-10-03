@@ -11,13 +11,16 @@ interface Props {
   loading?: boolean;
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
+  /** Defaults to the title. */
+  accessibilityLabel?: string;
 }
 
-export default function Button({ title, onPress, variant = 'primary', disabled, loading, compact, style }: Props) {
+export default function Button({ title, onPress, variant = 'primary', disabled, loading, compact, style, accessibilityLabel }: Props) {
   const inactive = disabled || loading;
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       onPress={onPress}
       disabled={inactive}

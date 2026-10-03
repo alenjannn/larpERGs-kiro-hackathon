@@ -10,6 +10,7 @@ import { spacing } from '../../../shared/theme';
 import AssignmentCard from '../components/AssignmentCard';
 import ConnectionTest from '../components/ConnectionTest';
 import OfflineTest from '../components/OfflineTest';
+import TodayHelpRequests from '../components/TodayHelpRequests';
 import { useBHWData } from '../hooks/useBHWData';
 import { useOfflineSync } from '../hooks/useOfflineSync';
 
@@ -46,6 +47,12 @@ export default function BHWDashboardScreen() {
               : data.fetchError
           }
         />
+      ) : null}
+
+      {data?.cacheError ? <Notice tone="warning" message={data.cacheError} /> : null}
+
+      {data ? (
+        <TodayHelpRequests requests={data.helpRequests} patientNames={patientName} cachedAt={data.fromCache ? data.cachedAt : null} />
       ) : null}
 
       {data ? <AssignmentCard bhw={data.bhw} admin={data.admin} patientCount={patients.length} /> : null}

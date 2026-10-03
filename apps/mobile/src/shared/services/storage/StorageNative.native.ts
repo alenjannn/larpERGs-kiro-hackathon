@@ -71,6 +71,23 @@ export default class StorageNative implements LocalStorage {
     await this.getDb().runAsync('DELETE FROM kv_v1 WHERE key = ?', [key]);
   }
 
+  /** Exact prefix match via substr (no LIKE, so '_' and '%' in keys are not wildcards). */
+  async listItems<T>(prefix: LocalV1Key): Promise<{ key: LocalV1Key; value: T }[]> {
+    const rows = await this.getDb().getAllAsync<{ key: string; value: string }>(
+      'SELECT key, value FROM kv_v1 WHERE substr(key, 1, ?) = ? ORDER BY key',
+      [prefix.length, prefix]
+    );
+    const items: { key: LocalV1Key; value: T }[] = [];
+    for (const row of rows) {
+      try {
+        items.push({ key: row.key as LocalV1Key, value: JSON.parse(row.value) as T });
+      } catch {
+        console.warn(`Skipping unreadable saved item ${row.key}`);
+      }
+    }
+    return items;
+  }
+
   /** Native kv_cache keys have no prefix (e.g. "bhw:<id>"), so the whole table is legacy cache. */
   async clearDemoData(): Promise<{ cleared: number }> {
     const db = this.getDb();

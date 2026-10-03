@@ -53,6 +53,8 @@ export interface LocalStorage {
   /** Persists a `tuloy:v1:*` value. Throws on quota/access errors (never a silent in-memory fallback). */
   setItem<T>(key: LocalV1Key, value: T): Promise<void>;
   removeItem(key: LocalV1Key): Promise<void>;
+  /** Every `tuloy:v1:*` entry whose key starts with `prefix` (exact prefix match). Unparsable values are skipped. */
+  listItems<T>(prefix: LocalV1Key): Promise<{ key: LocalV1Key; value: T }[]>;
   /**
    * Reset demo data: clears `tuloy:v1:*` plus the legacy queue/cache
    * (web: `tuloy_offline_records`, `tuloy_cache:*`; native: local_sync_queue, kv_cache, kv_v1).

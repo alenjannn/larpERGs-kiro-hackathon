@@ -66,8 +66,6 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
-.env.*
 !.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -159,7 +157,6 @@ Thumbs.db
 
 # Editor directories and files
 .idea/
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -169,3 +166,4 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+config.bat

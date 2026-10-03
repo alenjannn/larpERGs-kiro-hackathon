@@ -44,6 +44,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     backgroundColor: colors.surface,
+    // 44 px touch target (tech.md §6).
+    minHeight: 44,
+    justifyContent: 'center',
   },
   selected: { backgroundColor: colors.primary, borderColor: colors.primary },
   text: { fontSize: 13, color: colors.text },
