@@ -22,8 +22,7 @@ export class SupabaseConfigError extends Error {
 export const supabase: SupabaseClient | null = env.supabaseConfigError
   ? null
   : createClient(env.supabaseUrl, env.supabaseAnonKey, {
-      // No login flow in the demo: don't persist or refresh auth sessions.
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
     });
 
 export const isSupabaseConfigured = supabase !== null;
