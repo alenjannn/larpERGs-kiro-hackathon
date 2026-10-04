@@ -96,6 +96,45 @@ async function loadFresh(patientId: string): Promise<PatientSnapshot> {
   };
 }
 
+// One Realtime channel per patient, shared by every mounted screen.
+// supabase.channel(name) returns the existing channel for a topic that is
+// already subscribed, and calling .on() on it throws. Home stays mounted while
+// other tabs mount, so each hook creating its own channel crashed the app.
+type RecordsListener = () => void;
+const recordChannels = new Map<string, { listeners: Set<RecordsListener>; remove: () => void }>();
+
+function subscribeToPatientRecords(patientId: string, listener: RecordsListener): () => void {
+  const client = supabase;
+  if (!client) return () => {};
+  let entry = recordChannels.get(patientId);
+  if (!entry) {
+    const listeners = new Set<RecordsListener>();
+    const channel = client
+      .channel(`patient_records:${patientId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'records', filter: `patient_id=eq.${patientId}` }, () => {
+        listeners.forEach((l) => {
+          try {
+            l();
+          } catch (error) {
+            console.error('Patient records listener failed:', error);
+          }
+        });
+      })
+      .subscribe();
+    entry = { listeners, remove: () => void client.removeChannel(channel) };
+    recordChannels.set(patientId, entry);
+  }
+  const current = entry;
+  current.listeners.add(listener);
+  return () => {
+    current.listeners.delete(listener);
+    if (current.listeners.size === 0 && recordChannels.get(patientId) === current) {
+      recordChannels.delete(patientId);
+      current.remove();
+    }
+  };
+}
+
 const inFlight = new Map<string, Promise<PatientSnapshot>>();
 
 /** Shared per patient, so Home, Profile and My Health loading together fetch once. */
@@ -184,31 +223,10 @@ export function usePatientSnapshot(patientId?: string): SnapshotState & { reload
 
   useEffect(() => onReconnect(() => void reload()), [onReconnect, reload]);
 
-  // Performance-optimized Realtime Listener:
-  // Only listens when mounted, and filtered specifically for this patient's records.
+  // Realtime: reload when this patient's records change (shared channel, see subscribeToPatientRecords).
   useEffect(() => {
-    const client = supabase;
-    if (!client || !id) return;
-
-    const channel = client
-      .channel(`patient_records:${id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'records',
-          filter: `patient_id=eq.${id}`,
-        },
-        () => {
-          void reload();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      void client.removeChannel(channel);
-    };
+    if (!id) return;
+    return subscribeToPatientRecords(id, () => void reload());
   }, [id, reload]);
 
   return { ...state, reload };

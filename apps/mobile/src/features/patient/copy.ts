@@ -41,6 +41,12 @@ export const PATIENT_COPY = {
   shareNow: 'Share now',
   connectToShare: 'Connect to share it.',
   checkAgainstPaper: 'Check this against your paper',
+  // Spec 06: more clearbook labs
+  otherLabs: 'Other lab results',
+  otherLabsNote: 'Shows a value only when one was entered. Not every checkup includes these tests.',
+  labEntryIntro: 'Copy one result from your paper report. All fields are required.',
+  labTestLabel: 'Test (required)',
+  glucoseTestTypeLabel: 'Glucose test type (required)',
 
   // YAKAP & Clinics
   yakapTitle: 'My YAKAP Checkup',
@@ -77,6 +83,7 @@ export const PATIENT_COPY_FIL = {
   reviewStatus: 'Katayuan ng pagsusuri',
   labsYouEntered: 'Mga resulta ng lab na inilagay mo',
   addLab: 'Magdagdag ng resulta mula sa papel ko',
+  otherLabs: 'Iba pang resulta ng lab', // FIL: needs native-speaker review
   bpTrend: 'Takbo ng presyon ng dugo',
   history: 'Kasaysayan',
   yakapTitle: 'Aking YAKAP Checkup',

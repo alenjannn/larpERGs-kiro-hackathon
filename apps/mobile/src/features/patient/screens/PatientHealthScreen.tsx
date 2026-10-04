@@ -11,6 +11,7 @@ import BPTrendChart from '../components/BPTrendChart';
 import ClearbookEntryList from '../components/ClearbookEntryList';
 import ClearbookEntrySheet from '../components/ClearbookEntrySheet';
 import HealthRecordCard from '../components/HealthRecordCard';
+import LabMeasurements from '../components/LabMeasurements';
 import LatestMeasurements from '../components/LatestMeasurements';
 import MeasurementHistory from '../components/MeasurementHistory';
 import SnapshotStatus from '../components/SnapshotStatus';
@@ -51,6 +52,7 @@ export default function PatientHealthScreen() {
       {s || entries.entries.length > 0 ? (
         <>
           <LatestMeasurements records={records} />
+          <LabMeasurements records={records} />
           <BPTrendChart records={records} />
           <MeasurementHistory records={records} />
         </>

@@ -9,6 +9,7 @@ import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import StatusChip from '../../../shared/components/StatusChip';
 import { DEMO_PERSONAS } from '../../../shared/config/demo';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { helpReasonLabel } from '../../../shared/helpRequests';
 import { colors, typography } from '../../../shared/theme';
 import { formatDateDMY } from '../../../shared/utils/date';
@@ -25,6 +26,7 @@ import { BLOCKED_OVERDUE_DAYS, buildNeedsAttention, formatAge, INACTIVE_DAYS, RE
 /** RHU coordinator home: exceptions only, each with its age and one action (A-1). */
 export default function NeedsAttentionScreen() {
   const router = useRouter();
+  const lang = useLanguage();
   const { data, error, loading, reload } = useAdminData();
   const flow = useOwnerAssignFlow(data, reload);
   const na = useMemo(() => (data ? buildNeedsAttention(data) : null), [data]);
@@ -75,14 +77,14 @@ export default function NeedsAttentionScreen() {
                 id: request.id,
                 cells: {
                   patient: request.patient?.full_name ?? 'Patient',
-                  reason: helpReasonLabel(request.reason),
+                  reason: helpReasonLabel(request.reason, lang),
                   age: formatAge(ageMs),
                   action: (
                     <Button
                       title="Assign"
                       variant="secondary"
                       disabled={actionsDisabled}
-                      onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason)} · ${request.patient?.full_name ?? 'Patient'}`)}
+                      onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason, lang)} · ${request.patient?.full_name ?? 'Patient'}`)}
                       accessibilityLabel={`Assign help request from ${request.patient?.full_name ?? 'patient'}`}
                     />
                   ),
@@ -165,7 +167,7 @@ export default function NeedsAttentionScreen() {
                 id: request.id,
                 cells: {
                   patient: request.patient?.full_name ?? 'Patient',
-                  reason: helpReasonLabel(request.reason),
+                  reason: helpReasonLabel(request.reason, lang),
                   owner: request.assigned_bhw_id ? bhwName.get(request.assigned_bhw_id) ?? 'unknown BHW' : 'No owner',
                   age: formatAge(ageMs),
                   action: (
@@ -173,7 +175,7 @@ export default function NeedsAttentionScreen() {
                       title="Reassign"
                       variant="secondary"
                       disabled={actionsDisabled}
-                      onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason)} · ${request.patient?.full_name ?? 'Patient'}`)}
+                      onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason, lang)} · ${request.patient?.full_name ?? 'Patient'}`)}
                       accessibilityLabel={`Reassign blocked request from ${request.patient?.full_name ?? 'patient'}`}
                     />
                   ),

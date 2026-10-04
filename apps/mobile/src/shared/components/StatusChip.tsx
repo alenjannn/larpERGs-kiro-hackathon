@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from './Icon';
-import { getStatus, type StatusKey, type StatusTone } from '../status';
+import { useLanguage } from '../context/DemoRoleContext';
+import { getStatus, type Language, type StatusKey, type StatusTone } from '../status';
 import { colors, spacing } from '../theme';
 
 export const TONE_COLORS: Record<StatusTone, { fg: string; bg: string }> = {
@@ -13,13 +14,15 @@ export const TONE_COLORS: Record<StatusTone, { fg: string; bg: string }> = {
 
 interface Props {
   status: StatusKey;
-  /** 'both' renders "EN · FIL". */
-  lang?: 'en' | 'fil' | 'both';
+  /** 'both' renders "EN · FIL". Omitted → the app language from the toggle. */
+  lang?: Language | 'both';
   size?: 'sm' | 'md';
 }
 
 /** Status as icon + text on a tinted background. Colour is never the only signal. */
-export default function StatusChip({ status, lang = 'en', size = 'md' }: Props) {
+export default function StatusChip({ status, lang: langProp, size = 'md' }: Props) {
+  const appLang = useLanguage();
+  const lang = langProp ?? appLang;
   const entry = getStatus(status);
   const tone = TONE_COLORS[entry.tone];
   const label = lang === 'both' ? `${entry.en} · ${entry.fil}` : entry[lang];
@@ -38,7 +41,7 @@ export default function StatusChip({ status, lang = 'en', size = 'md' }: Props) 
 }
 
 /** Several chips in sequence, e.g. "Saved on this device → Waiting to send". */
-export function StatusChipRow({ statuses, lang = 'en', size = 'sm' }: { statuses: StatusKey[]; lang?: Props['lang']; size?: Props['size'] }) {
+export function StatusChipRow({ statuses, lang, size = 'sm' }: { statuses: StatusKey[]; lang?: Props['lang']; size?: Props['size'] }) {
   return (
     <View style={styles.row}>
       {statuses.map((status, i) => (

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
 import { StatusChipRow } from './StatusChip';
+import { useLanguage } from '../context/DemoRoleContext';
 import { helpReasonLabel } from '../helpRequests';
 import type { StatusKey } from '../status';
 import { formatDateTimeDMY } from '../utils/date';
@@ -44,10 +45,11 @@ export default function HelpRequestItem({
   meta,
   action,
 }: Props) {
+  const lang = useLanguage();
   return (
     <View style={styles.item}>
       {patientName ? <Text style={styles.patient}>{patientName}</Text> : null}
-      <Text style={styles.reason}>{helpReasonLabel(reason)}</Text>
+      <Text style={styles.reason}>{helpReasonLabel(reason, lang)}</Text>
       {message ? <Text style={styles.message}>“{message}”</Text> : null}
       <Text style={styles.time}>
         {createdLabel} {formatDateTimeDMY(createdAt)}

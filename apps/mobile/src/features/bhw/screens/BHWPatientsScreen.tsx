@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
@@ -14,6 +14,7 @@ import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { DEMO_BHW_ID } from '../../../shared/config/demo';
 import { ageFromBirthDate } from '../../../shared/utils/format';
 import { colors, spacing, typography } from '../../../shared/theme';
+import PatientQrSheet from '../components/PatientQrSheet';
 import RecordForm from '../components/RecordForm';
 import RegisterPatientForm from '../components/RegisterPatientForm';
 import { syncStatusKeys } from '../fieldQueueStatus';
@@ -27,9 +28,12 @@ export default function BHWPatientsScreen() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [qrPatientId, setQrPatientId] = useState<string | null>(null);
 
   const patients = data?.patients ?? [];
   const records = data?.records ?? [];
+  const qrPatient = qrPatientId ? patients.find((p) => p.id === qrPatientId) ?? null : null;
+  const closeQr = useCallback(() => setQrPatientId(null), []);
 
   function afterSave(message: string) {
     setSavedMessage(message);
@@ -110,7 +114,16 @@ export default function BHWPatientsScreen() {
               <Text style={styles.chevron}>{open ? '▲' : '▼'}</Text>
             </Pressable>
             {chips && p.syncStatus !== 'synced' ? <StatusChipRow statuses={chips} /> : null}
-            <Button title="Log visit" onPress={() => openVisit(p.id)} accessibilityLabel={`Log a visit for ${p.full_name}`} style={styles.visitBtn} />
+            <View style={styles.actions}>
+              <Button title="Log visit" onPress={() => openVisit(p.id)} accessibilityLabel={`Log a visit for ${p.full_name}`} style={styles.visitBtn} />
+              <Button
+                title="Show QR"
+                variant="secondary"
+                onPress={() => setQrPatientId(p.id)}
+                accessibilityLabel={`Show QR code reference for ${p.full_name}`}
+                style={styles.visitBtn}
+              />
+            </View>
             {open ? (
               <>
                 <RecordForm
@@ -131,6 +144,8 @@ export default function BHWPatientsScreen() {
           </Card>
         );
       })}
+
+      <PatientQrSheet visible={!!qrPatient} patient={qrPatient} onClose={closeQr} />
     </Screen>
   );
 }
@@ -144,4 +159,5 @@ const styles = StyleSheet.create({
   saved: { fontSize: typography.body, fontWeight: '700', color: colors.text },
   chevron: { fontSize: 12, color: colors.muted },
   visitBtn: { alignSelf: 'flex-start' },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

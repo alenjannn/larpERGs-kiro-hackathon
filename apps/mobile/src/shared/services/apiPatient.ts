@@ -3,7 +3,8 @@
 
 import { requireSupabase } from './supabase';
 import type { PatientLabInsert } from '../../features/patient/logic/clearbook';
-import type { Appointment, Clinic, EncounterStatus, HealthRecord } from '../types/db.types';
+import type { PatientRecord } from '../../features/patient/types/patient.types';
+import type { Appointment, Clinic, EncounterStatus } from '../types/db.types';
 
 function unwrap<T>(result: { data: T | null; error: unknown }): T {
   if (result.error) throw result.error;
@@ -30,18 +31,22 @@ export async function reportAttended(appointmentId: string, patientId: string): 
   ) as Appointment | null;
 }
 
-/** Exactly-once insert of a patient clearbook entry: client UUID, ON CONFLICT (id) DO NOTHING. */
+/**
+ * Exactly-once insert of a patient clearbook entry: client UUID, ON CONFLICT (id) DO NOTHING.
+ * The row carries only its own lab's columns (glucose, or the Spec 06
+ * creatinine/cholesterol columns from supabase/apply_spec6_labs.sql).
+ */
 export async function insertPatientLabEntry(row: PatientLabInsert, signal?: AbortSignal): Promise<void> {
   let query = requireSupabase().from('records').upsert(row, { onConflict: 'id', ignoreDuplicates: true });
   if (signal) query = query.abortSignal(signal);
   unwrap(await query);
 }
 
-/** Read-back by id: only a returned row counts as shared. */
-export async function fetchRecordById(id: string, signal?: AbortSignal): Promise<HealthRecord | null> {
+/** Read-back by id: only a returned row counts as shared. Includes the Spec 06 lab columns when present. */
+export async function fetchRecordById(id: string, signal?: AbortSignal): Promise<PatientRecord | null> {
   let query = requireSupabase().from('records').select('*').eq('id', id);
   if (signal) query = query.abortSignal(signal);
-  return unwrap(await query.maybeSingle()) as HealthRecord | null;
+  return unwrap(await query.maybeSingle()) as PatientRecord | null;
 }
 
 /** Every clinic, by name (YAKAP & Clinics finder). */

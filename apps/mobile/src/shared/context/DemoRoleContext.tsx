@@ -1,8 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DEMO_PERSONAS, type DemoRole } from '../config/demo';
 import { getStorage } from '../services/storage';
+import { isLanguage, type Language } from '../status';
 
 const ROLE_KEY = 'tuloy:v1:demo_role';
+/** Separate key so the persisted role format is unchanged. */
+const LANGUAGE_KEY = 'tuloy:v1:language';
 const ROLES: readonly DemoRole[] = ['admin', 'bhw', 'patient'];
 
 export interface DemoRoleState {
@@ -19,6 +22,9 @@ export interface DemoRoleValue extends DemoRoleState {
   setClinicianMode(on: boolean): void;
   /** Back to the initial state and forget the persisted choice (Reset demo data). */
   resetRole(): void;
+  /** Display language for dictionary labels. Kept across role switches and resets. */
+  language: Language;
+  setLanguage(language: Language): void;
 }
 
 interface Persisted {
@@ -116,7 +122,35 @@ export function DemoRoleProvider({ children }: { children: ReactNode }) {
       .catch((error) => console.warn('Could not clear demo role:', error));
   }, []);
 
-  const value = useMemo(() => ({ ...state, selectRole, setClinicianMode, resetRole }), [state, selectRole, setClinicianMode, resetRole]);
+  const [language, setLanguageState] = useState<Language>('en');
+  const languageTouched = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    getStorage()
+      .then((s) => s.getItem<unknown>(LANGUAGE_KEY))
+      .then((saved) => {
+        if (!cancelled && !languageTouched.current && isLanguage(saved)) setLanguageState(saved);
+      })
+      .catch((error) => console.warn('Could not restore language:', error));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const setLanguage = useCallback((next: Language) => {
+    languageTouched.current = true;
+    setLanguageState(next);
+    // A failed write never blocks the switch; the choice stays in memory.
+    getStorage()
+      .then((s) => s.setItem(LANGUAGE_KEY, next))
+      .catch((error) => console.warn('Could not persist language:', error));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...state, selectRole, setClinicianMode, resetRole, language, setLanguage }),
+    [state, selectRole, setClinicianMode, resetRole, language, setLanguage]
+  );
   return <DemoRoleContext.Provider value={value}>{children}</DemoRoleContext.Provider>;
 }
 
@@ -124,4 +158,9 @@ export function useDemoRole(): DemoRoleValue {
   const value = useContext(DemoRoleContext);
   if (!value) throw new Error('useDemoRole must be used inside <DemoRoleProvider>.');
   return value;
+}
+
+/** Current display language. Falls back to English outside the provider, so shared components never throw. */
+export function useLanguage(): Language {
+  return useContext(DemoRoleContext)?.language ?? 'en';
 }

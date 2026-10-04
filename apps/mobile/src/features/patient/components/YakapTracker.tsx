@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from '../../../shared/components/Icon';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import type { YakapStage } from '../../../shared/types/db.types';
 import { colors, radius, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
@@ -10,12 +11,16 @@ import { stageIndex, stageLabel, YAKAP_STAGES } from '../logic/yakap';
  * "You are here" and an icon (never colour alone). Earlier: "Done"; later: "Later".
  */
 export default function YakapTracker({ stage, clinicConfirmed }: { stage: YakapStage | null | undefined; clinicConfirmed: boolean }) {
+  const lang = useLanguage();
+  // The other language stays as a smaller second line, as before.
+  const otherLang = lang === 'fil' ? 'en' : 'fil';
   const current = stageIndex(stage);
   return (
     <View style={styles.list}>
       {current === -1 ? <Text style={styles.notStarted}>{PATIENT_COPY.notStarted}</Text> : null}
       {YAKAP_STAGES.map((info, i) => {
-        const label = stageLabel(info, clinicConfirmed);
+        const label = stageLabel(info, clinicConfirmed, lang);
+        const secondary = stageLabel(info, clinicConfirmed, otherLang);
         const state = current === -1 ? 'Later' : i < current ? 'Done' : i === current ? PATIENT_COPY.youAreHere : 'Later';
         const isCurrent = i === current;
         return (
@@ -35,7 +40,7 @@ export default function YakapTracker({ stage, clinicConfirmed }: { stage: YakapS
                 {i + 1}. {label}
               </Text>
               {/* FIL: needs native-speaker review */}
-              <Text style={styles.fil}>{info.fil}</Text>
+              <Text style={styles.fil}>{secondary}</Text>
               <Text style={[styles.state, isCurrent && styles.currentState]}>{state}</Text>
               {isCurrent ? <Text style={styles.action}>{info.patientAction}</Text> : null}
             </View>

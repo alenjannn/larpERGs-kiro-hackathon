@@ -5,14 +5,33 @@ import ChipGroup from '../../../shared/components/ChipGroup';
 import Notice from '../../../shared/components/Notice';
 import TextField from '../../../shared/components/TextField';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
-import type { GlucoseTestType, GlucoseUnit } from '../../../shared/types/db.types';
+import type { GlucoseTestType } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
 import { newId } from '../../../shared/utils/id';
 import { colors, radius, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
-import { GLUCOSE_TEST_TYPES, GLUCOSE_UNITS, validateEntry, type ClearbookEntry, type EntryDraft } from '../logic/clearbook';
+import {
+  EMPTY_DRAFT,
+  GLUCOSE_TEST_TYPES,
+  LAB_KINDS,
+  LAB_LABELS,
+  LAB_UNITS,
+  labPlaceholder,
+  validateEntry,
+  type ClearbookEntry,
+  type EntryDraft,
+  type LabKind,
+  type LabUnit,
+} from '../logic/clearbook';
 import { GLUCOSE_TEST_LABELS } from '../logic/measurements';
 import { EntryRow } from './ClearbookEntryList';
+
+/** Confirm-step line, e.g. "Fasting blood glucose · 110 mg/dL · Test date 27 Sep 2026". */
+function draftSummary(d: EntryDraft): string {
+  if (!d.lab || !d.unit) return '';
+  const name = d.lab === 'glucose' && d.testType ? `${GLUCOSE_TEST_LABELS[d.testType]} blood glucose` : LAB_LABELS[d.lab];
+  return `${name} · ${d.value.trim()} ${d.unit} · Test date ${formatDateDMY(d.testDate)}`;
+}
 
 interface Props {
   visible: boolean;
@@ -23,7 +42,7 @@ interface Props {
 }
 
 type Step = 'form' | 'confirm' | 'saved';
-const EMPTY: EntryDraft = { testType: null, value: '', unit: null, testDate: '' };
+const EMPTY: EntryDraft = EMPTY_DRAFT;
 
 /**
  * Manual clearbook entry (P-3): form → confirm against the paper → saved.
@@ -76,6 +95,12 @@ export default function ClearbookEntrySheet({ visible, entries, save, onClose }:
     setDraft((d) => ({ ...d, [key]: value }));
   };
 
+  // A different test clears unit and glucose test type, so a unit is never carried over by mistake.
+  const setLab = (lab: LabKind) => {
+    setTouched(true);
+    setDraft((d) => (d.lab === lab ? d : { ...d, lab, unit: null, testType: null }));
+  };
+
   const confirm = async () => {
     if (saving) return;
     setSaving(true);
@@ -94,10 +119,7 @@ export default function ClearbookEntrySheet({ visible, entries, save, onClose }:
   };
 
   const saved = savedId ? entries.find((e) => e.id === savedId) ?? null : null;
-  const summary =
-    draft.testType && draft.unit
-      ? `${GLUCOSE_TEST_LABELS[draft.testType]} blood glucose · ${draft.value.trim()} ${draft.unit} · Test date ${formatDateDMY(draft.testDate)}`
-      : '';
+  const summary = draftSummary(draft);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
@@ -136,29 +158,44 @@ export default function ClearbookEntrySheet({ visible, entries, save, onClose }:
                   {PATIENT_COPY.addLab}
                 </Text>
                 <Text style={styles.fil}>{PATIENT_COPY_FIL.addLab}</Text>
-                <Text style={styles.body}>Blood glucose, from your paper report. All fields are required.</Text>
-                <ChipGroup<GlucoseTestType>
-                  label="Test type (required)"
-                  options={GLUCOSE_TEST_TYPES.map((value) => ({ value, label: GLUCOSE_TEST_LABELS[value] }))}
-                  value={draft.testType}
-                  onChange={(v) => set('testType', v)}
+                <Text style={styles.body}>{PATIENT_COPY.labEntryIntro}</Text>
+                <ChipGroup<LabKind>
+                  label={PATIENT_COPY.labTestLabel}
+                  options={LAB_KINDS.map((value) => ({ value, label: LAB_LABELS[value] }))}
+                  value={draft.lab}
+                  onChange={setLab}
                 />
-                {errors.testType ? <Text style={styles.fieldError}>{errors.testType}</Text> : null}
+                {errors.lab ? <Text style={styles.fieldError}>{errors.lab}</Text> : null}
+                {draft.lab === 'glucose' ? (
+                  <>
+                    <ChipGroup<GlucoseTestType>
+                      label={PATIENT_COPY.glucoseTestTypeLabel}
+                      options={GLUCOSE_TEST_TYPES.map((value) => ({ value, label: GLUCOSE_TEST_LABELS[value] }))}
+                      value={draft.testType}
+                      onChange={(v) => set('testType', v)}
+                    />
+                    {errors.testType ? <Text style={styles.fieldError}>{errors.testType}</Text> : null}
+                  </>
+                ) : null}
                 <TextField
                   label="Value (required)"
                   value={draft.value}
                   onChangeText={(v) => set('value', v)}
                   keyboardType="decimal-pad"
-                  placeholder="For example 110"
+                  placeholder={labPlaceholder(draft.lab)}
                 />
                 {errors.value ? <Text style={styles.fieldError}>{errors.value}</Text> : null}
-                <ChipGroup<GlucoseUnit>
-                  label="Unit (required)"
-                  options={GLUCOSE_UNITS.map((value) => ({ value, label: value }))}
-                  value={draft.unit}
-                  onChange={(v) => set('unit', v)}
-                />
-                {errors.unit ? <Text style={styles.fieldError}>{errors.unit}</Text> : null}
+                {draft.lab ? (
+                  <ChipGroup<LabUnit>
+                    label="Unit (required)"
+                    options={LAB_UNITS[draft.lab].map((value) => ({ value, label: value }))}
+                    value={draft.unit}
+                    onChange={(v) => set('unit', v)}
+                  />
+                ) : (
+                  <Text style={styles.muted}>Unit (required): choose the test first.</Text>
+                )}
+                {errors.unit && draft.lab ? <Text style={styles.fieldError}>{errors.unit}</Text> : null}
                 <TextField
                   label="Test date (required, YYYY-MM-DD)"
                   value={draft.testDate}

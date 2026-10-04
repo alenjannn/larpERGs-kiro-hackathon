@@ -7,6 +7,7 @@ import Notice from '../../../shared/components/Notice';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import TextField from '../../../shared/components/TextField';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import {
   DEFERRED_BACKGROUND,
   HELP_REASON_LABELS,
@@ -55,6 +56,7 @@ export function UrgentCareBox() {
  */
 export default function HelpRequestSheet({ visible, patientId, items, onClose, initialReason, initialMessage }: Props) {
   const { isOnline } = useConnectivity();
+  const lang = useLanguage();
   const draftId = useRef(newId());
   const sheetRef = useRef<View>(null);
   const [reason, setReason] = useState<HelpReason | null>(null);
@@ -129,7 +131,7 @@ export default function HelpRequestSheet({ visible, patientId, items, onClose, i
                 {/* FIL: needs native-speaker review */}
                 <Text style={styles.fil}>Naka-save sa device na ito</Text>
                 <StatusChipRow statuses={outboxStatusKeys(live._sync_status, 'help_request')} size="md" />
-                <Text style={styles.body}>{helpReasonLabel(live.reason)}</Text>
+                <Text style={styles.body}>{helpReasonLabel(live.reason, lang)}</Text>
                 {live.message ? <Text style={styles.body}>“{live.message}”</Text> : null}
                 {isOnline === false ? (
                   <>

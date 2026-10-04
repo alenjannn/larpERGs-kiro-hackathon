@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
 import { formatBPValue, formatMeasurement } from '../../../shared/utils/format';
 import { colors, spacing, typography } from '../../../shared/theme';
@@ -10,6 +11,7 @@ import { barrierLabel, contactOutcomeLabel, GLUCOSE_TEST_LABELS, type GlucoseTes
 
 /** One past visit: date, measurements with units, outcome, barrier, next action and sync status. */
 export default function VisitSummary({ record }: { record: BHWRecord }) {
+  const lang = useLanguage();
   const bp = formatBPValue(record.systolic, record.diastolic);
   const measurements = [
     bp ? `BP ${bp} mmHg` : null,
@@ -22,8 +24,8 @@ export default function VisitSummary({ record }: { record: BHWRecord }) {
     record.height_cm != null ? `Height ${record.height_cm} cm` : null,
     record.temperature_c != null ? `Temp ${record.temperature_c} °C` : null,
   ].filter(Boolean);
-  const outcome = contactOutcomeLabel(record.contact_outcome);
-  const barrier = barrierLabel(record.barrier);
+  const outcome = contactOutcomeLabel(record.contact_outcome, lang);
+  const barrier = barrierLabel(record.barrier, lang);
   const chips = syncStatusKeys(record.syncStatus, record.syncError);
   return (
     <View style={styles.item}>

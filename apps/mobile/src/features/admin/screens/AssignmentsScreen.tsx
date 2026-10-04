@@ -9,6 +9,7 @@ import EmptyState from '../../../shared/components/EmptyState';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import StatusChip from '../../../shared/components/StatusChip';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { helpReasonLabel } from '../../../shared/helpRequests';
 import { OPEN_COORDINATION, OPEN_ENCOUNTER } from '../../../shared/services/apiAdmin';
 import type { StatusKey } from '../../../shared/status';
@@ -34,6 +35,7 @@ function ownerLabel(id: string | null, bhws: BHW[]): string {
 /** Assign and reassign patients and help requests so every task has an owner (A-2). */
 export default function AssignmentsScreen() {
   const router = useRouter();
+  const lang = useLanguage();
   const params = useLocalSearchParams<{ bhw?: string }>();
   const filter = typeof params.bhw === 'string' && params.bhw ? params.bhw : ALL;
   const { data, error, loading, reload } = useAdminData();
@@ -150,7 +152,7 @@ export default function AssignmentsScreen() {
                   id: r.id,
                   cells: {
                     patient: name,
-                    reason: helpReasonLabel(r.reason),
+                    reason: helpReasonLabel(r.reason, lang),
                     received: formatDateTimeDMY(r.received_at),
                     owner: ownerLabel(r.assigned_bhw_id, bhws),
                     status: <StatusChip size="sm" status={`coordination.${r.coordination_status}` as StatusKey} />,
@@ -159,7 +161,7 @@ export default function AssignmentsScreen() {
                         title={r.assigned_bhw_id ? 'Reassign' : 'Assign'}
                         variant="secondary"
                         disabled={flow.offline}
-                        onPress={() => flow.openRequest(r.id, `${helpReasonLabel(r.reason)} · ${name}`)}
+                        onPress={() => flow.openRequest(r.id, `${helpReasonLabel(r.reason, lang)} · ${name}`)}
                         accessibilityLabel={`${r.assigned_bhw_id ? 'Reassign' : 'Assign'} help request from ${name}`}
                       />
                     ),

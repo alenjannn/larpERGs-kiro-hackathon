@@ -83,7 +83,7 @@ function Gallery() {
               <Text style={styles.groupTitle}>{group}</Text>
               {ALL_STATUS_KEYS.filter((k) => k.startsWith(`${group}.`)).map((key: StatusKey) => (
                 <View key={key} style={styles.statusRow}>
-                  <StatusChip status={key} />
+                  <StatusChip status={key} lang="en" />
                   <StatusChip status={key} lang="fil" size="sm" />
                   <Text style={styles.keyText}>{key}</Text>
                 </View>

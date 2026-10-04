@@ -63,6 +63,8 @@ export const YAKAP_STAGES: YakapStageInfo[] = [
 ];
 
 export const CLINIC_CONFIRMED_LABEL = 'Clinic confirmed';
+/** FIL: needs native-speaker review */
+export const CLINIC_CONFIRMED_LABEL_FIL = 'Kumpirmado ng klinika';
 
 /** Index in YAKAP_STAGES, or -1 when not started / unknown. */
 export function stageIndex(stage: YakapStage | null | undefined): number {
@@ -77,6 +79,9 @@ export function isClinicConfirmed(appts: Appointment[], clinicId: string | null 
 }
 
 /** Label for a stage, with the clinic-selection label computed (P-4.3). */
-export function stageLabel(info: YakapStageInfo, clinicConfirmed: boolean): string {
-  return info.stage === 'clinic_selected_pending' && clinicConfirmed ? CLINIC_CONFIRMED_LABEL : info.label;
+export function stageLabel(info: YakapStageInfo, clinicConfirmed: boolean, lang: 'en' | 'fil' = 'en'): string {
+  if (info.stage === 'clinic_selected_pending' && clinicConfirmed) {
+    return lang === 'fil' ? CLINIC_CONFIRMED_LABEL_FIL : CLINIC_CONFIRMED_LABEL;
+  }
+  return lang === 'fil' ? info.fil : info.label;
 }

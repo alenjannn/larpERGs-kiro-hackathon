@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Card from '../../../shared/components/Card';
-import type { HealthRecord } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
 import { NO_READING } from '../../../shared/utils/format';
 import { colors, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
-import { isOlderReading, MEASURE_LABELS, readingsFor, type MeasureKey } from '../logic/measurements';
+import { isOlderReading, LAB_KEYS, MEASURE_LABELS, readingsFor, VITAL_KEYS, type MeasureKey } from '../logic/measurements';
+import type { PatientRecord } from '../types/patient.types';
 
-const ORDER: MeasureKey[] = ['bp', 'glucose', 'weight', 'height'];
+const ORDER: MeasureKey[] = [...VITAL_KEYS, ...LAB_KEYS];
 
 /** Every dated reading per measure, newest first, with value, unit and date. */
-export default function MeasurementHistory({ records }: { records: HealthRecord[] }) {
+export default function MeasurementHistory({ records }: { records: PatientRecord[] }) {
   const lists = useMemo(() => ORDER.map((key) => ({ key, readings: readingsFor(records, key) })), [records]);
   return (
     <Card title={PATIENT_COPY.history} subtitle={PATIENT_COPY_FIL.history}>

@@ -2,6 +2,7 @@ import { StyleSheet, Text } from 'react-native';
 import Card from '../../../shared/components/Card';
 import EmptyState from '../../../shared/components/EmptyState';
 import StatusChip from '../../../shared/components/StatusChip';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { helpReasonLabel, INBOX_CAPTION } from '../../../shared/helpRequests';
 import type { StatusKey } from '../../../shared/status';
 import type { BHW, HelpRequestWithPatient } from '../../../shared/types/db.types';
@@ -20,12 +21,13 @@ const COLUMNS = [
 
 /** The demo clinic inbox, latest 20. One row per request id (A-5): the server PK and the hook both dedupe. */
 export default function DemoClinicInbox({ requests, bhws }: { requests: HelpRequestWithPatient[]; bhws: BHW[] }) {
+  const lang = useLanguage();
   const bhwName = new Map(bhws.map((b) => [b.id, b.full_name]));
   const rows = requests.slice(0, 20).map((r) => ({
     id: r.id,
     cells: {
       patient: r.patient?.full_name ?? 'Patient',
-      reason: helpReasonLabel(r.reason),
+      reason: helpReasonLabel(r.reason, lang),
       created: formatDateTimeDMY(r.created_on_device_at),
       received: formatDateTimeDMY(r.received_at),
       owner: r.assigned_bhw_id ? bhwName.get(r.assigned_bhw_id) ?? 'unknown BHW' : 'No owner',

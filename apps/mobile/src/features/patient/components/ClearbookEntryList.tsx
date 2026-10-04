@@ -7,8 +7,14 @@ import type { HealthRecord } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
 import { colors, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
-import type { ClearbookEntry } from '../logic/clearbook';
+import { entryLab, entryValue, LAB_LABELS, type ClearbookEntry } from '../logic/clearbook';
 import { GLUCOSE_TEST_LABELS } from '../logic/measurements';
+
+/** "Blood glucose · Fasting", "Serum creatinine", "Total cholesterol". */
+export function entryTitle(entry: ClearbookEntry): string {
+  if (entry.lab === 'creatinine' || entry.lab === 'cholesterol') return LAB_LABELS[entry.lab];
+  return `${LAB_LABELS[entryLab(entry)]} · ${GLUCOSE_TEST_LABELS[entry.glucose_test_type]}`;
+}
 
 /** Transport (and, once shared, clinical) chips for one entry (design §4.6). */
 export function entryStatusKeys(entry: ClearbookEntry, server?: HealthRecord): StatusKey[] {
@@ -37,11 +43,12 @@ export function EntryRow({
   onShare?: (id: string) => void;
 }) {
   const unshared = entry._share_status === 'local' || entry._share_status === 'failed';
+  const { value, unit } = entryValue(entry);
   return (
     <View style={styles.row}>
-      <Text style={styles.title}>Blood glucose · {GLUCOSE_TEST_LABELS[entry.glucose_test_type]}</Text>
+      <Text style={styles.title}>{entryTitle(entry)}</Text>
       <Text style={styles.value}>
-        {entry.glucose_value} {entry.glucose_unit}
+        {value} {unit}
       </Text>
       <Text style={styles.muted}>Test date {formatDateDMY(entry.test_date || entry.measured_at)}</Text>
       <Text style={styles.muted}>{PATIENT_COPY.enteredByYou}</Text>

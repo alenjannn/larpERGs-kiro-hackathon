@@ -95,7 +95,7 @@ export default function BHWMapScreen() {
           {token ? (
             <MapView markers={markers} />
           ) : (
-            <LabeledMockMap rows={rows} facility={MOCK_FACILITY} reason="Mock map: no Mapbox token set. Positions are approximate and not to scale." />
+            <LabeledMockMap rows={rows} facility={MOCK_FACILITY} />
           )}
         </View>
       )}

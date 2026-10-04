@@ -9,6 +9,22 @@ import type { IconName } from './components/Icon';
 import type { SyncStatus } from './services/storage';
 
 export type StatusTone = 'muted' | 'pending' | 'primary' | 'success' | 'error';
+
+/** Display language for dictionary labels. Stored values never change with it. */
+export type Language = 'en' | 'fil';
+export const LANGUAGES: readonly Language[] = ['en', 'fil'];
+
+/** Toggle labels: each language is named in its own words. */
+export const LANGUAGE_META: Record<Language, { label: string; short: string; needsReview: boolean }> = {
+  en: { label: 'English', short: 'EN', needsReview: false },
+  fil: { label: 'Filipino', short: 'FIL', needsReview: true }, // FIL: needs native-speaker review
+};
+
+/** Shown whenever Filipino is selected. */
+export const FIL_REVIEW_NOTICE = {
+  en: 'Filipino labels are drafts and need native-speaker review.',
+  fil: 'Draft ang mga salin sa Filipino at kailangang suriin ng katutubong tagapagsalita.', // FIL: needs native-speaker review
+} as const;
 export type StatusGroup = 'transport' | 'encounter' | 'clinical' | 'coordination';
 
 export interface StatusEntry {
@@ -105,8 +121,17 @@ export function outboxStatusKeys(status: QueueStatus, kind: 'help_request' | 'bh
 }
 
 /** Plain-text form, e.g. "Saved on this device · Waiting to send". */
-export function queueStatusText(keys: StatusKey[], lang: 'en' | 'fil' = 'en'): string {
-  return keys.map((k) => getStatus(k)[lang]).join(' · ');
+export function queueStatusText(keys: StatusKey[], lang: Language = 'en'): string {
+  return keys.map((k) => statusLabel(k, lang)).join(' · ');
+}
+
+/** Label for one status in the chosen language. */
+export function statusLabel(key: StatusKey, lang: Language = 'en'): string {
+  return getStatus(key)[lang];
+}
+
+export function isLanguage(value: unknown): value is Language {
+  return typeof value === 'string' && (LANGUAGES as readonly string[]).includes(value);
 }
 
 /** Clinical chip for a record: transcription first, then review status. Null when not applicable. */

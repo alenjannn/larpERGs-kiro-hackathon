@@ -3,6 +3,7 @@ import { StyleSheet, Switch, Text, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import DemoQuickSwitchHeader from './DemoQuickSwitchHeader';
 import Icon from './Icon';
+import LanguageToggle from './LanguageToggle';
 import { DEMO_PERSONAS, ROLE_META, type DemoRole } from '../config/demo';
 import { useDemoRole } from '../context/DemoRoleContext';
 import { colors, spacing, typography } from '../theme';
@@ -31,6 +32,9 @@ export default function RoleHeader() {
   return (
     <View>
       <DemoQuickSwitchHeader onSwitch={(r) => selectRole(r)} />
+      <View style={styles.languageRow}>
+        <LanguageToggle />
+      </View>
       {showClinician ? (
         <View style={styles.modeRow}>
           <View style={styles.switchGroup}>
@@ -60,6 +64,13 @@ export default function RoleHeader() {
 }
 
 const styles = StyleSheet.create({
+  languageRow: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   modeRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

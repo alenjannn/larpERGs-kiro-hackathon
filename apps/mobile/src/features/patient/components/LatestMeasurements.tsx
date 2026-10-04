@@ -3,13 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import Card from '../../../shared/components/Card';
 import EmptyState from '../../../shared/components/EmptyState';
 import MeasurementCard from '../../../shared/components/MeasurementCard';
-import type { HealthRecord } from '../../../shared/types/db.types';
 import { spacing } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
-import { isOlderReading, latestMeasurements, MEASURE_LABELS, type MeasureKey, type Reading } from '../logic/measurements';
+import { isOlderReading, latestMeasurements, MEASURE_LABELS, VITAL_KEYS, type MeasureKey, type Reading } from '../logic/measurements';
+import type { PatientRecord } from '../types/patient.types';
 
-const ORDER: MeasureKey[] = ['bp', 'glucose', 'weight', 'height'];
-const UNITS: Record<MeasureKey, string> = { bp: 'mmHg', glucose: '', weight: 'kg', height: 'cm' };
+const ORDER: MeasureKey[] = VITAL_KEYS;
+const UNITS: Record<MeasureKey, string> = { bp: 'mmHg', glucose: '', weight: 'kg', height: 'cm', creatinine: '', cholesterol: '' };
 
 /** Context line under a value: test type, "Older reading", and a note when the date is the record date. */
 export function readingContext(reading: Reading, now = Date.now()): string | undefined {
@@ -22,7 +22,7 @@ export function readingContext(reading: Reading, now = Date.now()): string | und
 }
 
 /** Latest BP, glucose, weight and height, each dated. Missing → "No reading" (never 0). */
-export default function LatestMeasurements({ records }: { records: HealthRecord[] }) {
+export default function LatestMeasurements({ records }: { records: PatientRecord[] }) {
   const latest = useMemo(() => latestMeasurements(records), [records]);
   const none = ORDER.every((k) => latest[k] === null);
   return (
