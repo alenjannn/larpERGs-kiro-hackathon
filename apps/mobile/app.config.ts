@@ -29,8 +29,8 @@ const config: ExpoConfig = {
     favicon: './assets/favicon.png',
     name: 'TULOY Health',
     shortName: 'TULOY',
-    themeColor: '#0E7C66',
-    backgroundColor: '#F4F7F6',
+    themeColor: '#0F766E',
+    backgroundColor: '#F4F6F9',
   },
   plugins: [
     'expo-router',

@@ -1,6 +1,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 import { colors, layout, radius, shadow, spacing, text } from '../theme';
 
 interface Props {
@@ -23,6 +25,7 @@ interface Props {
 export default function Sheet({ visible, onClose, label, title = true, subtitle, children }: Props) {
   const { width } = useWindowDimensions();
   const wide = width >= layout.table;
+  const reduceMotion = useReducedMotion();
   const sheetRef = useRef<View>(null);
   const closeRef = useRef(onClose);
   useEffect(() => {
@@ -43,7 +46,7 @@ export default function Sheet({ visible, onClose, label, title = true, subtitle,
   }, [visible]);
 
   return (
-    <Modal visible={visible} transparent animationType={wide ? 'fade' : 'slide'} onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType={reduceMotion ? 'none' : wide ? 'fade' : 'slide'} onRequestClose={onClose}>
       <View style={[styles.root, wide && styles.rootWide]}>
         <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
         <View

@@ -34,6 +34,8 @@ export default function CreateBHWForm({ onSubmit, loading }: { onSubmit: (form: 
           onChangeText={set('email')}
           placeholder="name@tuloy.test"
           keyboardType="email-address"
+              spellCheck={false}
+              autoCorrect={false}
           autoCapitalize="none"
           maxLength={120}
         />

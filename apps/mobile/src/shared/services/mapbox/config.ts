@@ -35,7 +35,7 @@ export const MOCK_FACILITY: MapMarker = {
 
 export const MARKER_COLORS: Record<MapMarker['kind'], string> = {
   facility: '#D64545',
-  patient: '#1F6FD1',
+  patient: '#1D69C7',
 };
 
 /** Public Mapbox token (pk.*) or null when not configured. */

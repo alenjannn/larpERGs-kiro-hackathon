@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Card from '../../../shared/components/Card';
 import StatusChip from '../../../shared/components/StatusChip';
 import type { Appointment, Clinic } from '../../../shared/types/db.types';

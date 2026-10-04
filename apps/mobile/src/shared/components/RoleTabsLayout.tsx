@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, useWindowDimensions } from 'react-native';
+import Text from './Text';
 import { Tabs, useRouter, Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppHeader from './AppHeader';
@@ -7,6 +8,7 @@ import Icon, { type IconName } from './Icon';
 import OfflineBanner from './OfflineBanner';
 import RoleHeader, { ClinicianModeControl, LanguageSection } from './RoleHeader';
 import SideNav from './SideNav';
+import SkipLink from './SkipLink';
 import { ROLE_META, type DemoRole } from '../config/demo';
 import { colors, layout, spacing, text } from '../theme';
 import { useEffectiveRole } from '../hooks/useEffectiveRole';
@@ -69,6 +71,7 @@ export default function RoleTabsLayout({ role, tabs }: { role: DemoRole; tabs: R
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+      <SkipLink />
       <RoleHeader chrome={!sidebar} />
       <OfflineBanner />
       <View style={styles.body}>
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
   body: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg },
   bottomBar: { backgroundColor: colors.surface, borderTopColor: colors.border, minHeight: 64, paddingTop: spacing.xs },
-  bottomLabel: { fontSize: 12, fontWeight: '600', marginBottom: 2 },
+  bottomLabel: { fontSize: 13, fontWeight: '600', marginBottom: 2 },
   restricted: {
     alignItems: 'center',
     gap: spacing.md,

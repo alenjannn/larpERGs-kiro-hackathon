@@ -2,6 +2,7 @@
 // These IDs match the rows created by supabase/seed.sql (apply_demo_seed).
 
 import type { IconName } from '../components/Icon';
+import { roleColors } from '../theme';
 
 export const DEMO_ADMIN_ID = 'a0000000-0000-4000-8000-000000000001';
 export const DEMO_CLINICIAN_ID = 'a0000000-0000-4000-8000-000000000002';
@@ -24,7 +25,7 @@ export const ROLE_META: Record<
   DemoRole,
   { label: string; workspace: string; icon: IconName; href: '/admin' | '/bhw' | '/patient'; color: string; tint: string }
 > = {
-  admin: { label: 'Admin', workspace: 'RHU workspace', icon: 'tools', href: '/admin', color: '#5B3FB8', tint: '#F3F0FC' },
-  bhw: { label: 'BHW', workspace: 'Field workspace', icon: 'clinic', href: '/bhw', color: '#0E7C66', tint: '#ECF8F4' },
-  patient: { label: 'Patient', workspace: 'My care', icon: 'person', href: '/patient', color: '#1F6FD1', tint: '#EDF4FD' },
+  admin: { label: 'Admin', workspace: 'RHU workspace', icon: 'tools', href: '/admin', ...roleColors.admin },
+  bhw: { label: 'BHW', workspace: 'Field workspace', icon: 'clinic', href: '/bhw', ...roleColors.bhw },
+  patient: { label: 'Patient', workspace: 'My care', icon: 'person', href: '/patient', ...roleColors.patient },
 };

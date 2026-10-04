@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View, type PressableStateCallbackType, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View, type PressableStateCallbackType, type StyleProp, type ViewStyle } from 'react-native';
+import Text from './Text';
 import Icon, { type IconName } from './Icon';
 import { colors, radius, shadow, spacing, touch, typography } from '../theme';
 
@@ -91,6 +92,6 @@ const styles = StyleSheet.create({
 const HOVER = StyleSheet.create({
   primary: { backgroundColor: colors.primaryStrong, borderColor: colors.primaryStrong },
   secondary: { backgroundColor: colors.primaryBg },
-  danger: { backgroundColor: '#991B1B', borderColor: '#991B1B' },
+  danger: { backgroundColor: colors.errorStrong, borderColor: colors.errorStrong },
   ghost: { backgroundColor: colors.primaryBg },
 });

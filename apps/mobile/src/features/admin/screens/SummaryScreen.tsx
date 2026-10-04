@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
+import TileGrid from '../../../shared/components/TileGrid';
 import Card from '../../../shared/components/Card';
 import Icon from '../../../shared/components/Icon';
 import ChipGroup from '../../../shared/components/ChipGroup';
@@ -57,7 +59,7 @@ export default function SummaryScreen() {
             {data.fromCache ? ' (saved copy)' : ''} · {COHORT_RULE}
           </Text>
 
-          <View style={styles.grid}>
+          <TileGrid minTileWidth={220} maxColumns={4}>
             {ORDER.map((key) => {
               const m = summary.metrics[key];
               const isSelected = selected === key;
@@ -84,12 +86,12 @@ export default function SummaryScreen() {
                 </Pressable>
               );
             })}
-          </View>
+          </TileGrid>
 
           {b ? (
             <Card title="Follow-up breakdown" subtitle={`${periodLabel(period)} · each appointment counted once`}>
               {summary.breakdownReconciles ? (
-                <View style={styles.breakdown}>
+                <TileGrid minTileWidth={110} maxColumns={5}>
                   {(
                     [
                       ['Completed', b.completed],
@@ -107,7 +109,7 @@ export default function SummaryScreen() {
                     <Text style={styles.cellValue}>{summary.metrics.follow_up.denominator}</Text>
                     <Text style={styles.cellLabel}>Total due</Text>
                   </View>
-                </View>
+                </TileGrid>
               ) : (
                 <Notice tone="warning" message="The breakdown does not add up to the total, so it is hidden. Refresh and check the appointment data." />
               )}
@@ -123,15 +125,12 @@ export default function SummaryScreen() {
 
 const styles = StyleSheet.create({
   meta: text.caption,
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  tileWrap: { flexGrow: 1, flexBasis: 220, borderRadius: radius.lg + 2, borderWidth: 2, borderColor: 'transparent', gap: spacing.xs },
+  tileWrap: { flexGrow: 1, borderRadius: radius.lg + 2, borderWidth: 2, borderColor: 'transparent', gap: spacing.xs },
   tileSelected: { borderColor: colors.primary, backgroundColor: colors.primaryBg },
   tapRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingBottom: spacing.xs },
   tap: { fontSize: typography.caption, color: colors.primary, fontWeight: '700' },
-  breakdown: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   cell: {
     flexGrow: 1,
-    flexBasis: 110,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,

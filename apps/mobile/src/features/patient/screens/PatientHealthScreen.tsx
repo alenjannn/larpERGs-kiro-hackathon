@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';

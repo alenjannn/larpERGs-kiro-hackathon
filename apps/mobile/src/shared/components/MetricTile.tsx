@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { formatCountOfTotal } from '../utils/format';
 import { colors, radius, shadow, spacing, text } from '../theme';
 
@@ -24,7 +25,6 @@ export default function MetricTile({ label, numerator, denominator, hint }: Prop
 const styles = StyleSheet.create({
   tile: {
     flexGrow: 1,
-    flexBasis: 180,
     backgroundColor: colors.surface,
     borderRadius: radius.lg + 2,
     borderWidth: 1,

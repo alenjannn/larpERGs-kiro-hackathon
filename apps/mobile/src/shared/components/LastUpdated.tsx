@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
 import { formatDateTimeDMY } from '../utils/date';
 import { colors, spacing, text } from '../theme';

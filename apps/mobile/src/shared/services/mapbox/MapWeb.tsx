@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../components/Text';
 import { DEFAULT_ZOOM, DEMO_MAP_CENTER, getMapboxToken, MARKER_COLORS, type MapMarker, type MapViewProps } from './config';
 
 // Web-only map. Never imports @rnmapbox/maps.

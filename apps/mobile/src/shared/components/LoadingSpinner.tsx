@@ -1,9 +1,10 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { colors, spacing, text } from '../theme';
 
 export default function LoadingSpinner({ label = 'Loading…' }: { label?: string }) {
   return (
-    <View style={styles.container} accessibilityRole="progressbar" accessibilityLabel={label}>
+    <View style={styles.container} accessibilityRole="progressbar" accessibilityLabel={label} aria-busy accessibilityLiveRegion="polite">
       <ActivityIndicator color={colors.primary} />
       <Text style={styles.label}>{label}</Text>
     </View>

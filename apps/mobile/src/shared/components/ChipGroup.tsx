@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
+import { Pressable, StyleSheet, View, type PressableStateCallbackType } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
 import { colors, radius, spacing, text, touch, typography } from '../theme';
 
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   hovered: { backgroundColor: colors.surfaceAlt, borderColor: colors.primary },
-  selected: { backgroundColor: colors.primaryBg, borderColor: colors.primary, boxShadow: 'inset 0 0 0 1px #0F766E' },
+  selected: { backgroundColor: colors.primaryBg, borderColor: colors.primary, boxShadow: `inset 0 0 0 1px ${colors.primary}` },
   // Long bilingual labels wrap inside the chip instead of overflowing the card.
   text: { fontSize: typography.small, lineHeight: 18, color: colors.text, flexShrink: 1 },
   selectedText: { color: colors.primaryStrong, fontWeight: '700' },

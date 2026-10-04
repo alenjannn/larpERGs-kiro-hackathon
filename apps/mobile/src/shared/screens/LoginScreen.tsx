@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../components/Text';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { useDemoRole } from '../context/DemoRoleContext';
@@ -111,8 +112,11 @@ export default function LoginScreen() {
               onChangeText={setEmail}
               placeholder="you@example.com"
               keyboardType="email-address"
+              spellCheck={false}
+              autoCorrect={false}
               autoCapitalize="none"
               autoComplete="email"
+              importantForAutofill="yes"
               textContentType="emailAddress"
               returnKeyType="next"
               error={emailError}
@@ -125,6 +129,7 @@ export default function LoginScreen() {
               placeholder="Your password"
               secureTextEntry
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
+              importantForAutofill="yes"
               textContentType={isSignUp ? 'newPassword' : 'password'}
               returnKeyType="go"
               onSubmitEditing={() => void handleSubmit()}

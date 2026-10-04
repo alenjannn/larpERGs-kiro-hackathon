@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
+import { Pressable, StyleSheet, View, type PressableStateCallbackType } from 'react-native';
+import Text from './Text';
 import Icon, { type IconName } from './Icon';
 import { colors, radius, shadow, spacing, text, touch } from '../theme';
 
