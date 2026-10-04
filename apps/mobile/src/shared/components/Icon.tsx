@@ -1,49 +1,54 @@
-import { StyleSheet, Text, type StyleProp, type TextStyle } from 'react-native';
+import type { ComponentProps } from 'react';
+import type { StyleProp, TextStyle } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
 import { colors } from '../theme';
 
-// Named icons as Unicode text-presentation glyphs (no icon dependency).
-// U+FE0E forces text presentation where a glyph also has an emoji form, so
-// the colour token applies. Icons are decorative: the adjacent label carries
-// the meaning, so they are hidden from screen readers.
+// One vector icon family (Feather: outline, uniform 2px stroke), bundled as a
+// font so it works offline. App names stay stable; only this map knows Feather.
+// Icons are decorative: the adjacent label carries the meaning, so they are
+// hidden from screen readers.
 const GLYPHS = {
-  device: '▯',
-  clock: '◷',
-  'arrow-up': '↑',
-  check: '✓',
-  alert: '⚠\uFE0E',
-  flag: '⚑',
-  calendar: '▦',
-  person: '◉',
-  repeat: '↻',
-  hourglass: '⧗',
-  document: '▤',
-  circle: '○',
-  blocked: '⊘',
-  offline: '⌀',
-  info: 'ⓘ',
-  help: '?',
-  close: '✕',
+  device: 'smartphone',
+  clock: 'clock',
+  'arrow-up': 'arrow-up',
+  check: 'check',
+  alert: 'alert-triangle',
+  flag: 'flag',
+  calendar: 'calendar',
+  person: 'user',
+  repeat: 'rotate-ccw',
+  hourglass: 'loader',
+  document: 'file-text',
+  circle: 'circle',
+  blocked: 'slash',
+  offline: 'wifi-off',
+  info: 'info',
+  help: 'help-circle',
+  close: 'x',
   // Navigation and UI.
-  home: '⌂',
-  list: '☰',
-  map: '⌖',
-  chart: '◔',
-  heart: '♥︎',
-  clinic: '✚',
-  swap: '⇄',
-  medical: '✎',
-  logout: '⇥',
-  plus: '+',
-  back: '←',
-  'chevron-right': '›',
-  'chevron-down': '▾',
-  'chevron-up': '▴',
-  tools: '⚙︎',
-} as const;
+  home: 'home',
+  list: 'users',
+  map: 'map',
+  chart: 'bar-chart-2',
+  heart: 'heart',
+  clinic: 'plus-square',
+  swap: 'shuffle',
+  medical: 'activity',
+  logout: 'log-out',
+  plus: 'plus',
+  back: 'arrow-left',
+  'chevron-right': 'chevron-right',
+  'chevron-down': 'chevron-down',
+  'chevron-up': 'chevron-up',
+  tools: 'settings',
+} as const satisfies Record<string, ComponentProps<typeof Feather>['name']>;
 
 export type IconName = keyof typeof GLYPHS;
 
 export const ICON_NAMES = Object.keys(GLYPHS) as IconName[];
+
+/** Icon sizes, as tokens: inline with small text, default, prominent. */
+export const iconSize = { sm: 14, md: 18, lg: 22 };
 
 interface Props {
   name: IconName;
@@ -54,17 +59,14 @@ interface Props {
 
 export default function Icon({ name, size = 16, color = colors.text, style }: Props) {
   return (
-    <Text
+    <Feather
+      name={GLYPHS[name]}
+      size={size}
+      color={color}
+      style={style}
       accessibilityElementsHidden
       importantForAccessibility="no"
       aria-hidden
-      style={[styles.icon, { fontSize: size, lineHeight: Math.round(size * 1.25), color }, style]}
-    >
-      {GLYPHS[name]}
-    </Text>
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  icon: { fontWeight: '700', textAlign: 'center', includeFontPadding: false },
-});

@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import Card from '../../../shared/components/Card';
 import EmptyState from '../../../shared/components/EmptyState';
 import MeasurementCard from '../../../shared/components/MeasurementCard';
-import { spacing } from '../../../shared/theme';
+import TileGrid from '../../../shared/components/TileGrid';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 import { isOlderReading, latestMeasurements, MEASURE_LABELS, VITAL_KEYS, type MeasureKey, type Reading } from '../logic/measurements';
 import type { PatientRecord } from '../types/patient.types';
@@ -30,7 +29,7 @@ export default function LatestMeasurements({ records }: { records: PatientRecord
       {none ? (
         <EmptyState icon="info" title={PATIENT_COPY.noReadings} message={PATIENT_COPY.noReadingsMessage} />
       ) : (
-        <View style={styles.grid}>
+        <TileGrid minTileWidth={130} maxColumns={4}>
           {ORDER.map((key) => {
             const r = latest[key];
             return (
@@ -44,12 +43,9 @@ export default function LatestMeasurements({ records }: { records: PatientRecord
               />
             );
           })}
-        </View>
+        </TileGrid>
       )}
     </Card>
   );
 }
 
-const styles = StyleSheet.create({
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-});

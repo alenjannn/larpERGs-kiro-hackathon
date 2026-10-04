@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
+import TileGrid from '../../../shared/components/TileGrid';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import ConfirmSheet from '../../../shared/components/ConfirmSheet';
@@ -100,7 +102,7 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
         <Text style={styles.section} accessibilityRole="header">
           Latest readings
         </Text>
-        <View style={styles.grid}>
+        <TileGrid minTileWidth={130} maxColumns={3}>
           <MeasurementCard
             label="Blood pressure"
             value={latestBP ? formatBPValue(latestBP.systolic, latestBP.diastolic) : null}
@@ -115,7 +117,7 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
             context={latestGlucose?.glucose_test_type ? latestGlucose.glucose_test_type.replace('_', ' ') : undefined}
           />
           <MeasurementCard label="Weight" value={latestWeight?.weight_kg ?? null} unit="kg" measuredAt={latestWeight ? measured(latestWeight) : null} />
-        </View>
+        </TileGrid>
 
         <Text style={styles.section} accessibilityRole="header">
           Results awaiting review ({pending.length})
@@ -224,7 +226,6 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
 
 const styles = StyleSheet.create({
   section: { ...text.overline, marginTop: spacing.sm },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   result: { gap: spacing.xs, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
   resultTitle: text.bodyStrong,
   body: text.body,

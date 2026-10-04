@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
+import { Pressable, StyleSheet, View, type PressableStateCallbackType } from 'react-native';
+import Text from './Text';
 import type { ComponentProps, ReactNode } from 'react';
 import type { Tabs } from 'expo-router';
 import BrandMark from './BrandMark';

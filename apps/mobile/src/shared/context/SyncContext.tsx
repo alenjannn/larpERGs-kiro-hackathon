@@ -72,7 +72,18 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   }, [isOnline]);
 
   // Offline → online: start at once, aborting and restarting any stuck attempt (OC-4.1).
-  useEffect(() => onReconnect(() => void outbox.flush({ restart: true })), [onReconnect]);
+  // The reconnect event fires before React re-renders with isOnline = true, so
+  // onlineRef (read by the outbox) still says offline here. The event itself
+  // proves we are online: update the ref first, or the flush is skipped and
+  // requests saved offline wait until the app is reopened.
+  useEffect(
+    () =>
+      onReconnect(() => {
+        onlineRef.current = true;
+        void outbox.flush({ restart: true });
+      }),
+    [onReconnect]
+  );
 
   // Foreground / visibility while online.
   useEffect(

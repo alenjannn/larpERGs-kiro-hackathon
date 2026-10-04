@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import Text from '../components/Text';
+import TileGrid from '../components/TileGrid';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import ConfirmSheet from '../components/ConfirmSheet';
@@ -163,22 +165,22 @@ function Gallery() {
 
         <Section title="MeasurementCard — null shows “No reading”, never 0">
           <Code>{'<MeasurementCard label="Blood pressure" value={formatBPValue(s, d)} unit="mmHg" measuredAt={iso} />'}</Code>
-          <View style={styles.wrap}>
+          <TileGrid minTileWidth={150}>
             <MeasurementCard label="Blood pressure" value={formatBPValue(132, 84)} unit="mmHg" measuredAt={daysAgo(12)} />
             <MeasurementCard label="Blood sugar" value={126} unit="mg/dL" context="Fasting" measuredAt={daysAgo(7)} />
             <MeasurementCard label="Weight" value={null} unit="kg" measuredAt={null} />
             <MeasurementCard label="BP (missing diastolic)" value={formatBPValue(132, null)} unit="mmHg" measuredAt={daysAgo(3)} />
             <MeasurementCard label="Height" value={152} unit="cm" measuredAt={null} />
-          </View>
+          </TileGrid>
         </Section>
 
         <Section title="MetricTile — “n of d (p%)”, zero denominator → “No cases”">
           <Code>{'<MetricTile label="…" numerator={18} denominator={30} />'}</Code>
-          <View style={styles.wrap}>
+          <TileGrid minTileWidth={150}>
             <MetricTile label="Help requests acknowledged" numerator={18} denominator={30} />
             <MetricTile label="Follow-ups confirmed" numerator={0} denominator={0} hint="Zero denominator" />
             <MetricTile label="Invalid input" numerator={4} denominator={3} hint="Numerator > denominator" />
-          </View>
+          </TileGrid>
         </Section>
 
         <Section title="EmptyState">

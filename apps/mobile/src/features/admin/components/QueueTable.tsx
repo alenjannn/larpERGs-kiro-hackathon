@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import Text from '../../../shared/components/Text';
 import { colors, layout, radius, spacing, text, typography } from '../../../shared/theme';
 
 export const TABLE_BREAKPOINT = layout.table;

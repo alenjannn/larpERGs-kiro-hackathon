@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';

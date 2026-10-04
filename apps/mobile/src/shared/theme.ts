@@ -34,6 +34,12 @@ export const colors = {
   /** Subtle panels inside cards (readings, notes). */
   surfaceAlt: '#F8FAFC',
   primaryText: '#FFFFFF',
+  /** Secondary text on a primary-coloured surface (4.6:1 on primary). */
+  onPrimaryMuted: '#E3F4F1',
+  /** Hover/pressed for destructive buttons. */
+  errorStrong: '#991B1B',
+  /** Outline of the DEMO DATA badge. */
+  pendingBorder: '#F3D9B8',
   /** Placeholder text in inputs. */
   placeholder: '#7B8794',
   /** Keyboard focus ring (web). */
@@ -44,7 +50,7 @@ export const colors = {
   dangerBg: palette.errorBg,
   warning: palette.pending,
   warningBg: palette.pendingBg,
-  info: '#1F6FD1',
+  info: '#1D69C7',
   infoBg: '#EEF4FD',
   // Offline is calm: navy, never red.
   offlineBg: palette.text,
@@ -54,12 +60,25 @@ export const colors = {
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
 export const radius = { sm: 6, md: 10, lg: 14, xl: 18, pill: 999 };
 
+/** Role identity colours (white text on each is >= 4.5:1). */
+export const roleColors = {
+  admin: { color: '#5B3FB8', tint: '#F3F0FC' },
+  bhw: { color: '#0E7C66', tint: '#ECF8F4' },
+  patient: { color: '#1D69C7', tint: '#EDF4FD' },
+};
+
 /** Soft elevation. Borders stay for structure; shadows only lift surfaces. */
 export const shadow = {
   card: { boxShadow: '0 1px 2px rgba(16, 42, 67, 0.04), 0 2px 8px rgba(16, 42, 67, 0.04)' },
   raised: { boxShadow: '0 2px 4px rgba(16, 42, 67, 0.06), 0 8px 24px rgba(16, 42, 67, 0.08)' },
   overlay: { boxShadow: '0 16px 48px rgba(16, 42, 67, 0.24)' },
   button: { boxShadow: '0 1px 2px rgba(16, 42, 67, 0.12)' },
+  /** The current step or selected item. */
+  highlight: { boxShadow: '0 4px 14px rgba(15, 118, 110, 0.12)' },
+  /** Field focus ring (keyboard and pointer). */
+  focusRing: { boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.18)' },
+  /** Ring on a field with a validation error. */
+  errorRing: { boxShadow: '0 0 0 3px rgba(185, 28, 28, 0.12)' },
 } satisfies Record<string, ViewStyle>;
 
 /** Typography: body text about 16px, nothing below 12px. */

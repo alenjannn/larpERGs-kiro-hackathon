@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
+import { Platform, Pressable, StyleSheet, View, type PressableStateCallbackType } from 'react-native';
+import Text from '../components/Text';
 import { useRouter } from 'expo-router';
 import AuthLayout, { useWideAuth } from '../components/AuthLayout';
 import BrandMark from '../components/BrandMark';

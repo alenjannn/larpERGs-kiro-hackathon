@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { formatDateTimeDMY } from '../../../shared/utils/date';

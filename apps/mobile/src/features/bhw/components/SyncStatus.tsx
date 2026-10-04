@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import EmptyState from '../../../shared/components/EmptyState';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import type { LocalRecord, SyncEntity } from '../../../shared/services/storage';

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { colors } from '../theme';
 
 /** The Tuloy logo mark: a rounded teal tile with "T". Decorative; pair it with the name. */

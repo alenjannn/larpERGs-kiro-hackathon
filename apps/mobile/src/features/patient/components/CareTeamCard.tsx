@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Card from '../../../shared/components/Card';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import Icon, { type IconName } from '../../../shared/components/Icon';

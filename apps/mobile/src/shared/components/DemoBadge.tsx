@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { colors, radius } from '../theme';
 
 /** Label for synthetic data (security.md requires "DEMO DATA" labels in the UI). */
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     backgroundColor: colors.warningBg,
     borderWidth: 1,
-    borderColor: '#F3D9B8',
+    borderColor: colors.pendingBorder,
     borderRadius: radius.sm,
     paddingHorizontal: 6,
     paddingVertical: 2,

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import Icon from '../../../shared/components/Icon';
 import type { Clinic } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { colors, radius, shadow, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY, PHILHEALTH_YAKAP_URL } from '../copy';
 
 const UNKNOWN = PATIENT_COPY.unknown;
@@ -94,7 +95,7 @@ export default function ClinicCard({ clinic, mine, isOnline }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg + 2, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', boxShadow: '0 1px 2px rgba(16, 42, 67, 0.04), 0 2px 8px rgba(16, 42, 67, 0.04)' },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg + 2, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', ...shadow.card },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.lg, minHeight: 44 },
   headerText: { flex: 1, gap: 2 },
   name: { fontSize: typography.body, fontWeight: '700', color: colors.text },
