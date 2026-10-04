@@ -1,11 +1,12 @@
-import { Platform, StyleSheet, Text } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
-import { colors } from '../../../shared/theme';
+import Icon from '../../../shared/components/Icon';
+import { colors, spacing, text } from '../../../shared/theme';
 import SyncCounts from '../components/SyncCounts';
 import SyncResultNotice from '../components/SyncResultNotice';
 import SyncStatus from '../components/SyncStatus';
@@ -26,9 +27,15 @@ export default function BHWSyncScreen() {
       <Card
         title={isOnline === null ? 'Connection: checked on sync' : isOnline ? 'Online' : 'Offline'}
         subtitle={`Saved in ${Platform.OS === 'web' ? 'this browser (localStorage)' : 'this phone (SQLite)'}`}
+        right={
+          <View style={styles.conn} accessible accessibilityLabel={isOnline === false ? 'Offline' : isOnline ? 'Online' : 'Connection unknown'}>
+            <Icon name={isOnline === false ? 'offline' : isOnline ? 'check' : 'clock'} size={14} color={isOnline === false ? colors.text : isOnline ? colors.success : colors.muted} />
+          </View>
+        }
       >
         {sync.loading && sync.items.length === 0 ? <LoadingSpinner /> : <SyncCounts counts={sync.counts} />}
         <Button
+          icon="arrow-up"
           title={sync.syncing ? 'Sending…' : `Sync Now (${sync.pendingCount})`}
           onPress={sync.syncNow}
           loading={sync.syncing}
@@ -50,15 +57,18 @@ export default function BHWSyncScreen() {
       >
         <SyncStatus items={sync.items} syncing={sync.syncing} />
       </Card>
-      <Text style={styles.footnote}>Tip: turn on airplane mode or DevTools “Offline”, add records, then come back online and tap Sync Now.</Text>
-      <Text style={styles.footnote}>Sync Now sends field records to the demo server only. Full cloud sync is deferred.</Text>
-      {sync.counts.needs_review > 0 ? (
-        <Text style={styles.footnote}>Needs review: nothing was overwritten. Resolving this in the app isn&apos;t available yet.</Text>
-      ) : null}
+      <Card title="How sync works">
+        <Text style={styles.footnote}>• Sync Now sends field records to the demo server only. Full cloud sync is deferred.</Text>
+        <Text style={styles.footnote}>• Tip: turn on airplane mode or DevTools “Offline”, add records, then come back online and tap Sync Now.</Text>
+        {sync.counts.needs_review > 0 ? (
+          <Text style={styles.footnote}>• Needs review: nothing was overwritten. Resolving this in the app isn&apos;t available yet.</Text>
+        ) : null}
+      </Card>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  footnote: { fontSize: 12, color: colors.muted, textAlign: 'center' },
+  footnote: text.muted,
+  conn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.mutedBg, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.xs },
 });

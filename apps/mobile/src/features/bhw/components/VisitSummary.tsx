@@ -3,7 +3,7 @@ import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
 import { formatBPValue, formatMeasurement } from '../../../shared/utils/format';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { syncStatusKeys } from '../fieldQueueStatus';
 import { recordTime } from '../today';
 import type { BHWRecord } from '../types/bhw.types';
@@ -40,7 +40,7 @@ export default function VisitSummary({ record }: { record: BHWRecord }) {
 }
 
 const styles = StyleSheet.create({
-  item: { gap: 2, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
-  date: { fontSize: typography.caption, color: colors.muted },
-  line: { fontSize: typography.small, color: colors.text },
+  item: { gap: 2, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  date: { ...text.caption, fontWeight: '600' },
+  line: text.small,
 });

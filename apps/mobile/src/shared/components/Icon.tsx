@@ -23,6 +23,22 @@ const GLYPHS = {
   info: 'ⓘ',
   help: '?',
   close: '✕',
+  // Navigation and UI.
+  home: '⌂',
+  list: '☰',
+  map: '⌖',
+  chart: '◔',
+  heart: '♥︎',
+  clinic: '✚',
+  swap: '⇄',
+  medical: '✎',
+  logout: '⇥',
+  plus: '+',
+  back: '←',
+  'chevron-right': '›',
+  'chevron-down': '▾',
+  'chevron-up': '▴',
+  tools: '⚙︎',
 } as const;
 
 export type IconName = keyof typeof GLYPHS;
@@ -50,5 +66,5 @@ export default function Icon({ name, size = 16, color = colors.text, style }: Pr
 }
 
 const styles = StyleSheet.create({
-  icon: { fontWeight: '700', textAlign: 'center' },
+  icon: { fontWeight: '700', textAlign: 'center', includeFontPadding: false },
 });

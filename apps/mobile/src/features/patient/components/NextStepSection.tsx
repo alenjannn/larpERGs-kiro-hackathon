@@ -10,7 +10,7 @@ import type { OutboxItem } from '../../../shared/services/outbox';
 import { outboxStatusKeys } from '../../../shared/status';
 import type { Appointment } from '../../../shared/types/db.types';
 import { formatDateDMY, formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
 import { useReportAttended } from '../hooks/useReportAttended';
 import { canReportAttended, findAnotherDateRequest } from '../logic/nextStep';
@@ -87,6 +87,6 @@ export default function NextStepSection({ appointment: appt, clinicName, patient
 }
 
 const styles = StyleSheet.create({
-  note: { fontSize: typography.body, color: colors.muted, lineHeight: typography.lineHeight },
+  note: { ...text.body, color: text.muted.color },
   existing: { gap: spacing.xs },
 });

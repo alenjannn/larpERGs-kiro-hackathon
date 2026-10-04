@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
 import Icon, { type IconName } from './Icon';
-import { colors, spacing, typography } from '../theme';
+import { colors, spacing, text } from '../theme';
 
 interface Props {
   title: string;
@@ -14,18 +14,22 @@ interface Props {
 export default function EmptyState({ title, message, icon = 'info', action }: Props) {
   return (
     <View style={styles.box}>
-      <Icon name={icon} size={28} color={colors.muted} />
+      <View style={styles.iconWrap}>
+        <Icon name={icon} size={22} color={colors.muted} />
+      </View>
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}
-      {action ? <Button variant="secondary" title={action.label} onPress={action.onPress} /> : null}
+      {action ? <Button variant="secondary" title={action.label} onPress={action.onPress} style={styles.action} /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   box: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xl, paddingHorizontal: spacing.lg },
-  title: { fontSize: typography.body, fontWeight: '700', color: colors.text, textAlign: 'center' },
-  message: { fontSize: typography.small, color: colors.muted, textAlign: 'center', lineHeight: 20 },
+  iconWrap: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.mutedBg, borderWidth: 6, borderColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' },
+  title: { ...text.bodyStrong, textAlign: 'center' },
+  message: { ...text.muted, textAlign: 'center', maxWidth: 440 },
+  action: { marginTop: spacing.xs },
 });

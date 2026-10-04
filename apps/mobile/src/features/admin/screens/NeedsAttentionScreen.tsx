@@ -1,17 +1,20 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import DemoBadge from '../../../shared/components/DemoBadge';
+import DeveloperTools from '../../../shared/components/DeveloperTools';
 import EmptyState from '../../../shared/components/EmptyState';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
+import SectionHeader from '../../../shared/components/SectionHeader';
+import StatTile from '../../../shared/components/StatTile';
 import StatusChip from '../../../shared/components/StatusChip';
 import { DEMO_PERSONAS } from '../../../shared/config/demo';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { helpReasonLabel } from '../../../shared/helpRequests';
-import { colors, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { formatDateDMY } from '../../../shared/utils/date';
 import AdminDataStates from '../components/AdminDataStates';
 import BHWList from '../components/BHWList';
@@ -39,7 +42,7 @@ export default function NeedsAttentionScreen() {
   return (
     <Screen
       title="Needs Attention"
-      subtitle={`${data?.admin?.full_name ?? DEMO_PERSONAS.admin.name} · RHU coordinator · only items where care is stuck`}
+      subtitle={`${data?.admin?.full_name ?? DEMO_PERSONAS.admin.name} · RHU coordinator. Only items where care is stuck.`}
       refreshing={loading && !!data}
       onRefresh={reload}
     >
@@ -60,9 +63,16 @@ export default function NeedsAttentionScreen() {
 
       {na && data ? (
         <>
-          <Text style={styles.summary} accessibilityRole="summary">
+          <Text style={[styles.summary, total === 0 && styles.summaryOk]} accessibilityRole="summary">
             {total === 0 ? 'Nothing needs attention right now.' : `${total} item${total === 1 ? '' : 's'} need attention.`}
           </Text>
+          <View style={styles.stats}>
+            <StatTile label="Unassigned requests" value={na.unassignedRequests.length} />
+            <StatTile label="Unassigned patients" value={na.unassignedPatients.length} />
+            <StatTile label="Overdue reviews" value={na.overdueReviews.length} />
+            <StatTile label="Blocked barriers" value={na.blockedRequests.length} />
+            <StatTile label="Inactive BHWs" value={na.inactiveBHWs.length} />
+          </View>
 
           <Card title="Unassigned help requests" subtitle="No BHW owns these yet" right={<DemoBadge />}>
             <QueueTable
@@ -224,6 +234,7 @@ export default function NeedsAttentionScreen() {
             />
           </Card>
 
+          <SectionHeader title="Activity" subtitle="What has come in from patients and BHWs" />
           <DemoClinicInbox requests={data.helpRequests} bhws={data.bhws} />
           <FieldRecordsFeed records={data.records} patients={data.patients} bhws={data.bhws} />
 
@@ -235,12 +246,16 @@ export default function NeedsAttentionScreen() {
       ) : null}
 
       {flow.sheet}
-      <ConnectionTest />
+      <DeveloperTools>
+        <ConnectionTest />
+      </DeveloperTools>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  summary: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
-  footnote: { fontSize: typography.caption, color: colors.muted },
+  summary: { ...text.bodyStrong, color: colors.pending },
+  summaryOk: { color: colors.success },
+  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  footnote: text.caption,
 });

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceAlt,
   },
-  count: { fontSize: typography.title, fontWeight: '700', color: colors.text },
+  count: { fontSize: typography.heading, fontWeight: '700', color: colors.text, fontVariant: ['tabular-nums'] },
 });

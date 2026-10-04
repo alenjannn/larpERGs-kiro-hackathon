@@ -73,6 +73,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
+    flexShrink: 1,
+    maxWidth: '100%',
   },
-  reviewText: { fontSize: typography.caption, color: colors.pending, fontWeight: '700' },
+  // Wraps in narrow places such as the desktop sidebar.
+  reviewText: { fontSize: typography.caption, color: colors.pending, fontWeight: '700', flexShrink: 1 },
 });

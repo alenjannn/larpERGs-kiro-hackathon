@@ -5,7 +5,7 @@ import { useLanguage } from '../context/DemoRoleContext';
 import { helpReasonLabel } from '../helpRequests';
 import type { StatusKey } from '../status';
 import { formatDateTimeDMY } from '../utils/date';
-import { colors, spacing, typography } from '../theme';
+import { colors, radius, spacing, text } from '../theme';
 
 interface Props {
   reason: string;
@@ -49,7 +49,7 @@ export default function HelpRequestItem({
   return (
     <View style={styles.item}>
       {patientName ? <Text style={styles.patient}>{patientName}</Text> : null}
-      <Text style={styles.reason}>{helpReasonLabel(reason, lang)}</Text>
+      <Text style={patientName ? styles.reason : styles.patient}>{helpReasonLabel(reason, lang)}</Text>
       {message ? <Text style={styles.message}>“{message}”</Text> : null}
       <Text style={styles.time}>
         {createdLabel} {formatDateTimeDMY(createdAt)}
@@ -67,12 +67,18 @@ export default function HelpRequestItem({
 }
 
 const styles = StyleSheet.create({
-  item: { gap: spacing.xs, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
-  patient: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  reason: { fontSize: typography.body, fontWeight: '600', color: colors.text },
-  message: { fontSize: typography.body, color: colors.text },
-  time: { fontSize: typography.small, color: colors.muted },
-  detail: { fontSize: typography.small, color: colors.muted },
-  note: { fontSize: typography.small, color: colors.text, lineHeight: 20 },
-  action: { alignSelf: 'flex-start' },
+  item: { gap: spacing.xs, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  patient: { ...text.bodyStrong, fontWeight: '700' },
+  reason: text.bodyStrong,
+  message: {
+    ...text.body,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.border,
+    paddingLeft: spacing.sm,
+    marginVertical: 2,
+  },
+  time: text.caption,
+  detail: { ...text.caption, color: colors.error },
+  note: { ...text.small, backgroundColor: colors.mutedBg, borderRadius: radius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, marginTop: 2 },
+  action: { alignSelf: 'flex-start', marginTop: spacing.xs },
 });

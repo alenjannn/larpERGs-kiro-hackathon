@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import type { YakapStage } from '../../../shared/types/db.types';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { colors, radius, spacing, text } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
 import { YAKAP_STAGES } from '../logic/yakap';
 
@@ -29,6 +29,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: 2,
   },
-  label: { fontSize: typography.caption, color: colors.primary, fontWeight: '700' },
-  value: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
+  label: { ...text.overline, color: colors.primary },
+  value: text.bodyStrong,
 });

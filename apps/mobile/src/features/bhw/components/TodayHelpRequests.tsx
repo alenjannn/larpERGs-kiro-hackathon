@@ -7,7 +7,7 @@ import Notice from '../../../shared/components/Notice';
 import type { StatusKey } from '../../../shared/status';
 import type { HelpRequestWithPatient } from '../../../shared/types/db.types';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { ACK_OFFLINE_MESSAGE } from '../hooks/useAcknowledgeHelpRequest';
 import { helpRequestNextAction } from '../today';
 
@@ -33,7 +33,7 @@ export default function TodayHelpRequests({ requests, patientNames, cachedAt, on
   const unique = [...new Map(requests.map((r) => [r.id, r])).values()];
   const hasAssigned = unique.some((r) => r.coordination_status === 'assigned');
   return (
-    <Card title="Today · Help requests" subtitle="Received in the demo clinic inbox for your patients">
+    <Card title={`Help requests (${unique.length})`} subtitle="Received in the demo clinic inbox for your patients">
       {cachedAt ? <LastUpdated at={cachedAt} /> : null}
       {offline && hasAssigned ? <Notice tone="info" message={ACK_OFFLINE_MESSAGE} /> : null}
       {unique.length === 0 ? <EmptyState title="No help requests right now." icon="check" /> : null}
@@ -53,7 +53,7 @@ export default function TodayHelpRequests({ requests, patientNames, cachedAt, on
             receivedAt={r.received_at}
             meta={r.acknowledged_at ? `Acknowledged ${formatDateTimeDMY(r.acknowledged_at)}` : null}
             statuses={['transport.received_in_inbox', `coordination.${r.coordination_status}` as StatusKey]}
-            detail={error ? `⚠ ${error}` : null}
+            detail={error}
             note={`Next: ${helpRequestNextAction(r)}`}
             action={
               canAck && !offline
@@ -79,5 +79,5 @@ export default function TodayHelpRequests({ requests, patientNames, cachedAt, on
 }
 
 const styles = StyleSheet.create({
-  footnote: { fontSize: typography.caption, color: colors.muted },
+  footnote: { ...text.caption, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
 });

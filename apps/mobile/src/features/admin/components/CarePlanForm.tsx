@@ -12,7 +12,7 @@ import type { CarePlan, HealthRecord, Patient } from '../../../shared/types/db.t
 import { formatDateDMY, formatDateTimeDMY } from '../../../shared/utils/date';
 import { formatBPValue } from '../../../shared/utils/format';
 import { newId } from '../../../shared/utils/id';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import type { CarePlanInput } from '../../../shared/services/apiAdmin';
 
 const SUMMARY_MAX = 600;
@@ -182,7 +182,8 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
           message="Do not enter a diagnosis label or a risk score. Describe what was reviewed and what the patient should do next."
         />
         <TextField
-          label={`Summary (required, ${summary.length}/${SUMMARY_MAX})`}
+          label="Summary (required)"
+          hint={`${summary.length} / ${SUMMARY_MAX} characters`}
           value={summary}
           onChangeText={setSummary}
           multiline
@@ -190,7 +191,8 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
           placeholder="e.g. Your recent results were reviewed by your clinician."
         />
         <TextField
-          label={`Next steps (${nextSteps.length}/${NEXT_STEPS_MAX})`}
+          label="Next steps (optional)"
+          hint={`${nextSteps.length} / ${NEXT_STEPS_MAX} characters`}
           value={nextSteps}
           onChangeText={setNextSteps}
           multiline
@@ -221,12 +223,12 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
 }
 
 const styles = StyleSheet.create({
-  section: { fontSize: typography.small, fontWeight: '700', color: colors.text, marginTop: spacing.sm },
+  section: { ...text.overline, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  result: { gap: spacing.xs, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
-  resultTitle: { fontSize: typography.body, fontWeight: '600', color: colors.text },
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  meta: { fontSize: typography.caption, color: colors.muted },
+  result: { gap: spacing.xs, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  resultTitle: text.bodyStrong,
+  body: text.body,
+  meta: text.caption,
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   action: { flexGrow: 1, flexBasis: 160 },
 });

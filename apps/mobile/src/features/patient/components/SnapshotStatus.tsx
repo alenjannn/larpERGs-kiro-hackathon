@@ -4,7 +4,7 @@ import LastUpdated from '../../../shared/components/LastUpdated';
 import Notice from '../../../shared/components/Notice';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
 import { NO_SNAPSHOT_MESSAGE, NO_SNAPSHOT_TITLE, OFFLINE_HOME_NOTICE } from '../../../shared/helpRequests';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import type { SnapshotStatus as Status } from '../hooks/usePatientSnapshot';
 
 interface Props {
@@ -34,5 +34,5 @@ export default function SnapshotStatus({ status, lastUpdatedAt, staleReason, sho
 
 const styles = StyleSheet.create({
   wrap: { gap: spacing.xs },
-  note: { fontSize: typography.small, color: colors.muted },
+  note: text.muted,
 });

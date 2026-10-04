@@ -3,7 +3,7 @@ import EmptyState from '../../../shared/components/EmptyState';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import type { LocalRecord, SyncEntity } from '../../../shared/services/storage';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, spacing } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { fieldQueueStatusKeys } from '../fieldQueueStatus';
 
 const ENTITY_LABEL: Record<SyncEntity, string> = {
@@ -39,9 +39,9 @@ export default function SyncStatus({ items, syncing }: { items: LocalRecord[]; s
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
   main: { flex: 1, gap: spacing.xs },
-  message: { fontSize: 14, color: colors.text },
-  meta: { fontSize: 12, color: colors.muted },
-  error: { fontSize: 12, color: colors.danger },
+  message: text.bodyStrong,
+  meta: text.caption,
+  error: { ...text.caption, color: colors.danger },
 });

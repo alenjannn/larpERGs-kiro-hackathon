@@ -13,7 +13,7 @@ export default function AdminBHWScreen() {
   const manage = useBHWManagement(reload);
 
   return (
-    <Screen title="BHW Management" subtitle="Create, monitor and (de)activate Barangay Health Workers" refreshing={loading && !!data} onRefresh={reload}>
+    <Screen title="BHWs" subtitle="Create, monitor and activate or deactivate Barangay Health Workers" refreshing={loading && !!data} onRefresh={reload}>
       {loading && !data ? <LoadingSpinner /> : null}
       {error ? <Notice tone="error" message={error} /> : null}
       {manage.error ? <Notice tone="error" message={manage.error} /> : null}
@@ -24,7 +24,7 @@ export default function AdminBHWScreen() {
       </Card>
 
       {data ? (
-        <Card title={`Your BHWs (${data.bhws.length})`}>
+        <Card title={`Your BHWs (${data.bhws.length})`} subtitle="Listed in the order they were added. Not a ranking.">
           <BHWList activity={data.activity} onToggleStatus={manage.toggleStatus} busyId={manage.busy} />
         </Card>
       ) : null}

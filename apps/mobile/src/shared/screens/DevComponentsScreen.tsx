@@ -3,6 +3,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import ConfirmSheet from '../components/ConfirmSheet';
+import Disclosure from '../components/Disclosure';
 import EmptyState from '../components/EmptyState';
 import Icon, { ICON_NAMES } from '../components/Icon';
 import LastUpdated from '../components/LastUpdated';
@@ -13,6 +14,8 @@ import Notice from '../components/Notice';
 import OfflineBanner from '../components/OfflineBanner';
 import RoleHeader from '../components/RoleHeader';
 import Screen from '../components/Screen';
+import SectionHeader from '../components/SectionHeader';
+import TextField from '../components/TextField';
 import StatusChip, { StatusChipRow } from '../components/StatusChip';
 import { ALL_STATUS_KEYS, legacyQueueStatusKeys, queueStatusText, STATUS, type StatusGroup, type StatusKey } from '../status';
 import { formatBPValue } from '../utils/format';
@@ -75,6 +78,39 @@ function Gallery() {
   return (
     <SafeAreaView style={styles.safe}>
       <Screen title="Component gallery" subtitle="Shared components from tech.md §6 with usage examples (DEMO, web only)">
+        <Section title="Button — primary, secondary, danger, ghost">
+          <Code>{'<Button title="…" variant="primary|secondary|danger|ghost" icon="plus" compact />'}</Code>
+          <View style={styles.wrap}>
+            <Button title="Primary" icon="plus" onPress={() => setLastAction('Button: primary')} />
+            <Button title="Secondary" variant="secondary" onPress={() => setLastAction('Button: secondary')} />
+            <Button title="Danger" variant="danger" onPress={() => setLastAction('Button: danger')} />
+            <Button title="Ghost link" variant="ghost" trailingIcon="chevron-right" onPress={() => setLastAction('Button: ghost')} />
+            <Button title="Compact" compact variant="secondary" onPress={() => setLastAction('Button: compact')} />
+            <Button title="Disabled" disabled onPress={() => undefined} />
+          </View>
+        </Section>
+
+        <Section title="Notice — info, success, warning, error">
+          <Notice tone="info" message="Showing saved information." />
+          <Notice tone="success" title="Saved" message="Synced 3 records. The demo server confirmed each one." />
+          <Notice tone="warning" message="Synced 2 of 3. 1 still saved on this device." />
+          <Notice tone="error" message="Could not load the RHU workspace." />
+        </Section>
+
+        <Section title="TextField — hint and error">
+          <View style={styles.wrap}>
+            <TextField label="Birth date (optional)" hint="YYYY-MM-DD" placeholder="1980-01-31" />
+            <TextField label="Email address" value="not-an-email" error="Email looks invalid." onChangeText={() => undefined} />
+          </View>
+        </Section>
+
+        <Section title="SectionHeader and Disclosure">
+          <SectionHeader title="Your care" subtitle="Groups the cards below it" />
+          <Disclosure icon="tools" title="Developer tools" subtitle="Collapsed by default">
+            <Text style={styles.label}>Secondary tools live here.</Text>
+          </Disclosure>
+        </Section>
+
         <Section title="StatusChip — every status in the dictionary">
           <Code>{"<StatusChip status=\"transport.waiting_to_send\" lang=\"en\" />"}</Code>
           <Notice tone="info" message="FIL labels: needs native-speaker review." />

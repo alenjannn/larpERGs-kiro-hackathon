@@ -3,12 +3,12 @@ import Card from '../../../shared/components/Card';
 import Notice from '../../../shared/components/Notice';
 import type { HealthRecord } from '../../../shared/types/db.types';
 import { formatDateTime, timeAgo } from '../../../shared/utils/date';
-import { colors, spacing } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 
 /** Upcoming appointments scheduled by the patient's BHW. */
 export default function AppointmentList({ appointments, bhwName }: { appointments: HealthRecord[]; bhwName?: string }) {
   return (
-    <Card title="📅 Upcoming appointments" subtitle={bhwName ? `Scheduled by ${bhwName}` : undefined}>
+    <Card title="Upcoming appointments" subtitle={bhwName ? `Scheduled by ${bhwName}` : undefined}>
       {appointments.length === 0 ? <Notice tone="info" message="No upcoming appointments." /> : null}
       {appointments.map((a) => (
         <View key={a.id} style={styles.row}>
@@ -27,11 +27,11 @@ export default function AppointmentList({ appointments, bhwName }: { appointment
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
-  date: { width: 120 },
-  when: { fontSize: 13, fontWeight: '700', color: colors.info },
-  rel: { fontSize: 12, color: colors.muted },
-  flex: { flex: 1 },
-  title: { fontSize: 15, fontWeight: '600', color: colors.text },
-  notes: { fontSize: 13, color: colors.muted },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  date: { width: 140 },
+  when: { ...text.label, color: colors.primary },
+  rel: text.caption,
+  flex: { flex: 1, minWidth: 160 },
+  title: text.bodyStrong,
+  notes: text.muted,
 });

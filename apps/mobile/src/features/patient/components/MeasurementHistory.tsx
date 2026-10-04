@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Card from '../../../shared/components/Card';
 import { formatDateDMY } from '../../../shared/utils/date';
 import { NO_READING } from '../../../shared/utils/format';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 import { isOlderReading, LAB_KEYS, MEASURE_LABELS, readingsFor, VITAL_KEYS, type MeasureKey } from '../logic/measurements';
 import type { PatientRecord } from '../types/patient.types';
@@ -47,9 +47,9 @@ export default function MeasurementHistory({ records }: { records: PatientRecord
 }
 
 const styles = StyleSheet.create({
-  group: { gap: spacing.xs, paddingVertical: spacing.xs },
-  heading: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  row: { paddingVertical: 2, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-  value: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
-  muted: { fontSize: typography.small, color: colors.muted, fontWeight: '400' },
+  group: { gap: spacing.xs, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  heading: text.overline,
+  row: { paddingVertical: spacing.xs + 2, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  value: text.bodyStrong,
+  muted: { ...text.muted, fontWeight: '400' },
 });

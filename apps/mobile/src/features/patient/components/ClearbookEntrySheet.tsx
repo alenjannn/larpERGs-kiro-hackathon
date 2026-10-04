@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
 import Button from '../../../shared/components/Button';
 import ChipGroup from '../../../shared/components/ChipGroup';
 import Notice from '../../../shared/components/Notice';
+import Sheet, { SheetActions, sheetActionStyle } from '../../../shared/components/Sheet';
 import TextField from '../../../shared/components/TextField';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
 import type { GlucoseTestType } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
 import { newId } from '../../../shared/utils/id';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 import {
   EMPTY_DRAFT,
@@ -52,7 +53,6 @@ const EMPTY: EntryDraft = EMPTY_DRAFT;
 export default function ClearbookEntrySheet({ visible, entries, save, onClose }: Props) {
   const { isOnline } = useConnectivity();
   const draftId = useRef(newId());
-  const sheetRef = useRef<View>(null);
   const [draft, setDraft] = useState<EntryDraft>(EMPTY);
   const [touched, setTouched] = useState(false);
   const [step, setStep] = useState<Step>('form');
@@ -73,22 +73,6 @@ export default function ClearbookEntrySheet({ visible, entries, save, onClose }:
     setSavedId(null);
     onClose();
   };
-  const closeRef = useRef(close);
-  closeRef.current = close;
-
-  // Web: Escape closes; focus moves into the sheet once when it opens.
-  useEffect(() => {
-    if (!visible || Platform.OS !== 'web' || typeof window === 'undefined') return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeRef.current();
-    };
-    window.addEventListener('keydown', onKey);
-    const timer = setTimeout(() => (sheetRef.current as unknown as { focus?: () => void } | null)?.focus?.(), 50);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      clearTimeout(timer);
-    };
-  }, [visible]);
 
   const set = <K extends keyof EntryDraft>(key: K, value: EntryDraft[K]) => {
     setTouched(true);
@@ -121,132 +105,101 @@ export default function ClearbookEntrySheet({ visible, entries, save, onClose }:
   const saved = savedId ? entries.find((e) => e.id === savedId) ?? null : null;
   const summary = draftSummary(draft);
 
+  // FIL: needs native-speaker review
+  const heading =
+    step === 'saved'
+      ? { en: 'Saved on this device', fil: 'Naka-save sa device na ito' }
+      : step === 'confirm'
+        ? { en: PATIENT_COPY.checkAgainstPaper, fil: 'Suriin ito laban sa iyong papel' }
+        : { en: PATIENT_COPY.addLab, fil: PATIENT_COPY_FIL.addLab };
+
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
-      <View style={styles.root}>
-        <Pressable style={styles.backdrop} onPress={close} accessibilityRole="button" accessibilityLabel="Close" />
-        <View ref={sheetRef} focusable style={styles.sheet} accessibilityViewIsModal aria-modal role="dialog" aria-label={PATIENT_COPY.addLab}>
-          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            {step === 'saved' ? (
-              <>
-                <Text style={styles.title} accessibilityRole="header">
-                  Saved on this device
-                </Text>
-                {/* FIL: needs native-speaker review */}
-                <Text style={styles.fil}>Naka-save sa device na ito</Text>
-                {saved ? <EntryRow entry={saved} isOnline={isOnline} /> : null}
-                <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
-                <Button title="Done" onPress={close} />
-              </>
-            ) : step === 'confirm' ? (
-              <>
-                <Text style={styles.title} accessibilityRole="header">
-                  {PATIENT_COPY.checkAgainstPaper}
-                </Text>
-                {/* FIL: needs native-speaker review */}
-                <Text style={styles.fil}>Suriin ito laban sa iyong papel</Text>
-                <Text style={styles.summary}>{summary}</Text>
-                <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
-                <View style={styles.actions}>
-                  <Button title="Go back" variant="secondary" onPress={() => setStep('form')} disabled={saving} style={styles.action} />
-                  <Button title="Save" onPress={() => void confirm()} loading={saving} style={styles.action} accessibilityLabel="Save this lab result" />
-                </View>
-              </>
-            ) : (
-              <>
-                <Text style={styles.title} accessibilityRole="header">
-                  {PATIENT_COPY.addLab}
-                </Text>
-                <Text style={styles.fil}>{PATIENT_COPY_FIL.addLab}</Text>
-                <Text style={styles.body}>{PATIENT_COPY.labEntryIntro}</Text>
-                <ChipGroup<LabKind>
-                  label={PATIENT_COPY.labTestLabel}
-                  options={LAB_KINDS.map((value) => ({ value, label: LAB_LABELS[value] }))}
-                  value={draft.lab}
-                  onChange={setLab}
-                />
-                {errors.lab ? <Text style={styles.fieldError}>{errors.lab}</Text> : null}
-                {draft.lab === 'glucose' ? (
-                  <>
-                    <ChipGroup<GlucoseTestType>
-                      label={PATIENT_COPY.glucoseTestTypeLabel}
-                      options={GLUCOSE_TEST_TYPES.map((value) => ({ value, label: GLUCOSE_TEST_LABELS[value] }))}
-                      value={draft.testType}
-                      onChange={(v) => set('testType', v)}
-                    />
-                    {errors.testType ? <Text style={styles.fieldError}>{errors.testType}</Text> : null}
-                  </>
-                ) : null}
-                <TextField
-                  label="Value (required)"
-                  value={draft.value}
-                  onChangeText={(v) => set('value', v)}
-                  keyboardType="decimal-pad"
-                  placeholder={labPlaceholder(draft.lab)}
-                />
-                {errors.value ? <Text style={styles.fieldError}>{errors.value}</Text> : null}
-                {draft.lab ? (
-                  <ChipGroup<LabUnit>
-                    label="Unit (required)"
-                    options={LAB_UNITS[draft.lab].map((value) => ({ value, label: value }))}
-                    value={draft.unit}
-                    onChange={(v) => set('unit', v)}
-                  />
-                ) : (
-                  <Text style={styles.muted}>Unit (required): choose the test first.</Text>
-                )}
-                {errors.unit && draft.lab ? <Text style={styles.fieldError}>{errors.unit}</Text> : null}
-                <TextField
-                  label="Test date (required, YYYY-MM-DD)"
-                  value={draft.testDate}
-                  onChangeText={(v) => set('testDate', v)}
-                  placeholder="2026-09-27"
-                  autoCapitalize="none"
-                />
-                {errors.testDate ? <Text style={styles.fieldError}>{errors.testDate}</Text> : null}
-                <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
-                {error ? <Notice tone="error" message={error} /> : null}
-                <View style={styles.actions}>
-                  <Button title="Cancel" variant="secondary" onPress={close} style={styles.action} />
-                  <Button
-                    title="Save"
-                    onPress={() => {
-                      setTouched(true);
-                      if (check.ok) setStep('confirm');
-                    }}
-                    disabled={!check.ok}
-                    style={styles.action}
-                    accessibilityLabel={check.ok ? 'Save, then check against your paper' : 'Save (complete all fields first)'}
-                  />
-                </View>
-              </>
-            )}
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
+    <Sheet visible={visible} onClose={close} label={heading.en} subtitle={heading.fil}>
+      {step === 'saved' ? (
+        <>
+          {saved ? <EntryRow entry={saved} isOnline={isOnline} /> : null}
+          <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
+          <Button title="Done" onPress={close} />
+        </>
+      ) : step === 'confirm' ? (
+        <>
+          <Text style={styles.summary}>{summary}</Text>
+          <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
+          <SheetActions>
+            <Button title="Go back" variant="secondary" onPress={() => setStep('form')} disabled={saving} style={sheetActionStyle} />
+            <Button title="Save" onPress={() => void confirm()} loading={saving} style={sheetActionStyle} accessibilityLabel="Save this lab result" />
+          </SheetActions>
+        </>
+      ) : (
+        <>
+          <Text style={styles.body}>{PATIENT_COPY.labEntryIntro}</Text>
+          <ChipGroup<LabKind>
+            label={PATIENT_COPY.labTestLabel}
+            options={LAB_KINDS.map((value) => ({ value, label: LAB_LABELS[value] }))}
+            value={draft.lab}
+            onChange={setLab}
+            error={errors.lab}
+          />
+          {draft.lab === 'glucose' ? (
+            <ChipGroup<GlucoseTestType>
+              label={PATIENT_COPY.glucoseTestTypeLabel}
+              options={GLUCOSE_TEST_TYPES.map((value) => ({ value, label: GLUCOSE_TEST_LABELS[value] }))}
+              value={draft.testType}
+              onChange={(v) => set('testType', v)}
+              error={errors.testType}
+            />
+          ) : null}
+          <TextField
+            label="Value (required)"
+            value={draft.value}
+            onChangeText={(v) => set('value', v)}
+            keyboardType="decimal-pad"
+            placeholder={labPlaceholder(draft.lab)}
+            error={errors.value}
+          />
+          {draft.lab ? (
+            <ChipGroup<LabUnit>
+              label="Unit (required)"
+              options={LAB_UNITS[draft.lab].map((value) => ({ value, label: value }))}
+              value={draft.unit}
+              onChange={(v) => set('unit', v)}
+              error={errors.unit}
+            />
+          ) : (
+            <Text style={styles.muted}>Unit (required): choose the test first.</Text>
+          )}
+          <TextField
+            label="Test date (required)"
+            hint="Format: YYYY-MM-DD, for example 2026-09-27"
+            value={draft.testDate}
+            onChangeText={(v) => set('testDate', v)}
+            placeholder="2026-09-27"
+            autoCapitalize="none"
+            error={errors.testDate}
+          />
+          <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
+          {error ? <Notice tone="error" message={error} /> : null}
+          <SheetActions>
+            <Button title="Cancel" variant="secondary" onPress={close} style={sheetActionStyle} />
+            <Button
+              title="Continue"
+              onPress={() => {
+                setTouched(true);
+                if (check.ok) setStep('confirm');
+              }}
+              disabled={!check.ok}
+              style={sheetActionStyle}
+              accessibilityLabel={check.ok ? 'Continue, then check against your paper' : 'Continue (complete all fields first)'}
+            />
+          </SheetActions>
+        </>
+      )}
+    </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(22, 50, 79, 0.45)' },
-  sheet: {
-    width: '100%',
-    maxWidth: 560,
-    maxHeight: '92%',
-    alignSelf: 'center',
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
-  },
-  content: { padding: spacing.xl, gap: spacing.md },
-  title: { fontSize: typography.title, fontWeight: '700', color: colors.text },
-  fil: { fontSize: typography.small, color: colors.muted, marginTop: -spacing.sm },
-  body: { fontSize: typography.body, color: colors.text },
-  summary: { fontSize: typography.body, color: colors.text, fontWeight: '700', lineHeight: typography.lineHeight },
-  muted: { fontSize: typography.small, color: colors.muted, lineHeight: 20 },
-  fieldError: { fontSize: typography.small, color: colors.error, marginTop: -spacing.xs },
-  actions: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
-  action: { flexGrow: 1, flexBasis: 140 },
+  body: text.body,
+  summary: text.bodyStrong,
+  muted: text.muted,
 });

@@ -30,7 +30,7 @@ export default function TodayQueue({
 }) {
   if (items.length === 0) {
     return (
-      <Card title="Today · Follow-up">
+      <Card title="Follow-up">
         {cachedAt ? <LastUpdated at={cachedAt} /> : null}
         <EmptyState title="Nothing else needs follow-up today." icon="check" />
       </Card>

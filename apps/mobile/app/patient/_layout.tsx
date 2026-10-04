@@ -5,11 +5,11 @@ export default function PatientLayout() {
     <RoleTabsLayout
       role="patient"
       tabs={[
-        { name: 'index', title: 'Home', icon: '🏠' },
-        { name: 'health', title: 'My Health', icon: '❤️' },
-        { name: 'yakap', title: 'YAKAP & Clinics', icon: '🧭' },
-        { name: 'care-plan', title: 'Care Plan', icon: '📋' },
-        { name: 'profile', title: 'Profile', icon: '👤' },
+        { name: 'index', title: 'Home', icon: 'home' },
+        { name: 'health', title: 'My Health', icon: 'heart' },
+        { name: 'yakap', title: 'YAKAP & Clinics', shortTitle: 'YAKAP', icon: 'clinic' },
+        { name: 'care-plan', title: 'Care Plan', icon: 'document' },
+        { name: 'profile', title: 'Profile', icon: 'person' },
       ]}
     />
   );

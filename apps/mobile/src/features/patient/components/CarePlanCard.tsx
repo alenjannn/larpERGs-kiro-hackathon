@@ -4,7 +4,7 @@ import DemoBadge from '../../../shared/components/DemoBadge';
 import StatusChip from '../../../shared/components/StatusChip';
 import type { Admin, CarePlan } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 
 /** A released care plan (patients never receive drafts). Read-only: no edit, release or sign actions. */
 export default function CarePlanCard({ plan, clinician, title }: { plan: CarePlan; clinician: Admin | null; title: string }) {
@@ -27,7 +27,7 @@ export default function CarePlanCard({ plan, clinician, title }: { plan: CarePla
 
 const styles = StyleSheet.create({
   section: { gap: spacing.xs },
-  label: { fontSize: typography.small, color: colors.muted, fontWeight: '700' },
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  muted: { fontSize: typography.small, color: colors.muted },
+  label: text.overline,
+  body: text.body,
+  muted: text.muted,
 });

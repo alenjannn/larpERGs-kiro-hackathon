@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from './Icon';
 import { useConnectivity } from '../context/ConnectivityContext';
-import { colors, spacing, typography } from '../theme';
+import { colors, spacing, text } from '../theme';
 
 export const OFFLINE_BANNER_TEXT = "You're offline. Your saved information is still here. Requests will send when you reconnect.";
-const TAGLINE = 'Tuloy ang alaga, kahit offline';
+export const TAGLINE = 'Tuloy ang alaga, kahit offline';
 
 interface Props {
   showTagline?: boolean;
@@ -33,10 +33,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     backgroundColor: colors.offlineBg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm + 2,
   },
   texts: { flex: 1, gap: 2 },
-  text: { color: colors.offlineText, fontSize: typography.small, lineHeight: 20 },
-  tagline: { color: colors.offlineText, fontSize: typography.caption, fontStyle: 'italic', opacity: 0.9 },
+  text: { ...text.small, color: colors.offlineText },
+  tagline: { ...text.caption, color: colors.offlineText, fontStyle: 'italic' },
 });

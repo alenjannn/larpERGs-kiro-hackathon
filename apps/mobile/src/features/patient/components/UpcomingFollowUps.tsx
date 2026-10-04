@@ -3,7 +3,7 @@ import Card from '../../../shared/components/Card';
 import StatusChip from '../../../shared/components/StatusChip';
 import type { Appointment, Clinic } from '../../../shared/types/db.types';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 
 /** Upcoming appointments after the next step. Renders nothing when there are none. */
@@ -26,7 +26,7 @@ export default function UpcomingFollowUps({ appointments, clinic }: { appointmen
 }
 
 const styles = StyleSheet.create({
-  row: { gap: spacing.xs, paddingVertical: spacing.xs },
-  title: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
-  meta: { fontSize: typography.small, color: colors.muted },
+  row: { gap: spacing.xs, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  title: text.bodyStrong,
+  meta: text.muted,
 });

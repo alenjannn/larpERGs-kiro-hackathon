@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
 import Card from '../../../shared/components/Card';
 import StatusChip from '../../../shared/components/StatusChip';
-import { colors, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 import type { ReviewState } from '../logic/nextStep';
 
@@ -27,6 +27,6 @@ export default function ReviewStatusCard({ state }: { state: ReviewState }) {
 }
 
 const styles = StyleSheet.create({
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  muted: { fontSize: typography.body, color: colors.muted },
+  body: text.body,
+  muted: { ...text.body, color: text.muted.color },
 });

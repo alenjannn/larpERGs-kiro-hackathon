@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
+import Icon from './Icon';
 import StatusChip from './StatusChip';
 import type { StatusKey } from '../status';
 import { formatDateDMY, formatDateTimeDMY } from '../utils/date';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, radius, shadow, spacing, text } from '../theme';
 
 interface Props {
   /** The action, in plain words: "Go to your follow-up BP check". */
@@ -34,11 +35,21 @@ export default function NextStepCard({ action, responsible, date, dateKind = 'ap
       <Text style={styles.action} accessibilityRole="header">
         {action}
       </Text>
-      {responsible ? <Text style={styles.meta}>{responsible}</Text> : null}
-      <Text style={styles.meta}>{dateText}</Text>
+      {responsible ? (
+        <View style={styles.metaRow}>
+          <Icon name="clinic" size={14} color={colors.muted} />
+          <Text style={styles.meta}>{responsible}</Text>
+        </View>
+      ) : null}
+      <View style={styles.metaRow}>
+        <Icon name="calendar" size={14} color={colors.muted} />
+        <Text style={styles.meta}>{dateText}</Text>
+      </View>
       <StatusChip status={status} />
-      {children}
-      <Button title={helpLabel} variant="secondary" onPress={onHelp} />
+      <View style={styles.actions}>
+        {children}
+        <Button title={helpLabel} variant="secondary" onPress={onHelp} />
+      </View>
     </View>
   );
 }
@@ -49,12 +60,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    borderLeftWidth: 6,
-    borderLeftColor: colors.primary,
-    padding: spacing.lg,
-    gap: spacing.sm,
+    borderTopWidth: 4,
+    borderTopColor: colors.primary,
+    padding: spacing.lg + 2,
+    gap: spacing.sm + 2,
+    ...shadow.raised,
   },
-  kicker: { fontSize: typography.caption, color: colors.primary, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5 },
-  action: { fontSize: typography.title, color: colors.text, fontWeight: '700' },
-  meta: { fontSize: typography.body, color: colors.muted },
+  kicker: { ...text.overline, color: colors.primary },
+  action: { ...text.heading, fontSize: 22, lineHeight: 28 },
+  // Full width on phones; a readable column on wide screens.
+  actions: { gap: spacing.sm + 2, width: '100%', maxWidth: 420, marginTop: spacing.xs },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  meta: { ...text.body, color: colors.muted, flexShrink: 1 },
 });

@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, type PressableStateCallbackType } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import AuthLayout, { useWideAuth } from '../components/AuthLayout';
+import BrandMark from '../components/BrandMark';
 import Button from '../components/Button';
+import Card from '../components/Card';
 import ConfirmSheet from '../components/ConfirmSheet';
 import Icon from '../components/Icon';
 import Notice from '../components/Notice';
+import SectionHeader from '../components/SectionHeader';
 import { env } from '../config/env';
 import { DEMO_PERSONAS, ROLE_META, type DemoPersonaKey, type DemoRole } from '../config/demo';
 import { useAuth } from '../context/AuthContext';
 import { useDemoRole } from '../context/DemoRoleContext';
 import { useDemoReset } from '../hooks/useDemoReset';
-import { colors, radius, spacing } from '../theme';
+import { colors, radius, shadow, spacing, text } from '../theme';
 
 const ROLE_CARDS: { key: DemoPersonaKey; title: string; blurb: string; persona: string }[] = [
   {
@@ -50,6 +53,7 @@ export default function DemoLauncherScreen() {
   const { setDemoRole } = useAuth();
   const reset = useDemoReset();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const wide = useWideAuth();
 
   const openRole = (key: DemoPersonaKey) => {
     const persona = DEMO_PERSONAS[key];
@@ -65,31 +69,33 @@ export default function DemoLauncherScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <AuthLayout maxWidth={640}>
         <View style={styles.inner}>
-          <Text style={styles.title} accessibilityRole="header">
-            TULOY Health
-          </Text>
-          <Text style={styles.subtitle}>Hackathon demo · pick a role, then switch any time with the header</Text>
-          <View style={styles.simulated} accessible accessibilityLabel="Simulated role — no real authentication">
-            <Icon name="info" size={14} color={colors.pending} />
-            <Text style={styles.simulatedText}>Simulated role — no real authentication</Text>
+          <View style={styles.brand}>
+            {!wide ? <BrandMark size={52} /> : null}
+            <Text style={styles.title} accessibilityRole="header" aria-level={1}>
+              Tuloy Health demo
+            </Text>
+            <Text style={styles.subtitle}>Pick a persona to open its workspace. Sign out from the header to come back here.</Text>
+            <View style={styles.simulated} accessible accessibilityLabel="Simulated role — no real authentication">
+              <Icon name="info" size={14} color={colors.pending} />
+              <Text style={styles.simulatedText}>Simulated role — no real authentication</Text>
+            </View>
           </View>
 
-          <View style={styles.chain} accessibilityLabel="Chain of command: Admin, then BHW, then Patient">
+          <View style={styles.chain} accessible accessibilityLabel="Chain of command: Admin, then BHW, then Patient">
             {(['admin', 'bhw', 'patient'] as DemoRole[]).map((role, i) => (
               <View key={role} style={styles.chainItem}>
-                <View style={[styles.chainPill, { backgroundColor: ROLE_META[role].color }]}>
-                  <Text style={styles.chainText}>
-                    {ROLE_META[role].emoji} {ROLE_META[role].label}
-                  </Text>
+                <View style={[styles.chainPill, { backgroundColor: ROLE_META[role].tint, borderColor: ROLE_META[role].color }]}>
+                  <Icon name={ROLE_META[role].icon} size={13} color={ROLE_META[role].color} />
+                  <Text style={[styles.chainText, { color: ROLE_META[role].color }]}>{ROLE_META[role].label}</Text>
                 </View>
-                {i < 2 ? <Text style={styles.arrow}>→</Text> : null}
+                {i < 2 ? <Icon name="chevron-right" size={18} color={colors.muted} /> : null}
               </View>
             ))}
           </View>
 
+          <SectionHeader title="Choose a persona" />
           {ROLE_CARDS.map((card) => {
             const meta = ROLE_META[DEMO_PERSONAS[card.key].role];
             return (
@@ -98,44 +104,60 @@ export default function DemoLauncherScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`${card.title}. Persona: ${card.persona}`}
                 onPress={() => openRole(card.key)}
-                style={({ pressed }) => [styles.roleCard, { borderLeftColor: meta.color }, pressed && styles.pressed]}
+                style={(state: PressableStateCallbackType & { hovered?: boolean }) => [
+                  styles.roleCard,
+                  state.hovered && { borderColor: meta.color, ...shadow.raised },
+                  state.pressed && styles.pressed,
+                ]}
               >
-                <Text style={[styles.roleTitle, { color: meta.color }]}>
-                  {card.key === 'clinician' ? '🩺' : meta.emoji} {card.title}
-                </Text>
-                <Text style={styles.roleBlurb}>{card.blurb}</Text>
-                <Text style={styles.persona}>Persona: {card.persona} (DEMO DATA)</Text>
+                <View style={[styles.roleIcon, { backgroundColor: meta.tint }]}>
+                  <Icon name={card.key === 'clinician' ? 'medical' : meta.icon} size={20} color={meta.color} />
+                </View>
+                <View style={styles.roleText}>
+                  <Text style={styles.roleTitle}>{card.title}</Text>
+                  <Text style={styles.roleBlurb}>{card.blurb}</Text>
+                  <Text style={styles.persona}>Persona: {card.persona} (DEMO DATA)</Text>
+                </View>
+                <Icon name="chevron-right" size={22} color={colors.muted} />
               </Pressable>
             );
           })}
 
-          <Button
-            title="Reset demo data"
-            variant="danger"
-            onPress={() => {
-              reset.clear();
-              setConfirmOpen(true);
-            }}
-            loading={reset.running}
-          />
-          {reset.status === 'done' ? <Notice tone="success" message="Demo data reset" /> : null}
-          {reset.status === 'error' && reset.error ? <Notice tone="error" message={reset.error} /> : null}
+          <SectionHeader title="Demo data" />
+          <Card>
+            <Text style={styles.body}>
+              Start over: removes everything created during demos, restores the original DEMO DATA and clears this device.
+            </Text>
+            {reset.status === 'done' ? <Notice tone="success" message="Demo data reset" /> : null}
+            {reset.status === 'error' && reset.error ? <Notice tone="error" message={reset.error} /> : null}
+            <Button
+              title="Reset demo data"
+              variant="danger"
+              onPress={() => {
+                reset.clear();
+                setConfirmOpen(true);
+              }}
+              loading={reset.running}
+              style={styles.resetBtn}
+            />
+          </Card>
 
-          {env.supabaseConfigError ? (
-            <Notice tone="warning" message={env.supabaseConfigError} />
-          ) : (
-            <Notice tone="success" message="Supabase configured (anon key)." />
-          )}
-          {!env.hasMapboxToken ? (
-            <Notice tone="info" message="No Mapbox token: the BHW map uses an OpenStreetMap fallback." />
-          ) : null}
-          {env.demoMapCenterWarning ? <Notice tone="info" message={env.demoMapCenterWarning} /> : null}
-
-          <Text style={styles.note}>
-            {Platform.OS === 'web' ? '🌐 Web demo · offline queue stored in this browser' : '📱 Native · offline queue stored in SQLite'}
-          </Text>
+          <SectionHeader title="Environment" />
+          <View style={styles.env}>
+            {env.supabaseConfigError ? (
+              <Notice tone="warning" message={env.supabaseConfigError} />
+            ) : (
+              <Notice tone="success" message="Supabase configured (anon key)." />
+            )}
+            {!env.hasMapboxToken ? (
+              <Notice tone="info" message="No Mapbox token: the BHW map uses an OpenStreetMap fallback." />
+            ) : null}
+            {env.demoMapCenterWarning ? <Notice tone="info" message={env.demoMapCenterWarning} /> : null}
+            <Text style={styles.note}>
+              {Platform.OS === 'web' ? 'Web demo · offline queue stored in this browser' : 'Native · offline queue stored in SQLite'}
+            </Text>
+          </View>
         </View>
-      </ScrollView>
 
       <ConfirmSheet
         visible={confirmOpen}
@@ -147,44 +169,50 @@ export default function DemoLauncherScreen() {
         onConfirm={confirmReset}
         onCancel={() => setConfirmOpen(false)}
       />
-    </SafeAreaView>
+    </AuthLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: spacing.lg, flexGrow: 1, justifyContent: 'center' },
-  inner: { width: '100%', maxWidth: 560, alignSelf: 'center', gap: spacing.md },
-  title: { fontSize: 34, fontWeight: '800', color: colors.primary, textAlign: 'center' },
-  subtitle: { fontSize: 15, color: colors.muted, textAlign: 'center', marginTop: -spacing.xs },
+  inner: { gap: spacing.md },
+  brand: { alignItems: 'center', gap: spacing.sm },
+  title: { ...text.display, textAlign: 'center' },
+  subtitle: { ...text.body, color: colors.muted, textAlign: 'center', maxWidth: 480 },
   simulated: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
     gap: spacing.xs,
     backgroundColor: colors.pendingBg,
-    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.pending,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
-  simulatedText: { fontSize: 13, color: colors.pending, fontWeight: '700' },
-  chain: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: spacing.xs, marginVertical: spacing.sm },
+  simulatedText: { ...text.caption, color: colors.pending, fontWeight: '700' },
+  chain: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm },
   chainItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  chainPill: { borderRadius: 999, paddingHorizontal: spacing.md, paddingVertical: 6 },
-  chainText: { color: '#fff', fontWeight: '700', fontSize: 13 },
-  arrow: { fontSize: 18, color: colors.muted },
+  chainPill: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  chainText: { fontWeight: '700', fontSize: 14 },
   roleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    borderLeftWidth: 6,
-    padding: spacing.lg,
-    gap: spacing.xs,
+    padding: spacing.lg + 2,
+    ...shadow.card,
   },
   pressed: { opacity: 0.85 },
-  roleTitle: { fontSize: 19, fontWeight: '800' },
-  roleBlurb: { fontSize: 15, color: colors.text, lineHeight: 21 },
-  persona: { fontSize: 13, color: colors.muted },
-  note: { fontSize: 12, color: colors.muted, textAlign: 'center' },
+  roleIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  roleText: { flex: 1, gap: 2 },
+  roleTitle: text.title,
+  roleBlurb: text.small,
+  persona: text.caption,
+  body: text.body,
+  resetBtn: { alignSelf: 'flex-start' },
+  env: { gap: spacing.sm },
+  note: { ...text.caption, textAlign: 'center' },
 });
