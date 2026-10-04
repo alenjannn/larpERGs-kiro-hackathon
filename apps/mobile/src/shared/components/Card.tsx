@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import Text from './Text';
 import { colors, radius, shadow, spacing, text } from '../theme';
 
 interface Props {

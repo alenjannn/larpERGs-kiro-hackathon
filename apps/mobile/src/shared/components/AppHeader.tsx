@@ -1,8 +1,10 @@
-import { Pressable, StyleSheet, Text, View, useWindowDimensions, type PressableStateCallbackType } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions, type PressableStateCallbackType } from 'react-native';
+import Text from './Text';
 import { useRouter } from 'expo-router';
 import BrandMark from './BrandMark';
 import Button from './Button';
 import Icon from './Icon';
+import LanguageToggle from './LanguageToggle';
 import { useAccount } from '../hooks/useAccount';
 import { colors, radius, spacing, text, touch } from '../theme';
 
@@ -11,6 +13,7 @@ export default function AppHeader() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const narrow = width < 600;
+  const tiny = width < 400;
   const { meta, signedIn, who, email, signOut } = useAccount();
 
   return (
@@ -38,6 +41,7 @@ export default function AppHeader() {
       ) : null}
 
       <View style={styles.spacer} />
+      {signedIn ? <LanguageToggle compact /> : null}
 
       {signedIn ? (
         <View style={styles.account}>
@@ -46,14 +50,26 @@ export default function AppHeader() {
               {who}
             </Text>
           ) : null}
-          <Button
-            title="Sign out"
-            variant="ghost"
-            compact
-            icon="logout"
-            onPress={() => void signOut()}
-            accessibilityLabel={`Sign out${email ? ` ${email}` : ' of the demo persona'}`}
-          />
+          {tiny ? (
+            // Very small phones: icon button with a full accessible name and a 44 px target.
+            <Pressable
+              onPress={() => void signOut()}
+              accessibilityRole="button"
+              accessibilityLabel={`Sign out${email ? ` ${email}` : ' of the demo persona'}`}
+              style={(state: PressableStateCallbackType & { hovered?: boolean }) => [styles.iconBtn, (state.hovered || state.pressed) && styles.brandHovered]}
+            >
+              <Icon name="logout" size={18} color={colors.primary} />
+            </Pressable>
+          ) : (
+            <Button
+              title="Sign out"
+              variant="ghost"
+              compact
+              icon="logout"
+              onPress={() => void signOut()}
+              accessibilityLabel={`Sign out${email ? ` ${email}` : ' of the demo persona'}`}
+            />
+          )}
         </View>
       ) : (
         <Button title="Sign in" variant="secondary" compact onPress={() => router.navigate('/login')} />
@@ -88,6 +104,7 @@ const styles = StyleSheet.create({
   roleText: { fontSize: 13, fontWeight: '700' },
   workspace: { fontSize: 13, color: colors.muted },
   spacer: { flex: 1 },
+  iconBtn: { width: touch.min, height: touch.min, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
   account: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexShrink: 1 },
   who: { ...text.caption, maxWidth: 220 },
 });

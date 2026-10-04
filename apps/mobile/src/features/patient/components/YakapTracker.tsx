@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Icon from '../../../shared/components/Icon';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import type { YakapStage } from '../../../shared/types/db.types';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { colors, radius, shadow, spacing, typography } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
 import { stageIndex, stageLabel, YAKAP_STAGES } from '../logic/yakap';
 
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     minHeight: 44,
   },
-  current: { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primaryBg, boxShadow: '0 4px 14px rgba(15, 118, 110, 0.12)' },
+  current: { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primaryBg, ...shadow.highlight },
   text: { flex: 1, gap: 2 },
   label: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
   currentLabel: { fontWeight: '800' },

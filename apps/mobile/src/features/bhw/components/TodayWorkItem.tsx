@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { colors, radius, spacing, text } from '../../../shared/theme';

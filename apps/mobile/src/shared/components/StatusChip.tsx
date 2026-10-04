@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
 import { useLanguage } from '../context/DemoRoleContext';
 import { getStatus, type Language, type StatusKey, type StatusTone } from '../status';

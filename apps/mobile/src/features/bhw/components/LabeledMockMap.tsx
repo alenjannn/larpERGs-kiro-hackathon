@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Icon from '../../../shared/components/Icon';
 import type { LatLng } from '../../../shared/services/mapbox';
 import { colors, spacing, text } from '../../../shared/theme';

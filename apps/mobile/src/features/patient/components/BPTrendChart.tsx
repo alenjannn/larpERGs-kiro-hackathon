@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Card from '../../../shared/components/Card';
 import type { HealthRecord } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';

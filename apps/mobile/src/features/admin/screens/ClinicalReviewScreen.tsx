@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import ChipGroup from '../../../shared/components/ChipGroup';
@@ -93,6 +94,7 @@ export default function ClinicalReviewScreen() {
                     <Button
                       title="Review"
                       variant="secondary"
+                      compact
                       onPress={() => setPatientId(r.patient_id)}
                       accessibilityLabel={`Review ${r.title} for ${name.get(r.patient_id) ?? 'patient'}`}
                     />

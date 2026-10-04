@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import type { YakapStage } from '../../../shared/types/db.types';
 import { colors, radius, spacing, text } from '../../../shared/theme';

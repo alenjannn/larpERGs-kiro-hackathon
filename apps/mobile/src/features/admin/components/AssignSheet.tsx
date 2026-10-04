@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import ChipGroup from '../../../shared/components/ChipGroup';
 import Notice from '../../../shared/components/Notice';

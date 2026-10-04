@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Icon, { type IconName } from './Icon';
 import { colors, radius, spacing, text } from '../theme';
 

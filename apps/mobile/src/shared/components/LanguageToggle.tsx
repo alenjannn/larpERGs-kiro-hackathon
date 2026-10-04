@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
 import { useDemoRole } from '../context/DemoRoleContext';
 import { FIL_REVIEW_NOTICE, LANGUAGE_META, LANGUAGES } from '../status';
@@ -9,7 +10,24 @@ import { colors, spacing, typography } from '../theme';
  * Changes display only; stored values are never translated.
  * FIL labels: needs native-speaker review.
  */
-export default function LanguageToggle() {
+/** "Filipino labels are drafts…" — shown while Filipino is selected. */
+export function FilReviewNotice() {
+  const { language } = useDemoRole();
+  if (language !== 'fil') return null;
+  return (
+    <View style={styles.review} accessible accessibilityLabel={FIL_REVIEW_NOTICE.en}>
+      <Icon name="info" size={14} color={colors.pending} />
+      <Text style={styles.reviewText}>{FIL_REVIEW_NOTICE.en}</Text>
+    </View>
+  );
+}
+
+interface Props {
+  /** Header use: short labels (EN / FIL), and the review notice is shown elsewhere. Accessible names stay full. */
+  compact?: boolean;
+}
+
+export default function LanguageToggle({ compact = false }: Props) {
   const { language, setLanguage } = useDemoRole();
 
   return (
@@ -25,20 +43,15 @@ export default function LanguageToggle() {
               accessibilityRole="radio"
               accessibilityState={{ selected, checked: selected }}
               accessibilityLabel={meta.needsReview ? `${meta.label} (draft, needs native-speaker review)` : meta.label}
-              style={[styles.option, selected && styles.optionSelected]}
+              style={[styles.option, compact && styles.optionCompact, selected && styles.optionSelected]}
             >
-              {selected ? <Icon name="check" size={14} color={colors.surface} /> : null}
-              <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{meta.label}</Text>
+              {selected && !compact ? <Icon name="check" size={14} color={colors.surface} /> : null}
+              <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{compact ? meta.short : meta.label}</Text>
             </Pressable>
           );
         })}
       </View>
-      {language === 'fil' ? (
-        <View style={styles.review} accessible accessibilityLabel={FIL_REVIEW_NOTICE.en}>
-          <Icon name="info" size={14} color={colors.pending} />
-          <Text style={styles.reviewText}>{FIL_REVIEW_NOTICE.en}</Text>
-        </View>
-      ) : null}
+      {compact ? null : <FilReviewNotice />}
     </View>
   );
 }
@@ -62,6 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.surface,
   },
+  optionCompact: { paddingHorizontal: spacing.sm + 2, minWidth: 44 },
   optionSelected: { backgroundColor: colors.primary },
   optionText: { fontSize: typography.small, color: colors.primary, fontWeight: '600' },
   optionTextSelected: { color: colors.surface },

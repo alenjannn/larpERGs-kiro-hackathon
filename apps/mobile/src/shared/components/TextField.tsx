@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
-import { colors, radius, spacing, text, touch, typography } from '../theme';
+import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import Text from './Text';
+import { fontFamilyFor, useFontsReady } from '../fonts';
+import { colors, radius, shadow, spacing, text, touch, typography } from '../theme';
 
 interface Props extends Omit<TextInputProps, 'style'> {
   label: string;
@@ -12,11 +14,17 @@ interface Props extends Omit<TextInputProps, 'style'> {
 
 export default function TextField({ label, hint, error, onFocus, onBlur, ...input }: Props) {
   const [focused, setFocused] = useState(false);
+  const fontsReady = useFontsReady();
+  const typeface = fontsReady ? { fontFamily: fontFamilyFor({}) ?? undefined } : null;
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         placeholderTextColor={colors.placeholder}
+        // Most fields describe someone else (a patient, a BHW): never autofill the user's own details.
+        // Sign-in fields pass their own autoComplete (email / password).
+        autoComplete="off"
+        importantForAutofill="no"
         accessibilityLabel={label}
         accessibilityHint={error ?? hint}
         aria-invalid={!!error}
@@ -29,7 +37,7 @@ export default function TextField({ label, hint, error, onFocus, onBlur, ...inpu
           setFocused(false);
           onBlur?.(e);
         }}
-        style={[styles.input, input.multiline && styles.multiline, focused && styles.focused, !!error && styles.invalid]}
+        style={[styles.input, typeface, input.multiline && styles.multiline, focused && styles.focused, !!error && styles.invalid]}
       />
       {error ? (
         <Text style={styles.error} accessibilityLiveRegion="polite">
@@ -58,8 +66,8 @@ const styles = StyleSheet.create({
     minHeight: touch.min,
   },
   multiline: { minHeight: 96, textAlignVertical: 'top' },
-  focused: { borderColor: colors.primary, boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.18)' },
-  invalid: { borderColor: colors.error, boxShadow: '0 0 0 3px rgba(185, 28, 28, 0.12)' },
+  focused: { borderColor: colors.primary, ...shadow.focusRing },
+  invalid: { borderColor: colors.error, ...shadow.errorRing },
   hint: text.caption,
   error: { ...text.caption, color: colors.error, fontWeight: '600' },
 });

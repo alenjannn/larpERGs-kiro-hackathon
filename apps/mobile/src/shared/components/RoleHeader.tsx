@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
+import Text from './Text';
 import { usePathname } from 'expo-router';
 import AppHeader from './AppHeader';
 import Icon from './Icon';
-import LanguageToggle from './LanguageToggle';
+import LanguageToggle, { FilReviewNotice } from './LanguageToggle';
 import { DEMO_PERSONAS, ROLE_META, type DemoRole } from '../config/demo';
 import { useDemoRole } from '../context/DemoRoleContext';
 import { colors, radius, spacing, text, touch } from '../theme';
@@ -82,8 +83,8 @@ export default function RoleHeader({ chrome = true }: { chrome?: boolean }) {
   return (
     <View>
       <AppHeader />
-      <View style={styles.languageRow}>
-        <LanguageToggle />
+      <View style={styles.noticeRow}>
+        <FilReviewNotice />
       </View>
       <ClinicianModeControl layout="bar" />
     </View>
@@ -91,13 +92,8 @@ export default function RoleHeader({ chrome = true }: { chrome?: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  languageRow: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xs,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
+  // Collapses to nothing unless Filipino is selected.
+  noticeRow: { paddingHorizontal: spacing.lg, backgroundColor: colors.surface },
   bar: {
     flexDirection: 'row',
     flexWrap: 'wrap',

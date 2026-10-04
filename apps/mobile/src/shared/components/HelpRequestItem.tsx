@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Button from './Button';
 import { StatusChipRow } from './StatusChip';
 import { useLanguage } from '../context/DemoRoleContext';
