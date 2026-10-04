@@ -7,8 +7,9 @@ import LastUpdated from '../../../shared/components/LastUpdated';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
+import SectionHeader from '../../../shared/components/SectionHeader';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import ClinicCard, { PhilHealthLink } from '../components/ClinicCard';
 import HelpRequestSheet from '../components/HelpRequestSheet';
 import SnapshotStatus from '../components/SnapshotStatus';
@@ -59,15 +60,19 @@ export default function PatientYakapScreen() {
 
       <Card>
         <Text style={styles.body}>{PATIENT_COPY.notEnrollment}</Text>
-        <Button title={PATIENT_COPY.askGettingStarted} onPress={() => setHelpOpen(true)} />
-        <PhilHealthLink isOnline={isOnline} />
+        <View style={styles.actions}>
+          <Button title={PATIENT_COPY.askGettingStarted} icon="help" onPress={() => setHelpOpen(true)} style={styles.action} />
+          <View style={styles.action}>
+            <PhilHealthLink isOnline={isOnline} />
+          </View>
+        </View>
       </Card>
 
-      <Text style={styles.heading} accessibilityRole="header">
-        {PATIENT_COPY.clinics}
-      </Text>
-      <Text style={styles.fil}>{PATIENT_COPY_FIL.clinics}</Text>
-      {clinics.status === 'ready' ? <LastUpdated at={clinics.lastUpdatedAt} /> : null}
+      <SectionHeader
+        title={PATIENT_COPY.clinics}
+        subtitle={PATIENT_COPY_FIL.clinics}
+        right={clinics.status === 'ready' ? <LastUpdated at={clinics.lastUpdatedAt} /> : undefined}
+      />
 
       {clinics.loading && clinics.status === 'loading' ? <LoadingSpinner /> : null}
       {clinics.status === 'none' && !clinics.loading ? (
@@ -92,9 +97,9 @@ export default function PatientYakapScreen() {
 }
 
 const styles = StyleSheet.create({
-  tagline: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight, fontWeight: '600' },
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  heading: { fontSize: typography.title, fontWeight: '700', color: colors.text, marginTop: spacing.sm },
-  fil: { fontSize: typography.small, color: colors.muted, marginTop: -spacing.sm },
+  tagline: text.bodyStrong,
+  body: text.body,
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  action: { flexGrow: 1, flexBasis: 220 },
   errorBox: { gap: spacing.sm },
 });

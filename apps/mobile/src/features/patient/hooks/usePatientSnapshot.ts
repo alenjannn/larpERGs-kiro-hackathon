@@ -102,6 +102,9 @@ async function loadFresh(patientId: string): Promise<PatientSnapshot> {
 // other tabs mount, so each hook creating its own channel crashed the app.
 type RecordsListener = () => void;
 const recordChannels = new Map<string, { listeners: Set<RecordsListener>; remove: () => void }>();
+// removeChannel() is async, so a quick remount could get the old, closing
+// channel back for a reused topic. A fresh topic per channel avoids that.
+let channelGeneration = 0;
 
 function subscribeToPatientRecords(patientId: string, listener: RecordsListener): () => void {
   const client = supabase;
@@ -110,7 +113,7 @@ function subscribeToPatientRecords(patientId: string, listener: RecordsListener)
   if (!entry) {
     const listeners = new Set<RecordsListener>();
     const channel = client
-      .channel(`patient_records:${patientId}`)
+      .channel(`patient_records:${patientId}:${++channelGeneration}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'records', filter: `patient_id=eq.${patientId}` }, () => {
         listeners.forEach((l) => {
           try {

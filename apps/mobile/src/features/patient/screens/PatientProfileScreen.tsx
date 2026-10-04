@@ -6,7 +6,7 @@ import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import { formatDate } from '../../../shared/utils/date';
 import { ageFromBirthDate } from '../../../shared/utils/format';
-import { colors, spacing } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import CareTeamCard from '../components/CareTeamCard';
 import SnapshotStatus from '../components/SnapshotStatus';
 import { usePatientData } from '../hooks/usePatientData';
@@ -45,7 +45,7 @@ export default function PatientProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  field: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md, paddingVertical: 6, borderTopWidth: 1, borderTopColor: colors.border },
-  label: { fontSize: 14, color: colors.muted },
-  value: { fontSize: 14, color: colors.text, fontWeight: '600', flexShrink: 1, textAlign: 'right' },
+  field: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md, paddingVertical: spacing.sm + 2, borderTopWidth: 1, borderTopColor: colors.border },
+  label: text.muted,
+  value: { ...text.small, fontWeight: '600', flexShrink: 1, textAlign: 'right' },
 });

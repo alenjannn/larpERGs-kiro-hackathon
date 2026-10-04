@@ -8,7 +8,7 @@ import { MOCK_FACILITY } from '../../../shared/services/mapbox';
 import type { NewLocalRecord } from '../../../shared/services/storage';
 import { parseYMD } from '../../../shared/utils/date';
 import { newId } from '../../../shared/utils/id';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import type { NewFieldPatient } from '../types/bhw.types';
 
 interface Props {
@@ -74,7 +74,7 @@ export default function RegisterPatientForm({ bhwId, barangay, onSave, onSaved, 
 
   return (
     <View style={styles.form}>
-      <TextField label="Full name" value={name} onChangeText={setName} placeholder="Demo Patient …" maxLength={80} />
+      <TextField label="Full name (required)" value={name} onChangeText={setName} placeholder="Demo Patient …" maxLength={80} />
       <ChipGroup
         label="Sex"
         options={[
@@ -85,7 +85,7 @@ export default function RegisterPatientForm({ bhwId, barangay, onSave, onSaved, 
         onChange={setSex}
       />
       <View style={styles.row}>
-        <TextField label="Birth date (YYYY-MM-DD)" value={birthDate} onChangeText={setBirthDate} placeholder="1980-01-31" maxLength={10} />
+        <TextField label="Birth date (optional)" hint="YYYY-MM-DD" value={birthDate} onChangeText={setBirthDate} placeholder="1980-01-31" maxLength={10} />
         <TextField label="Address / Purok" value={address} onChangeText={setAddress} placeholder="Purok 5 (demo)" maxLength={120} />
       </View>
       <ChipGroup<Smartphone>
@@ -119,8 +119,8 @@ export default function RegisterPatientForm({ bhwId, barangay, onSave, onSaved, 
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.sm },
+  form: { gap: spacing.md },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   flex: { flexGrow: 1, flexBasis: 120 },
-  hint: { fontSize: typography.caption, color: colors.muted },
+  hint: text.caption,
 });

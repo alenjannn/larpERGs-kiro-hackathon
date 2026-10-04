@@ -24,8 +24,8 @@ export default function CreateBHWForm({ onSubmit, loading }: { onSubmit: (form: 
   return (
     <View style={styles.form}>
       <View style={styles.row}>
-        <TextField label="Full name" value={form.full_name} onChangeText={set('full_name')} placeholder="Demo BHW …" maxLength={80} />
-        <TextField label="Barangay" value={form.barangay} onChangeText={set('barangay')} placeholder="Brgy. Demo …" maxLength={80} />
+        <TextField label="Full name (required)" value={form.full_name} onChangeText={set('full_name')} placeholder="Demo BHW …" maxLength={80} />
+        <TextField label="Barangay (required)" value={form.barangay} onChangeText={set('barangay')} placeholder="Brgy. Demo …" maxLength={80} />
       </View>
       <View style={styles.row}>
         <TextField
@@ -40,12 +40,13 @@ export default function CreateBHWForm({ onSubmit, loading }: { onSubmit: (form: 
         <TextField label="Phone (optional)" value={form.phone} onChangeText={set('phone')} placeholder="0900-000-0000" keyboardType="phone-pad" maxLength={20} />
       </View>
       {error ? <Notice tone="error" message={error} /> : null}
-      <Button title="Create BHW Account" onPress={submit} loading={loading} />
+      <Button title="Create BHW account" icon="plus" onPress={submit} loading={loading} style={styles.submit} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.sm },
+  form: { gap: spacing.md },
+  submit: { alignSelf: 'flex-start' },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

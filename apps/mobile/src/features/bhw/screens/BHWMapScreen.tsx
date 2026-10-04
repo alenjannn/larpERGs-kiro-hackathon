@@ -9,7 +9,7 @@ import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
 import { getMapboxToken, MapView, MOCK_FACILITY, type MapMarker } from '../../../shared/services/mapbox';
-import { colors } from '../../../shared/theme';
+import { colors, radius } from '../../../shared/theme';
 import LabeledMockMap from '../components/LabeledMockMap';
 import PatientStatusList, { type MapPatientRow } from '../components/PatientStatusList';
 import { useBHWData, useCurrentBHWId } from '../hooks/useBHWData';
@@ -77,7 +77,7 @@ export default function BHWMapScreen() {
   const offline = isOnline === false;
 
   return (
-    <Screen title="Field Map" subtitle="Your patients' households (synthetic DEMO locations)">
+    <Screen title="Field map" subtitle="Your patients' households (synthetic DEMO locations)">
       {loading && !data ? <LoadingSpinner /> : null}
       {error ? <Notice tone="error" message={error} /> : null}
       {data?.fromCache ? <LastUpdated at={data.cachedAt} /> : null}
@@ -108,5 +108,5 @@ export default function BHWMapScreen() {
 }
 
 const styles = StyleSheet.create({
-  mapBox: { height: 420, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, backgroundColor: '#E8EFEC' },
+  mapBox: { height: 420, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, backgroundColor: colors.mutedBg },
 });

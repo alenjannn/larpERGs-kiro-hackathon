@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Card from '../../../shared/components/Card';
+import Icon from '../../../shared/components/Icon';
 import ChipGroup from '../../../shared/components/ChipGroup';
 import MetricTile from '../../../shared/components/MetricTile';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { colors, radius, spacing, text, typography } from '../../../shared/theme';
 import AdminDataStates from '../components/AdminDataStates';
 import MetricCaseList from '../components/MetricCaseList';
 import { useAdminData } from '../hooks/useAdminData';
@@ -76,7 +77,10 @@ export default function SummaryScreen() {
                     denominator={m.denominator}
                     hint={`${m.period}\nCohort: ${m.cohort}\n${unknownText}`}
                   />
-                  <Text style={styles.tap}>{isSelected ? 'Hide cases' : 'Show cases'}</Text>
+                  <View style={styles.tapRow}>
+                    <Icon name={isSelected ? 'chevron-up' : 'chevron-down'} size={14} color={colors.primary} />
+                    <Text style={styles.tap}>{isSelected ? 'Hide cases (shown below)' : 'Show cases'}</Text>
+                  </View>
                 </Pressable>
               );
             })}
@@ -118,11 +122,12 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  meta: { fontSize: typography.caption, color: colors.muted },
+  meta: text.caption,
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  tileWrap: { flexGrow: 1, flexBasis: 200, borderRadius: radius.md, borderWidth: 2, borderColor: 'transparent', gap: spacing.xs },
-  tileSelected: { borderColor: colors.primary },
-  tap: { fontSize: typography.caption, color: colors.primary, fontWeight: '700', paddingHorizontal: spacing.sm, paddingBottom: spacing.xs },
+  tileWrap: { flexGrow: 1, flexBasis: 220, borderRadius: radius.lg + 2, borderWidth: 2, borderColor: 'transparent', gap: spacing.xs },
+  tileSelected: { borderColor: colors.primary, backgroundColor: colors.primaryBg },
+  tapRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingBottom: spacing.xs },
+  tap: { fontSize: typography.caption, color: colors.primary, fontWeight: '700' },
   breakdown: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   cell: {
     flexGrow: 1,
@@ -130,9 +135,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    padding: spacing.sm,
+    backgroundColor: colors.surfaceAlt,
+    padding: spacing.md,
     minHeight: 44,
   },
-  cellValue: { fontSize: typography.title, fontWeight: '700', color: colors.text },
-  cellLabel: { fontSize: typography.caption, color: colors.muted },
+  cellValue: { ...text.heading, fontVariant: ['tabular-nums'] },
+  cellLabel: text.caption,
 });

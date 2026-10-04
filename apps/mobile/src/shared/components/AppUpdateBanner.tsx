@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
 import Icon from './Icon';
 import { registerServiceWorker, type ShellUpdate } from '../services/serviceWorker';
-import { colors, spacing, typography } from '../theme';
+import { colors, spacing, text } from '../theme';
 
 /** "A new version of Tuloy is available." + Reload. Never reloads by itself (OC-10.6). */
 export default function AppUpdateBanner() {
@@ -14,9 +14,9 @@ export default function AppUpdateBanner() {
   if (!update) return null;
   return (
     <View style={styles.banner} accessibilityRole="alert">
-      <Icon name="info" size={16} color={colors.text} />
+      <Icon name="info" size={16} color={colors.info} />
       <Text style={styles.text}>A new version of Tuloy is available.</Text>
-      <Button title="Reload" compact onPress={() => update.apply()} accessibilityLabel="Reload to update Tuloy" style={styles.button} />
+      <Button title="Reload" compact onPress={() => update.apply()} accessibilityLabel="Reload to update Tuloy" />
     </View>
   );
 }
@@ -27,12 +27,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.xs,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.infoBg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  text: { flex: 1, fontSize: typography.small, color: colors.text, fontWeight: '600' },
-  button: { minHeight: 44 },
+  text: { ...text.label, flex: 1 },
 });

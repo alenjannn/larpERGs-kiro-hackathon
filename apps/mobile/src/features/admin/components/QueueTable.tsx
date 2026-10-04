@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, layout, radius, spacing, text, typography } from '../../../shared/theme';
 
-export const TABLE_BREAKPOINT = 768;
+export const TABLE_BREAKPOINT = layout.table;
 
 export interface QueueColumn {
   key: string;
@@ -81,15 +81,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  headerRow: { borderTopWidth: 0, paddingVertical: spacing.xs },
-  header: { fontSize: typography.caption, fontWeight: '700', color: colors.muted },
+  headerRow: { borderTopWidth: 0, paddingVertical: spacing.sm + 2, paddingHorizontal: spacing.sm, backgroundColor: colors.surfaceAlt, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border },
+  header: { ...text.overline },
   cell: { justifyContent: 'center' },
-  cellText: { fontSize: typography.small, color: colors.text },
-  card: { paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border, gap: spacing.xs },
+  cellText: { fontSize: typography.small, lineHeight: 20, color: colors.text },
+  card: { paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border, gap: spacing.sm },
   cardLine: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  cardLabel: { width: 110, fontSize: typography.caption, fontWeight: '600', color: colors.muted },
+  cardLabel: { width: 110, ...text.caption, fontWeight: '600' },
   cardValue: { flex: 1, alignItems: 'flex-start' },
 });

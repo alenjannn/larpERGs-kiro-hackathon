@@ -5,10 +5,10 @@ export default function BHWLayout() {
     <RoleTabsLayout
       role="bhw"
       tabs={[
-        { name: 'index', title: 'Today', icon: '🏠' },
-        { name: 'patients', title: 'My Patients', icon: '👥' },
-        { name: 'map', title: 'Map', icon: '🗺️' },
-        { name: 'sync', title: 'Sync', icon: '🔄' },
+        { name: 'index', title: 'Today', icon: 'home' },
+        { name: 'patients', title: 'My Patients', shortTitle: 'Patients', icon: 'list' },
+        { name: 'map', title: 'Map', icon: 'map' },
+        { name: 'sync', title: 'Sync', icon: 'repeat' },
       ]}
     />
   );

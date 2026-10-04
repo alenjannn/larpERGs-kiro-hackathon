@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing } from '../theme';
+import { colors, radius, shadow, spacing, text } from '../theme';
 
+/** A single count with its label, e.g. "12 · Assigned patients". */
 export default function StatTile({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
-    <View style={styles.tile}>
-      <Text style={styles.value}>{value}</Text>
+    <View style={styles.tile} accessible accessibilityLabel={`${label}: ${value}${hint ? `, ${hint}` : ''}`}>
       <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value}</Text>
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
     </View>
   );
@@ -14,14 +15,16 @@ export default function StatTile({ label, value, hint }: { label: string; value:
 const styles = StyleSheet.create({
   tile: {
     flexGrow: 1,
-    flexBasis: 140,
+    flexBasis: 150,
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.lg + 2,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
+    ...shadow.card,
+    padding: spacing.lg,
+    gap: 2,
   },
-  value: { fontSize: 24, fontWeight: '700', color: colors.text, fontVariant: ['tabular-nums'] },
-  label: { fontSize: 13, color: colors.muted, marginTop: 2 },
-  hint: { fontSize: 11, color: colors.muted, marginTop: 4 },
+  label: { ...text.caption, fontWeight: '600' },
+  value: { ...text.heading, fontVariant: ['tabular-nums'] },
+  hint: text.caption,
 });

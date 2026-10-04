@@ -3,7 +3,7 @@ import Card from '../../../shared/components/Card';
 import StatusChip from '../../../shared/components/StatusChip';
 import type { Admin, CarePlan } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
-import { colors, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 
 /** The latest released care plan (patients never see drafts). The full Care Plan tab is Spec 03. */
 export default function CarePlanSummaryCard({ plan, clinician }: { plan: CarePlan | null; clinician: Admin | null }) {
@@ -27,6 +27,6 @@ export default function CarePlanSummaryCard({ plan, clinician }: { plan: CarePla
 }
 
 const styles = StyleSheet.create({
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  muted: { fontSize: typography.small, color: colors.muted },
+  body: text.body,
+  muted: text.muted,
 });

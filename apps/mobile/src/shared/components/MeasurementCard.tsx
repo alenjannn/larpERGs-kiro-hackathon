@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { formatDateDMY } from '../utils/date';
 import { formatMeasurement, NO_READING } from '../utils/format';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, radius, spacing, text } from '../theme';
 
 interface Props {
   label: string;
@@ -32,15 +32,15 @@ const styles = StyleSheet.create({
   card: {
     flexGrow: 1,
     flexBasis: 150,
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
     borderColor: colors.border,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: 2,
   },
-  label: { fontSize: typography.small, color: colors.muted, fontWeight: '600' },
-  value: { fontSize: typography.title, color: colors.text, fontWeight: '700' },
-  missing: { fontSize: typography.body, color: colors.muted, fontWeight: '600' },
-  meta: { fontSize: typography.caption, color: colors.muted },
+  label: { ...text.caption, fontWeight: '600' },
+  value: { ...text.title, fontSize: 20, lineHeight: 26, fontVariant: ['tabular-nums'] },
+  missing: { ...text.bodyStrong, color: colors.muted, lineHeight: 26 },
+  meta: text.caption,
 });

@@ -5,7 +5,7 @@ import { DEFERRED_BACKUP } from '../../../shared/helpRequests';
 import { clinicalStatusKey, type StatusKey } from '../../../shared/status';
 import type { HealthRecord } from '../../../shared/types/db.types';
 import { formatDateDMY } from '../../../shared/utils/date';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text, typography } from '../../../shared/theme';
 import { PATIENT_COPY } from '../copy';
 import { entryLab, entryValue, LAB_LABELS, type ClearbookEntry } from '../logic/clearbook';
 import { GLUCOSE_TEST_LABELS } from '../logic/measurements';
@@ -59,7 +59,7 @@ export function EntryRow({
         isOnline === false ? (
           <Text style={styles.muted}>{PATIENT_COPY.connectToShare}</Text>
         ) : (
-          <Button title={PATIENT_COPY.shareNow} variant="secondary" onPress={() => onShare(entry.id)} />
+          <Button title={PATIENT_COPY.shareNow} variant="secondary" onPress={() => onShare(entry.id)} style={styles.start} />
         )
       ) : null}
     </View>
@@ -93,10 +93,11 @@ export default function ClearbookEntryList({ entries, serverRecords, isOnline, l
 
 const styles = StyleSheet.create({
   list: { gap: spacing.sm },
-  row: { gap: spacing.xs, paddingVertical: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
-  title: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  value: { fontSize: typography.title, fontWeight: '700', color: colors.text },
-  muted: { fontSize: typography.body, color: colors.muted },
-  error: { fontSize: typography.body, color: colors.error },
-  footnote: { fontSize: typography.small, color: colors.muted },
+  row: { gap: spacing.xs, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  title: text.bodyStrong,
+  value: { ...text.title, fontSize: typography.title + 2 },
+  muted: text.muted,
+  error: { ...text.small, color: colors.error },
+  footnote: text.caption,
+  start: { alignSelf: 'flex-start' },
 });

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCountOfTotal } from '../utils/format';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, radius, shadow, spacing, text } from '../theme';
 
 interface Props {
   label: string;
@@ -11,11 +11,11 @@ interface Props {
 
 /** Count with its denominator and percentage: "18 of 30 (60%)", or "No cases" when the denominator is 0. */
 export default function MetricTile({ label, numerator, denominator, hint }: Props) {
-  const text = formatCountOfTotal(numerator, denominator);
+  const value = formatCountOfTotal(numerator, denominator);
   return (
-    <View style={styles.tile} accessible accessibilityLabel={`${label}: ${text}${hint ? `. ${hint}` : ''}`}>
+    <View style={styles.tile} accessible accessibilityLabel={`${label}: ${value}${hint ? `. ${hint}` : ''}`}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{text}</Text>
+      <Text style={styles.value}>{value}</Text>
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
     </View>
   );
@@ -26,13 +26,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 180,
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.lg + 2,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
+    ...shadow.card,
+    padding: spacing.lg,
     gap: spacing.xs,
   },
-  label: { fontSize: typography.small, color: colors.muted, fontWeight: '600' },
-  value: { fontSize: typography.title, color: colors.text, fontWeight: '700' },
-  hint: { fontSize: typography.caption, color: colors.muted },
+  label: text.label,
+  value: { ...text.heading, fontVariant: ['tabular-nums'] },
+  hint: text.caption,
 });

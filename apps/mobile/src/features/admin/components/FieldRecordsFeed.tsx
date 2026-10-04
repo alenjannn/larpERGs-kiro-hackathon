@@ -5,7 +5,7 @@ import Icon from '../../../shared/components/Icon';
 import type { BHW, HealthRecord, Patient } from '../../../shared/types/db.types';
 import { formatDateTimeDMY, timeAgo } from '../../../shared/utils/date';
 import { recordTypeLabel } from '../../../shared/utils/format';
-import { colors, radius, spacing, typography } from '../../../shared/theme';
+import { colors, radius, spacing, text, typography } from '../../../shared/theme';
 
 interface Props {
   records: HealthRecord[];
@@ -49,11 +49,11 @@ export default function FieldRecordsFeed({ records, patients, bhws, limit = 8 }:
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
   main: { flex: 1, minWidth: 200, gap: 2 },
-  type: { fontSize: typography.caption, color: colors.muted, fontWeight: '600' },
-  title: { fontSize: typography.body, color: colors.text, fontWeight: '600' },
-  meta: { fontSize: typography.caption, color: colors.muted },
+  type: text.overline,
+  title: text.bodyStrong,
+  meta: text.caption,
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.success,
     backgroundColor: colors.successBg,
-    borderRadius: radius.lg,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
   },

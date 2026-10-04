@@ -94,7 +94,7 @@ export default function MapWeb({ markers, center = DEMO_MAP_CENTER, zoom = DEFAU
     return (
       <OsmFallback
         markers={markers}
-        note={failure ?? '🗺️ Web demo map (OpenStreetMap). Add EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN for Mapbox.'}
+        note={failure ?? 'Web demo map (OpenStreetMap). Add EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN for Mapbox.'}
       />
     );
   }

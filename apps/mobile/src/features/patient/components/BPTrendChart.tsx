@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
   diastolic: { position: 'absolute', width: DOT, height: DOT, borderWidth: 2, borderColor: colors.text, backgroundColor: colors.surface },
   valueLabel: { position: 'absolute', width: 80, textAlign: 'center', fontSize: typography.caption, color: colors.text, fontWeight: '700' },
   dateLabel: { position: 'absolute', width: 80, textAlign: 'center', fontSize: typography.caption, color: colors.muted },
-  legend: { fontSize: typography.small, color: colors.text },
-  muted: { fontSize: typography.body, color: colors.muted },
+  legend: { fontSize: typography.small, color: colors.text, lineHeight: 20 },
+  muted: { fontSize: typography.small, color: colors.muted, lineHeight: 20 },
 });

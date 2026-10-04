@@ -32,7 +32,7 @@ export default function StatusChip({ status, lang: langProp, size = 'md' }: Prop
       accessible
       accessibilityRole="text"
       accessibilityLabel={label}
-      style={[styles.chip, size === 'sm' && styles.small, { backgroundColor: tone.bg, borderColor: tone.fg }]}
+      style={[styles.chip, size === 'sm' && styles.small, { backgroundColor: tone.bg, borderColor: `${tone.fg}55` }]}
     >
       <Icon name={entry.icon} size={fontSize} color={tone.fg} />
       <Text style={[styles.label, { color: tone.fg, fontSize }]}>{label}</Text>
@@ -73,5 +73,5 @@ const styles = StyleSheet.create({
   label: { fontWeight: '700' },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs },
   rowItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  arrow: { color: colors.muted, fontSize: 14 },
+  arrow: { color: colors.muted, fontSize: 14, lineHeight: 18 },
 });

@@ -15,7 +15,7 @@ import { OPEN_COORDINATION, OPEN_ENCOUNTER } from '../../../shared/services/apiA
 import type { StatusKey } from '../../../shared/status';
 import type { BHW } from '../../../shared/types/db.types';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import AdminDataStates from '../components/AdminDataStates';
 import QueueTable from '../components/QueueTable';
 import { useAdminData } from '../hooks/useAdminData';
@@ -92,7 +92,7 @@ export default function AssignmentsScreen() {
 
       {data ? (
         <>
-          <ChipGroup label="Show" options={filterOptions} value={filter} onChange={setFilter} />
+          <ChipGroup label="Filter by owner" options={filterOptions} value={filter} onChange={setFilter} />
           {filteredBhw && isBHWInactive(filteredBhw) ? (
             <Notice tone="warning" message={`${filteredBhw.full_name} has been inactive. Reassign their patients to an active BHW; their open tasks move too.`} />
           ) : null}
@@ -183,5 +183,5 @@ export default function AssignmentsScreen() {
 
 const styles = StyleSheet.create({
   footnote: { paddingHorizontal: spacing.xs },
-  footnoteText: { fontSize: typography.caption, color: colors.muted },
+  footnoteText: text.caption,
 });

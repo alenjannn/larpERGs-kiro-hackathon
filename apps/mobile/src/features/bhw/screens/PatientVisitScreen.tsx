@@ -12,7 +12,7 @@ import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
 import { ageFromBirthDate } from '../../../shared/utils/format';
 import { newId } from '../../../shared/utils/id';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import VisitForm from '../components/VisitForm';
 import VisitSummary from '../components/VisitSummary';
 import { useBHWData, useCurrentBHWId } from '../hooks/useBHWData';
@@ -74,8 +74,11 @@ export default function PatientVisitScreen() {
   const age = patient ? ageFromBirthDate(patient.birth_date) : null;
 
   return (
-    <Screen title="Patient visit" subtitle="Measurements, outcome, barrier and next action in one save">
-      <Button title="← Back to My Patients" variant="secondary" onPress={back} style={styles.backBtn} accessibilityLabel="Back to My Patients" />
+    <Screen
+      title="Patient visit"
+      subtitle="Measurements, outcome, barrier and next action in one save"
+      back={{ label: 'My Patients', onPress: back }}
+    >
       {loading && !data ? <LoadingSpinner /> : null}
       {error ? <Notice tone="error" message={error} /> : null}
       {sync.actionError ? <Notice tone="error" message={sync.actionError} /> : null}
@@ -101,7 +104,7 @@ export default function PatientVisitScreen() {
       ) : null}
 
       {patient && savedId ? (
-        <Card title="Visit saved">
+        <Card title="Visit saved" style={styles.savedCard}>
           <StatusChipRow statuses={savedItem?.sync_status === 'synced' ? ['transport.synced'] : ['transport.saved_on_device', 'transport.waiting_to_send']} />
           <Text style={styles.meta}>One record was saved. Tap Sync Now on the Sync tab to send it to the demo server.</Text>
           <View style={styles.row}>
@@ -136,9 +139,9 @@ export default function PatientVisitScreen() {
 }
 
 const styles = StyleSheet.create({
-  backBtn: { alignSelf: 'flex-start' },
-  assisted: { fontSize: typography.small, fontWeight: '700', color: colors.text },
-  meta: { fontSize: typography.small, color: colors.muted },
+  savedCard: { borderColor: colors.success, backgroundColor: colors.successBg },
+  assisted: { ...text.label },
+  meta: text.muted,
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   flex: { flexGrow: 1, flexBasis: 160 },
 });

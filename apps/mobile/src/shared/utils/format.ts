@@ -21,9 +21,9 @@ export function isElevatedBP(r: Pick<HealthRecord, 'systolic' | 'diastolic'>): b
 }
 
 export const RECORD_TYPE_LABEL: Record<RecordType, string> = {
-  visit: '🏠 Home visit',
-  health_update: '📋 Health update',
-  appointment: '📅 Appointment',
+  visit: 'Home visit',
+  health_update: 'Health update',
+  appointment: 'Appointment',
 };
 
 /** Parses a numeric form field; empty -> null, invalid -> NaN. */
@@ -35,9 +35,9 @@ export function parseOptionalNumber(text: string): number | null {
 }
 
 const EXTRA_RECORD_TYPE_LABEL: Record<Exclude<AnyRecordType, RecordType>, string> = {
-  vitals: '🩺 Vitals',
-  lab_result: '🧪 Lab result',
-  note: '📝 Note',
+  vitals: 'Vitals',
+  lab_result: 'Lab result',
+  note: 'Note',
 };
 
 /** Label for any record_type, including the Spec 01 values. Unknown values fall back to the raw text. */

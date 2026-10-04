@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Card from '../../../shared/components/Card';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import type { BHW, Clinic } from '../../../shared/types/db.types';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import { PATIENT_COPY, PATIENT_COPY_FIL } from '../copy';
 
 const UNKNOWN = PATIENT_COPY.unknown;
@@ -23,7 +23,7 @@ export default function CareTeamContacts({ bhw, clinic }: { bhw: BHW | null; cli
           <Text style={styles.body}>{PATIENT_COPY.noHealthWorker}</Text>
         )}
       </View>
-      <View style={styles.block}>
+      <View style={[styles.block, styles.divided]}>
         <Text style={styles.label}>{PATIENT_COPY.yourClinic}</Text>
         <Text style={styles.name}>{clinic?.name ?? UNKNOWN}</Text>
         <Text style={styles.body}>Contact: {clinic?.contact?.trim() || UNKNOWN}</Text>
@@ -34,7 +34,8 @@ export default function CareTeamContacts({ bhw, clinic }: { bhw: BHW | null; cli
 
 const styles = StyleSheet.create({
   block: { gap: 2, paddingVertical: spacing.xs },
-  label: { fontSize: typography.small, color: colors.muted, fontWeight: '700' },
-  name: { fontSize: typography.body, color: colors.text, fontWeight: '700' },
-  body: { fontSize: typography.body, color: colors.text },
+  divided: { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.md },
+  label: text.overline,
+  name: { ...text.bodyStrong, fontWeight: '700' },
+  body: text.body,
 });

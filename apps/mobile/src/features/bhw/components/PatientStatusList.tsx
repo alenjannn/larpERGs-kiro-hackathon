@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from '../../../shared/components/Button';
 import EmptyState from '../../../shared/components/EmptyState';
 import Icon from '../../../shared/components/Icon';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text, typography } from '../../../shared/theme';
 import type { PatientMapStatus } from '../today';
 
 export interface MapPatientRow {
@@ -39,7 +39,7 @@ export default function PatientStatusList({ rows, onLogVisit }: { rows: MapPatie
             </Text>
             {r.address ? <Text style={styles.meta}>{r.address}</Text> : null}
           </View>
-          <Button compact variant="secondary" title="Visit" onPress={() => onLogVisit(r.id)} accessibilityLabel={`Log a visit for ${r.name}`} style={styles.btn} />
+          <Button compact variant="secondary" title="Visit" onPress={() => onLogVisit(r.id)} accessibilityLabel={`Log a visit for ${r.name}`} />
         </View>
       ))}
     </View>
@@ -47,7 +47,7 @@ export default function PatientStatusList({ rows, onLogVisit }: { rows: MapPatie
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
   pin: {
     width: 28,
     height: 28,
@@ -63,6 +63,5 @@ const styles = StyleSheet.create({
   name: { fontSize: typography.body, fontWeight: '700', color: colors.text },
   status: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   statusText: { fontSize: typography.small, color: colors.text, fontWeight: '600' },
-  meta: { fontSize: typography.caption, color: colors.muted },
-  btn: { minHeight: 44 },
+  meta: text.caption,
 });

@@ -2,7 +2,7 @@ import { StyleSheet, Text } from 'react-native';
 import Card from '../../../shared/components/Card';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import Notice from '../../../shared/components/Notice';
-import { colors } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import type { Admin, BHW } from '../../../shared/types/db.types';
 
 /** Shows the Admin -> BHW link: who manages this BHW and where they are assigned. */
@@ -23,5 +23,5 @@ export default function AssignmentCard({ bhw, admin, patientCount }: { bhw: BHW 
 }
 
 const styles = StyleSheet.create({
-  text: { fontSize: 14, color: colors.text },
+  text: text.body,
 });

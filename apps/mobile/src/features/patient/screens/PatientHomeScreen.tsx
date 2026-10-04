@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
 import DemoBadge from '../../../shared/components/DemoBadge';
+import DeveloperTools from '../../../shared/components/DeveloperTools';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
+import SectionHeader from '../../../shared/components/SectionHeader';
 import type { HelpReason } from '../../../shared/types/db.types';
-import { colors, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import AppointmentList from '../components/AppointmentList';
 import CarePlanSummaryCard from '../components/CarePlanSummaryCard';
 import CareTeamCard from '../components/CareTeamCard';
@@ -86,7 +88,7 @@ export default function PatientHomeScreen() {
         ) : (
           <Card title="No next step scheduled yet">
             <Text style={styles.body}>Ask your health worker for help arranging a checkup.</Text>
-            <Button title="I need help" variant="secondary" onPress={openHelp} />
+            <Button title="I need help" variant="secondary" onPress={openHelp} style={styles.start} />
           </Card>
         )
       ) : null}
@@ -98,8 +100,16 @@ export default function PatientHomeScreen() {
       {/* 3. Latest measurements */}
       {s ? (
         <>
-          <LatestMeasurements records={records} />
-          <Button title={PATIENT_COPY.seeMyHealth} variant="secondary" onPress={() => router.navigate('/patient/health')} />
+          <View style={styles.group}>
+            <LatestMeasurements records={records} />
+            <Button
+              title={PATIENT_COPY.seeMyHealth}
+              variant="ghost"
+              trailingIcon="chevron-right"
+              onPress={() => router.navigate('/patient/health')}
+              style={styles.start}
+            />
+          </View>
         </>
       ) : null}
 
@@ -108,9 +118,10 @@ export default function PatientHomeScreen() {
 
       {s ? <YakapStepLine stage={s.patient?.yakap_stage} /> : null}
 
-      <Card title="Need help?" subtitle="Kailangan ng tulong?">
+      <SectionHeader title="Help from your health worker" subtitle="Kailangan ng tulong?" />
+      <Card>
         <Text style={styles.body}>Ask your health worker for help with transport, dates, labs, documents or medicine.</Text>
-        <Button title="I need help" onPress={openHelp} />
+        <Button title="I need help" icon="help" onPress={openHelp} style={styles.start} />
       </Card>
 
       <MyRequestsCard
@@ -124,11 +135,12 @@ export default function PatientHomeScreen() {
 
       {s ? (
         <>
+          <SectionHeader title="Your care" />
           <CarePlanSummaryCard plan={s.care_plan} clinician={s.clinician} />
           <CareTeamCard profile={{ patient: s.patient, bhw: s.bhw, admin: s.admin }} />
           {s.clinic ? (
             <Card title="Your clinic" right={<DemoBadge />}>
-              <Text style={styles.body}>{s.clinic.name}</Text>
+              <Text style={styles.strong}>{s.clinic.name}</Text>
               {s.clinic.address ? <Text style={styles.muted}>{s.clinic.address}</Text> : null}
               <Text style={styles.muted}>Contact: {s.clinic.contact ?? 'Unknown'}</Text>
             </Card>
@@ -136,7 +148,9 @@ export default function PatientHomeScreen() {
         </>
       ) : null}
 
-      <ConnectionTest />
+      <DeveloperTools>
+        <ConnectionTest />
+      </DeveloperTools>
 
       <HelpRequestSheet
         visible={help !== null}
@@ -151,6 +165,9 @@ export default function PatientHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
-  muted: { fontSize: typography.small, color: colors.muted },
+  body: text.body,
+  strong: text.bodyStrong,
+  muted: text.muted,
+  group: { gap: spacing.xs },
+  start: { alignSelf: 'flex-start' },
 });

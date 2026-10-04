@@ -10,7 +10,7 @@ import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { DEMO_PERSONAS } from '../../../shared/config/demo';
 import { useDemoRole } from '../../../shared/context/DemoRoleContext';
 import { clinicalStatusKey, type StatusKey } from '../../../shared/status';
-import { colors, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import AdminDataStates from '../components/AdminDataStates';
 import CarePlanForm from '../components/CarePlanForm';
 import QueueTable from '../components/QueueTable';
@@ -138,5 +138,5 @@ export default function ClinicalReviewScreen() {
 }
 
 const styles = StyleSheet.create({
-  meta: { fontSize: typography.caption, color: colors.muted, textAlign: 'center' },
+  meta: { ...text.caption, textAlign: 'center' },
 });

@@ -27,7 +27,7 @@ export default function MockMap({ markers, reason }: { markers: MapMarker[]; rea
           />
         ))}
       </View>
-      <Text style={styles.reason}>🗺️ {reason}</Text>
+      <Text style={styles.reason}>{reason}</Text>
     </View>
   );
 }
@@ -36,5 +36,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8EFEC' },
   grid: { flex: 1, borderWidth: 1, borderColor: '#C9D6D1', margin: 12, borderRadius: 8, backgroundColor: '#F1F6F3' },
   pin: { position: 'absolute', width: 16, height: 16, marginLeft: -8, marginTop: -8, borderRadius: 8, borderWidth: 2, borderColor: '#fff' },
-  reason: { fontSize: 12, color: '#3D4A45', textAlign: 'center', paddingHorizontal: 12, paddingBottom: 12 },
+  reason: { fontSize: 13, color: '#475569', textAlign: 'center', paddingHorizontal: 12, paddingBottom: 12 },
 });

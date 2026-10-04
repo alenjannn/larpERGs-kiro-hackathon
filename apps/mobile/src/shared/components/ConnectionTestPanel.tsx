@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
 import Card from './Card';
+import Icon, { type IconName } from './Icon';
 import LoadingSpinner from './LoadingSpinner';
 import Notice from './Notice';
 import { useAsyncData } from '../hooks/useAsyncData';
 import { fetchConnectionTests, insertConnectionTest } from '../services/api';
 import { toUserMessage } from '../services/supabase';
 import { formatDateTime } from '../utils/date';
-import { colors, spacing } from '../theme';
+import { colors, spacing, text } from '../theme';
 import type { ClientType } from '../types/db.types';
 
-const ROLE_ICON: Record<ClientType, string> = { patient: '👤', bhw: '🏥', admin: '⚙️', system: '🛠️' };
+const ROLE_ICON: Record<ClientType, IconName> = { patient: 'person', bhw: 'clinic', admin: 'tools', system: 'tools' };
 
 interface Props {
   clientType: Exclude<ClientType, 'system'>;
@@ -42,21 +43,29 @@ export default function ConnectionTestPanel({ clientType, showAllRoles }: Props)
     }
   }
 
-  const status = error ? '🔴 Not connected' : data ? '🟢 Connected to Supabase' : '⏳ Connecting…';
+  const status = error
+    ? { icon: 'alert' as const, color: colors.error, label: 'Not connected' }
+    : data
+      ? { icon: 'check' as const, color: colors.success, label: 'Connected to Supabase' }
+      : { icon: 'clock' as const, color: colors.muted, label: 'Connecting…' };
 
   return (
     <Card
       title="Database connection test"
-      subtitle={showAllRoles ? `${status} · records from all roles` : status}
-      right={<Button compact title="Add Test Record" onPress={addRecord} loading={adding} disabled={!!error && !data} />}
+      subtitle={showAllRoles ? 'Records from all roles' : undefined}
+      right={<Button compact variant="secondary" title="Add test record" onPress={addRecord} loading={adding} disabled={!!error && !data} />}
     >
+      <View style={styles.status} accessible accessibilityLabel={`Status: ${status.label}`}>
+        <Icon name={status.icon} size={14} color={status.color} />
+        <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
+      </View>
       {error ? <Notice tone="error" message={error} /> : null}
       {addError ? <Notice tone="error" message={addError} /> : null}
       {loading && !data ? <LoadingSpinner /> : null}
       {data && data.length === 0 ? <Text style={styles.muted}>No test records yet.</Text> : null}
       {data?.map((row) => (
         <View key={row.id} style={styles.row}>
-          <Text style={styles.icon}>{ROLE_ICON[row.client_type] ?? '•'}</Text>
+          <Icon name={ROLE_ICON[row.client_type] ?? 'circle'} size={14} color={colors.muted} style={styles.icon} />
           <Text style={styles.message} numberOfLines={1}>
             {row.message}
           </Text>
@@ -70,9 +79,11 @@ export default function ConnectionTestPanel({ clientType, showAllRoles }: Props)
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 4, borderTopWidth: 1, borderTopColor: colors.border },
-  icon: { width: 22, textAlign: 'center' },
-  message: { flex: 1, fontSize: 14, color: colors.text },
-  meta: { fontSize: 12, color: colors.muted },
-  muted: { fontSize: 13, color: colors.muted },
+  status: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  statusText: { ...text.label },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  icon: { width: 22 },
+  message: { flex: 1, minWidth: 160, ...text.small },
+  meta: text.caption,
+  muted: text.muted,
 });

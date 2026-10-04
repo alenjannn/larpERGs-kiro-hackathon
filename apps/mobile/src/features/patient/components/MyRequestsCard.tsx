@@ -8,7 +8,7 @@ import Notice from '../../../shared/components/Notice';
 import { CONFLICT_EXPLANATION, DEFERRED_BACKGROUND, DEFERRED_BACKUP, helpReasonLabel } from '../../../shared/helpRequests';
 import type { OutboxItem } from '../../../shared/services/outbox';
 import { outboxStatusKeys } from '../../../shared/status';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 
 interface Props {
   items: OutboxItem[];
@@ -50,7 +50,16 @@ export default function MyRequestsCard({ items, loading, error, offlineNotice, o
           }
         />
       ))}
-      {anyUnsent ? <Button title="Try again" variant="secondary" onPress={onRetryAll} accessibilityLabel="Try again sending all requests not sent yet" /> : null}
+      {anyUnsent ? (
+        <Button
+          title="Try sending all again"
+          icon="repeat"
+          variant="secondary"
+          onPress={onRetryAll}
+          accessibilityLabel="Try again sending all requests not sent yet"
+          style={styles.start}
+        />
+      ) : null}
       <View style={styles.notes}>
         <Text style={styles.note}>{DEFERRED_BACKGROUND}</Text>
         <Text style={styles.note}>{DEFERRED_BACKUP}</Text>
@@ -60,6 +69,7 @@ export default function MyRequestsCard({ items, loading, error, offlineNotice, o
 }
 
 const styles = StyleSheet.create({
-  notes: { gap: spacing.xs, marginTop: spacing.xs },
-  note: { fontSize: typography.caption, color: colors.muted, lineHeight: 18 },
+  notes: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  note: text.caption,
+  start: { alignSelf: 'flex-start' },
 });

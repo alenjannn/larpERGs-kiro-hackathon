@@ -72,9 +72,7 @@ export default function ClinicCard({ clinic, mine, isOnline }: Props) {
             </View>
           ) : null}
         </View>
-        <Text style={styles.chevron} aria-hidden>
-          {open ? '▴' : '▾'}
-        </Text>
+        <Icon name={open ? 'chevron-up' : 'chevron-down'} size={20} color={colors.muted} />
       </Pressable>
 
       {open ? (
@@ -96,16 +94,15 @@ export default function ClinicCard({ clinic, mine, isOnline }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg + 2, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', boxShadow: '0 1px 2px rgba(16, 42, 67, 0.04), 0 2px 8px rgba(16, 42, 67, 0.04)' },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.lg, minHeight: 44 },
   headerText: { flex: 1, gap: 2 },
   name: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  chevron: { fontSize: 18, color: colors.muted },
   tag: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.xs },
   tagText: { fontSize: typography.small, color: colors.primary, fontWeight: '700' },
-  details: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, gap: spacing.sm },
+  details: { paddingHorizontal: spacing.lg, paddingVertical: spacing.lg, gap: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
   field: { gap: 2 },
-  fieldLabel: { fontSize: typography.caption, color: colors.muted, fontWeight: '700' },
+  fieldLabel: { fontSize: 12, color: colors.muted, fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase' },
   fieldValue: { fontSize: typography.body, color: colors.text },
   note: { fontSize: typography.body, color: colors.text, lineHeight: typography.lineHeight },
   muted: { fontSize: typography.small, color: colors.muted },

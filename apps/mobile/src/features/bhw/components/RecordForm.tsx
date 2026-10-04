@@ -9,7 +9,7 @@ import type { NewHealthRecord, RecordType } from '../../../shared/types/db.types
 import { parseYMD } from '../../../shared/utils/date';
 import { parseOptionalNumber, RECORD_TYPE_LABEL } from '../../../shared/utils/format';
 import { newId } from '../../../shared/utils/id';
-import { colors, spacing } from '../../../shared/theme';
+import { colors, radius, spacing, text } from '../../../shared/theme';
 import type { BHWPatient } from '../types/bhw.types';
 
 const DEFAULT_TITLE: Record<RecordType, string> = {
@@ -116,15 +116,15 @@ export default function RecordForm({ patient, bhwId, onSave, onDone, types = Obj
       {error ? <Notice tone="error" message={error} /> : null}
       <View style={styles.row}>
         <Button title="Cancel" variant="secondary" onPress={onDone} style={styles.flex} />
-        <Button title="Save Offline" onPress={submit} loading={saving} style={styles.flex} />
+        <Button title="Save on this device" onPress={submit} loading={saving} style={styles.flex} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.sm, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
-  heading: { fontSize: 14, fontWeight: '700', color: colors.text },
+  form: { gap: spacing.md, padding: spacing.md, borderRadius: radius.md, backgroundColor: colors.mutedBg },
+  heading: text.label,
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   flex: { flexGrow: 1, flexBasis: 120 },
 });

@@ -5,7 +5,7 @@ import Card from '../../../shared/components/Card';
 import ChipGroup from '../../../shared/components/ChipGroup';
 import Notice from '../../../shared/components/Notice';
 import TextField from '../../../shared/components/TextField';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { spacing, text } from '../../../shared/theme';
 import {
   BARRIER_LABELS,
   BARRIER_ORDER,
@@ -125,5 +125,5 @@ const styles = StyleSheet.create({
   form: { gap: spacing.md },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   flex: { flexGrow: 1, flexBasis: 160 },
-  hint: { fontSize: typography.caption, color: colors.muted, lineHeight: 18 },
+  hint: text.caption,
 });

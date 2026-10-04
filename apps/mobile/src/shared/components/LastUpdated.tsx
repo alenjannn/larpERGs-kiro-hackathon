@@ -1,13 +1,20 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Icon from './Icon';
 import { formatDateTimeDMY } from '../utils/date';
-import { colors, typography } from '../theme';
+import { colors, spacing, text } from '../theme';
 
 /** "Last updated 04 Oct 2026, 9:15 AM", shown next to cached content. */
 export default function LastUpdated({ at }: { at: string | null | undefined }) {
-  const text = at ? `Last updated ${formatDateTimeDMY(at)}` : 'Not updated yet';
-  return <Text style={styles.text}>{text}</Text>;
+  const label = at ? `Last updated ${formatDateTimeDMY(at)}` : 'Not updated yet';
+  return (
+    <View style={styles.row} accessible accessibilityLabel={label}>
+      <Icon name="clock" size={13} color={colors.muted} />
+      <Text style={styles.text}>{label}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  text: { fontSize: typography?.caption ?? 13, color: colors?.muted ?? '#475569' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  text: text.caption,
 });

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
+import Icon from '../../../shared/components/Icon';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import EmptyState from '../../../shared/components/EmptyState';
 import LastUpdated from '../../../shared/components/LastUpdated';
@@ -10,10 +11,11 @@ import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import RecordListItem from '../../../shared/components/RecordListItem';
 import Screen from '../../../shared/components/Screen';
+import SectionHeader from '../../../shared/components/SectionHeader';
 import { StatusChipRow } from '../../../shared/components/StatusChip';
 import { DEMO_BHW_ID } from '../../../shared/config/demo';
 import { ageFromBirthDate } from '../../../shared/utils/format';
-import { colors, spacing, typography } from '../../../shared/theme';
+import { colors, radius, spacing, text } from '../../../shared/theme';
 import PatientQrSheet from '../components/PatientQrSheet';
 import RecordForm from '../components/RecordForm';
 import RegisterPatientForm from '../components/RegisterPatientForm';
@@ -47,7 +49,7 @@ export default function BHWPatientsScreen() {
   return (
     <Screen
       title="My Patients"
-      subtitle="Patients your Admin assigned to you · log a visit, even offline"
+      subtitle="Patients your Admin assigned to you. Log a visit, even offline."
       refreshing={loading && !!data}
       onRefresh={reload}
     >
@@ -59,7 +61,7 @@ export default function BHWPatientsScreen() {
       {data?.fromCache ? <LastUpdated at={data.cachedAt} /> : null}
       {sync.actionError ? <Notice tone="error" message={sync.actionError} /> : null}
       {savedMessage ? (
-        <Card>
+        <Card style={styles.savedCard}>
           <Text style={styles.saved}>{savedMessage}</Text>
           <StatusChipRow statuses={['transport.saved_on_device', 'transport.waiting_to_send']} />
           <Text style={styles.meta}>Tap Sync Now on the Sync tab to send it ({sync.pendingCount} waiting).</Text>
@@ -79,10 +81,11 @@ export default function BHWPatientsScreen() {
             onCancel={() => setRegistering(false)}
           />
         ) : (
-          <Button title="+ Register New Patient" variant="secondary" onPress={() => setRegistering(true)} />
+          <Button title="Register a new patient" icon="plus" variant="secondary" onPress={() => setRegistering(true)} style={styles.start} />
         )}
       </Card>
 
+      {data && patients.length > 0 ? <SectionHeader title={`Assigned patients (${patients.length})`} /> : null}
       {data && patients.length === 0 ? (
         <EmptyState title="No patients yet" message="Ask your Admin to assign patients, or register one above." icon="person" />
       ) : null}
@@ -111,7 +114,8 @@ export default function BHWPatientsScreen() {
                 </Text>
                 {p.has_smartphone === false ? <Text style={styles.assisted}>Assisted (no smartphone)</Text> : null}
               </View>
-              <Text style={styles.chevron}>{open ? '▲' : '▼'}</Text>
+              <Text style={styles.toggle}>{open ? 'Hide records' : 'Records'}</Text>
+              <Icon name={open ? 'chevron-up' : 'chevron-down'} size={18} color={colors.primary} />
             </Pressable>
             {chips && p.syncStatus !== 'synced' ? <StatusChipRow statuses={chips} /> : null}
             <View style={styles.actions}>
@@ -125,7 +129,7 @@ export default function BHWPatientsScreen() {
               />
             </View>
             {open ? (
-              <>
+              <View style={styles.expanded}>
                 <RecordForm
                   patient={p}
                   bhwId={data?.bhw?.id ?? DEMO_BHW_ID}
@@ -139,7 +143,7 @@ export default function BHWPatientsScreen() {
                 {patientRecords.slice(0, 5).map((r) => (
                   <RecordListItem key={r.id} record={r} pendingSync={r.pendingSync} />
                 ))}
-              </>
+              </View>
             ) : null}
           </Card>
         );
@@ -151,13 +155,16 @@ export default function BHWPatientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44, borderRadius: radius.md },
   flex: { flex: 1 },
-  name: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  meta: { fontSize: typography.caption, color: colors.muted, marginTop: 2 },
-  assisted: { fontSize: typography.caption, fontWeight: '700', color: colors.text, marginTop: 2 },
-  saved: { fontSize: typography.body, fontWeight: '700', color: colors.text },
-  chevron: { fontSize: 12, color: colors.muted },
+  name: { ...text.title, fontSize: 17 },
+  meta: { ...text.caption, marginTop: 2 },
+  assisted: { ...text.caption, fontWeight: '700', color: colors.text, marginTop: 2 },
+  savedCard: { borderColor: colors.success, backgroundColor: colors.successBg },
+  saved: text.bodyStrong,
+  toggle: { ...text.label, color: colors.primary },
   visitBtn: { alignSelf: 'flex-start' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  start: { alignSelf: 'flex-start' },
+  expanded: { gap: spacing.sm },
 });

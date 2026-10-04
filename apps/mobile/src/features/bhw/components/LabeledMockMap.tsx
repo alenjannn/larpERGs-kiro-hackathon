@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from '../../../shared/components/Icon';
 import type { LatLng } from '../../../shared/services/mapbox';
-import { colors, spacing } from '../../../shared/theme';
+import { colors, spacing, text } from '../../../shared/theme';
 import BarangayMapBackdrop from './BarangayMapBackdrop';
 import type { MapPatientRow } from './PatientStatusList';
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     flexShrink: 1,
   },
-  label: { fontSize: 11, color: colors.text, flexShrink: 1 },
+  label: { fontSize: 12, color: colors.text, flexShrink: 1 },
   facilityLabel: { fontWeight: '700' },
-  reason: { fontSize: 12, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.md, paddingBottom: spacing.md },
+  reason: { ...text.caption, textAlign: 'center', paddingHorizontal: spacing.md, paddingBottom: spacing.md },
 });

@@ -6,7 +6,7 @@ import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import Screen from '../../../shared/components/Screen';
 import { useConnectivity } from '../../../shared/context/ConnectivityContext';
-import { colors, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import BPTrendChart from '../components/BPTrendChart';
 import ClearbookEntryList from '../components/ClearbookEntryList';
 import ClearbookEntrySheet from '../components/ClearbookEntrySheet';
@@ -41,7 +41,7 @@ export default function PatientHealthScreen() {
   return (
     <Screen
       title={PATIENT_COPY.tabs.health}
-      subtitle={`${PATIENT_COPY_FIL.tabs.health} · Readings with their dates and units (DEMO DATA)`}
+      subtitle={`Your readings with their dates and units · ${PATIENT_COPY_FIL.tabs.health} (DEMO DATA)`}
       refreshing={snap.loading && !!s}
       onRefresh={() => void snap.reload()}
     >
@@ -60,7 +60,7 @@ export default function PatientHealthScreen() {
 
       <Card title={PATIENT_COPY.labsYouEntered} subtitle={PATIENT_COPY_FIL.labsYouEntered}>
         <Text style={styles.muted}>{PATIENT_COPY.noInterpretation}</Text>
-        <Button title={PATIENT_COPY.addLab} onPress={() => setAdding(true)} />
+        <Button title={PATIENT_COPY.addLab} icon="plus" onPress={() => setAdding(true)} style={styles.start} />
         <ClearbookEntryList
           entries={entries.entries}
           serverRecords={s?.records ?? []}
@@ -72,7 +72,7 @@ export default function PatientHealthScreen() {
       </Card>
 
       {s ? (
-        <HealthRecordCard title="📋 Health updates" records={updates} bhwName={bhwName} emptyText="No health updates yet." />
+        <HealthRecordCard title="Health updates" records={updates} bhwName={bhwName} emptyText="No health updates yet." />
       ) : null}
 
       <ClearbookEntrySheet visible={adding} entries={entries.entries} save={entries.save} onClose={() => setAdding(false)} />
@@ -81,5 +81,6 @@ export default function PatientHealthScreen() {
 }
 
 const styles = StyleSheet.create({
-  muted: { fontSize: typography.body, color: colors.muted, lineHeight: typography.lineHeight },
+  muted: text.muted,
+  start: { alignSelf: 'flex-start' },
 });

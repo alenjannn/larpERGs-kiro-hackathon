@@ -2,10 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Card from '../../../shared/components/Card';
+import DeveloperTools from '../../../shared/components/DeveloperTools';
+import EmptyState from '../../../shared/components/EmptyState';
 import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 import Notice from '../../../shared/components/Notice';
 import RecordListItem from '../../../shared/components/RecordListItem';
 import Screen from '../../../shared/components/Screen';
+import SectionHeader from '../../../shared/components/SectionHeader';
 import StatTile from '../../../shared/components/StatTile';
 import { isWithinDays, timeAgo } from '../../../shared/utils/date';
 import { spacing } from '../../../shared/theme';
@@ -47,8 +50,8 @@ export default function BHWDashboardScreen() {
 
   return (
     <Screen
-      title={`Today · ${data?.bhw?.full_name ?? 'BHW'}`}
-      subtitle="Who needs help today · works offline from your last update"
+      title="Today"
+      subtitle={`${data?.bhw?.full_name ?? 'BHW'} · who needs help today. Works offline from your last update.`}
       refreshing={loading && !!data}
       onRefresh={() => {
         reload();
@@ -80,6 +83,7 @@ export default function BHWDashboardScreen() {
         />
       ) : null}
       {data ? <TodayQueue items={todayItems} cachedAt={cachedAt} onLogVisit={openVisit} /> : null}
+      <SectionHeader title="Overview" />
       {data ? <AssignmentCard bhw={data.bhw} admin={data.admin} patientCount={patients.length} /> : null}
       <View style={styles.stats}>
         <StatTile label="Assigned patients" value={patients.length} />
@@ -91,10 +95,14 @@ export default function BHWDashboardScreen() {
         {records.slice(0, 6).map((r) => (
           <RecordListItem key={r.id} record={r} pendingSync={r.pendingSync} context={`for ${patientName.get(r.patient_id) ?? 'patient'}`} />
         ))}
-        {data && records.length === 0 ? <Notice tone="info" message="No records yet. Open My Patients to log a visit." /> : null}
+        {data && records.length === 0 ? (
+          <EmptyState icon="document" title="No records yet" message="Open My Patients to log a visit." />
+        ) : null}
       </Card>
-      <OfflineTest sync={sync} onSynced={reload} />
-      <ConnectionTest />
+      <DeveloperTools>
+        <OfflineTest sync={sync} onSynced={reload} />
+        <ConnectionTest />
+      </DeveloperTools>
     </Screen>
   );
 }

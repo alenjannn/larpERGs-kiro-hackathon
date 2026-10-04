@@ -7,7 +7,7 @@ import { helpReasonLabel, INBOX_CAPTION } from '../../../shared/helpRequests';
 import type { StatusKey } from '../../../shared/status';
 import type { BHW, HelpRequestWithPatient } from '../../../shared/types/db.types';
 import { formatDateTimeDMY } from '../../../shared/utils/date';
-import { colors, typography } from '../../../shared/theme';
+import { text } from '../../../shared/theme';
 import QueueTable from './QueueTable';
 
 const COLUMNS = [
@@ -48,5 +48,5 @@ export default function DemoClinicInbox({ requests, bhws }: { requests: HelpRequ
 }
 
 const styles = StyleSheet.create({
-  caption: { fontSize: typography.caption, color: colors.muted },
+  caption: text.caption,
 });
