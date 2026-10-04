@@ -32,6 +32,14 @@ interface Props {
 
 const measured = (r: HealthRecord) => r.measured_at ?? r.created_at;
 
+/** records select('*') also returns the Spec 06 lab columns (null when not entered). */
+type ReviewRecord = HealthRecord & {
+  creatinine_value?: number | null;
+  creatinine_unit?: string | null;
+  cholesterol_value?: number | null;
+  cholesterol_unit?: string | null;
+};
+
 /** Review one patient's results and write, save or release their care plan (A-4). */
 export default function CarePlanForm({ patient, records, plans, clinicianId, busy, error, disabledReason, onSaveDraft, onRelease }: Props) {
   const draft = plans.find((p) => p.status === 'draft') ?? null;
@@ -115,6 +123,7 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
         {pending.length === 0 ? <Text style={styles.meta}>No results awaiting review for this patient.</Text> : null}
         {pending.map((r) => {
           const keys = [clinicalStatusKey(r)].filter((k): k is StatusKey => k !== null);
+          const lab = r as ReviewRecord;
           return (
             <View key={r.id} style={styles.result}>
               <Text style={styles.resultTitle}>{r.title}</Text>
@@ -129,6 +138,22 @@ export default function CarePlanForm({ patient, records, plans, clinicianId, bus
                   unit={r.glucose_unit ?? undefined}
                   measuredAt={measured(r)}
                   context={r.glucose_test_type?.replace('_', ' ')}
+                />
+              ) : null}
+              {lab.creatinine_value != null ? (
+                <MeasurementCard
+                  label="Serum creatinine"
+                  value={lab.creatinine_value}
+                  unit={lab.creatinine_unit ?? undefined}
+                  measuredAt={measured(r)}
+                />
+              ) : null}
+              {lab.cholesterol_value != null ? (
+                <MeasurementCard
+                  label="Total cholesterol"
+                  value={lab.cholesterol_value}
+                  unit={lab.cholesterol_unit ?? undefined}
+                  measuredAt={measured(r)}
                 />
               ) : null}
               {keys.length ? <StatusChipRow statuses={keys} /> : null}
