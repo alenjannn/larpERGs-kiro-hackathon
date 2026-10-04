@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../components/Text';
 import { MARKER_COLORS, type MapMarker } from './config';
 
 /** Offline-safe stand-in when no real map can render (Expo Go, missing token). */

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions, type PressableStateCallbackType } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions, type PressableStateCallbackType } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
+import { MAIN_CONTENT_ID } from './SkipLink';
 import { colors, layout, radius, spacing, text, touch } from '../theme';
 
 interface Props {
@@ -26,7 +28,8 @@ export default function Screen({ title, subtitle, back, actions, children, refre
       refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} /> : undefined}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={styles.inner}>
+      {/* The page's main landmark; the skip link focuses it (tabIndex -1 = focusable, not a tab stop). */}
+      <View style={styles.inner} nativeID={MAIN_CONTENT_ID} role="main" tabIndex={-1}>
         <View style={styles.header}>
           {back ? (
             <Pressable

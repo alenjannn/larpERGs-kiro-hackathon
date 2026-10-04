@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import Icon from './Icon';
 import { useConnectivity } from '../context/ConnectivityContext';
 import { colors, spacing, text } from '../theme';
@@ -37,6 +38,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm + 2,
   },
   texts: { flex: 1, gap: 2 },
-  text: { ...text.small, color: colors.offlineText },
+  text: { ...text.small, fontSize: 15, lineHeight: 22, color: colors.offlineText },
   tagline: { ...text.caption, color: colors.offlineText, fontStyle: 'italic' },
 });

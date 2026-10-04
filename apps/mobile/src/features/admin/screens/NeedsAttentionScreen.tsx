@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Text from '../../../shared/components/Text';
+import TileGrid from '../../../shared/components/TileGrid';
 import { useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
@@ -14,7 +16,7 @@ import StatusChip from '../../../shared/components/StatusChip';
 import { DEMO_PERSONAS } from '../../../shared/config/demo';
 import { useLanguage } from '../../../shared/context/DemoRoleContext';
 import { helpReasonLabel } from '../../../shared/helpRequests';
-import { colors, spacing, text } from '../../../shared/theme';
+import { colors, text } from '../../../shared/theme';
 import { formatDateDMY } from '../../../shared/utils/date';
 import AdminDataStates from '../components/AdminDataStates';
 import BHWList from '../components/BHWList';
@@ -66,13 +68,13 @@ export default function NeedsAttentionScreen() {
           <Text style={[styles.summary, total === 0 && styles.summaryOk]} accessibilityRole="summary">
             {total === 0 ? 'Nothing needs attention right now.' : `${total} item${total === 1 ? '' : 's'} need attention.`}
           </Text>
-          <View style={styles.stats}>
+          <TileGrid minTileWidth={150} maxColumns={5}>
             <StatTile label="Unassigned requests" value={na.unassignedRequests.length} />
             <StatTile label="Unassigned patients" value={na.unassignedPatients.length} />
             <StatTile label="Overdue reviews" value={na.overdueReviews.length} />
             <StatTile label="Blocked barriers" value={na.blockedRequests.length} />
             <StatTile label="Inactive BHWs" value={na.inactiveBHWs.length} />
-          </View>
+          </TileGrid>
 
           <Card title="Unassigned help requests" subtitle="No BHW owns these yet" right={<DemoBadge />}>
             <QueueTable
@@ -93,6 +95,7 @@ export default function NeedsAttentionScreen() {
                     <Button
                       title="Assign"
                       variant="secondary"
+                      compact
                       disabled={actionsDisabled}
                       onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason, lang)} · ${request.patient?.full_name ?? 'Patient'}`)}
                       accessibilityLabel={`Assign help request from ${request.patient?.full_name ?? 'patient'}`}
@@ -123,6 +126,7 @@ export default function NeedsAttentionScreen() {
                     <Button
                       title="Assign"
                       variant="secondary"
+                      compact
                       disabled={actionsDisabled}
                       onPress={() => flow.openPatient(patient.id)}
                       accessibilityLabel={`Assign ${patient.full_name} to a BHW`}
@@ -153,6 +157,7 @@ export default function NeedsAttentionScreen() {
                     <Button
                       title="Open Clinical Review"
                       variant="secondary"
+                      compact
                       onPress={() => router.push('/admin/clinical-review')}
                       accessibilityLabel={`Open Clinical Review for ${patientName}`}
                     />
@@ -184,6 +189,7 @@ export default function NeedsAttentionScreen() {
                     <Button
                       title="Reassign"
                       variant="secondary"
+                      compact
                       disabled={actionsDisabled}
                       onPress={() => flow.openRequest(request.id, `${helpReasonLabel(request.reason, lang)} · ${request.patient?.full_name ?? 'Patient'}`)}
                       accessibilityLabel={`Reassign blocked request from ${request.patient?.full_name ?? 'patient'}`}
@@ -224,6 +230,7 @@ export default function NeedsAttentionScreen() {
                     <Button
                       title="Reassign patients"
                       variant="secondary"
+                      compact
                       onPress={() => router.push({ pathname: '/admin/patient-management', params: { bhw: bhw.id } })}
                       accessibilityLabel={`Reassign patients of ${bhw.full_name}`}
                     />
@@ -256,6 +263,5 @@ export default function NeedsAttentionScreen() {
 const styles = StyleSheet.create({
   summary: { ...text.bodyStrong, color: colors.pending },
   summaryOk: { color: colors.success },
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   footnote: text.caption,
 });

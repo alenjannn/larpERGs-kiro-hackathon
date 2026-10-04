@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { colors, radius, shadow, spacing, text } from '../theme';
 
 /** A single count with its label, e.g. "12 · Assigned patients". */
@@ -15,7 +16,6 @@ export default function StatTile({ label, value, hint }: { label: string; value:
 const styles = StyleSheet.create({
   tile: {
     flexGrow: 1,
-    flexBasis: 150,
     backgroundColor: colors.surface,
     borderRadius: radius.lg + 2,
     borderWidth: 1,

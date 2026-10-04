@@ -1,4 +1,5 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Card from '../../../shared/components/Card';
 import EmptyState from '../../../shared/components/EmptyState';
 import StatusChip from '../../../shared/components/StatusChip';

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import EmptyState from '../../../shared/components/EmptyState';
 import LastUpdated from '../../../shared/components/LastUpdated';
 import Notice from '../../../shared/components/Notice';

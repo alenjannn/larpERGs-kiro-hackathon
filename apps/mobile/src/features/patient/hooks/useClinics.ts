@@ -121,7 +121,15 @@ export function useClinics() {
     }, [reload])
   );
 
-  useEffect(() => onReconnect(() => void reload()), [onReconnect, reload]);
+  // Reconnect fires before the re-render that updates onlineRef; the event itself means online.
+  useEffect(
+    () =>
+      onReconnect(() => {
+        onlineRef.current = true;
+        void reload();
+      }),
+    [onReconnect, reload]
+  );
 
   return { ...state, reload };
 }

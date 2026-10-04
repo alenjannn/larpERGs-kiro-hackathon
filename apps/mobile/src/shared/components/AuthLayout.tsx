@@ -1,5 +1,6 @@
 import { useSyncExternalStore, type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Text from './Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BrandMark from './BrandMark';
 import Icon from './Icon';
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   panelName: { ...text.title, color: colors.primaryText, fontSize: 20 },
   panelBody: { gap: spacing.lg },
   panelTitle: { ...text.display, color: colors.primaryText, fontSize: 34, lineHeight: 40 },
-  panelTagline: { ...text.body, color: '#E3F4F1', fontStyle: 'italic', fontSize: 18 },
+  panelTagline: { ...text.body, color: colors.onPrimaryMuted, fontStyle: 'italic', fontSize: 18 },
   roles: { gap: spacing.md, marginTop: spacing.lg },
   roleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   roleIcon: {
@@ -99,6 +100,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   roleName: { ...text.label, color: colors.primaryText },
-  roleWorkspace: { ...text.caption, color: '#E3F4F1' },
-  panelFoot: { ...text.caption, color: '#E3F4F1' },
+  roleWorkspace: { ...text.caption, color: colors.onPrimaryMuted },
+  panelFoot: { ...text.caption, color: colors.onPrimaryMuted },
 });

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Card from '../../../shared/components/Card';
 import Notice from '../../../shared/components/Notice';
 import type { HealthRecord } from '../../../shared/types/db.types';

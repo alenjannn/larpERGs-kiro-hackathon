@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from './Text';
 import { formatDateDMY } from '../utils/date';
 import { formatMeasurement, NO_READING } from '../utils/format';
 import { colors, radius, spacing, text } from '../theme';
@@ -31,7 +32,6 @@ export default function MeasurementCard({ label, value, unit, measuredAt, contex
 const styles = StyleSheet.create({
   card: {
     flexGrow: 1,
-    flexBasis: 150,
     backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
     borderColor: colors.border,

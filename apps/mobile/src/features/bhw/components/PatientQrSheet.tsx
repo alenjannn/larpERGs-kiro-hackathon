@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import Button from '../../../shared/components/Button';
 import DemoBadge from '../../../shared/components/DemoBadge';
 import { colors, radius, spacing, touch, typography } from '../../../shared/theme';

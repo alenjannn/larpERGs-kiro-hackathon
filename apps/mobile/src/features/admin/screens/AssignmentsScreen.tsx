@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Button from '../../../shared/components/Button';
 import Card from '../../../shared/components/Card';
@@ -123,6 +124,7 @@ export default function AssignmentsScreen() {
                       <Button
                         title={assigned ? 'Reassign' : 'Assign'}
                         variant="secondary"
+                      compact
                         disabled={flow.offline}
                         onPress={() => flow.openPatient(p.id)}
                         accessibilityLabel={`${assigned ? 'Reassign' : 'Assign'} ${p.full_name}`}
@@ -160,6 +162,7 @@ export default function AssignmentsScreen() {
                       <Button
                         title={r.assigned_bhw_id ? 'Reassign' : 'Assign'}
                         variant="secondary"
+                      compact
                         disabled={flow.offline}
                         onPress={() => flow.openRequest(r.id, `${helpReasonLabel(r.reason, lang)} · ${name}`)}
                         accessibilityLabel={`${r.assigned_bhw_id ? 'Reassign' : 'Assign'} help request from ${name}`}

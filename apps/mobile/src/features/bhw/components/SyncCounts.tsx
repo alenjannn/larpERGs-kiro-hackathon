@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../../../shared/components/Text';
+import TileGrid from '../../../shared/components/TileGrid';
 import StatusChip from '../../../shared/components/StatusChip';
 import type { StatusKey } from '../../../shared/status';
 import { colors, radius, spacing, typography } from '../../../shared/theme';
@@ -15,22 +17,20 @@ const ROWS: { state: FieldQueueState; status: StatusKey }[] = [
 /** B-4.1: one StatusChip + count per state (text + icon, never colour alone). */
 export default function SyncCounts({ counts }: { counts: FieldQueueCounts }) {
   return (
-    <View style={styles.grid}>
+    <TileGrid minTileWidth={140} maxColumns={5}>
       {ROWS.map((row) => (
         <View key={row.state} style={styles.cell} accessible accessibilityLabel={`${counts[row.state]} ${row.status.split('.')[1].replace(/_/g, ' ')}`}>
           <Text style={styles.count}>{counts[row.state]}</Text>
           <StatusChip status={row.status} size="sm" />
         </View>
       ))}
-    </View>
+    </TileGrid>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   cell: {
     flexGrow: 1,
-    flexBasis: 150,
     gap: spacing.xs,
     padding: spacing.md,
     borderRadius: radius.md,

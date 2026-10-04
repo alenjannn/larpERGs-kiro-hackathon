@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Card from '../../../shared/components/Card';
 import DeveloperTools from '../../../shared/components/DeveloperTools';
@@ -9,9 +8,9 @@ import Notice from '../../../shared/components/Notice';
 import RecordListItem from '../../../shared/components/RecordListItem';
 import Screen from '../../../shared/components/Screen';
 import SectionHeader from '../../../shared/components/SectionHeader';
+import TileGrid from '../../../shared/components/TileGrid';
 import StatTile from '../../../shared/components/StatTile';
 import { isWithinDays, timeAgo } from '../../../shared/utils/date';
-import { spacing } from '../../../shared/theme';
 import AssignmentCard from '../components/AssignmentCard';
 import ConnectionTest from '../components/ConnectionTest';
 import OfflineTest from '../components/OfflineTest';
@@ -21,6 +20,8 @@ import { useAcknowledgeHelpRequest } from '../hooks/useAcknowledgeHelpRequest';
 import { useBHWData, useCurrentBHWId } from '../hooks/useBHWData';
 import { useOfflineSync } from '../hooks/useOfflineSync';
 import { buildTodayItems } from '../today';
+import { useLanguage } from '../../../shared/context/DemoRoleContext';
+import { statusLabel } from '../../../shared/status';
 
 /** Today (route /bhw): who needs help today, help requests first (Spec 04, B-1). */
 export default function BHWDashboardScreen() {
@@ -28,6 +29,7 @@ export default function BHWDashboardScreen() {
   const bhwId = useCurrentBHWId();
   const { data, error, loading, reload } = useBHWData();
   const sync = useOfflineSync();
+  const lang = useLanguage();
   const reloadToday = useCallback(() => reload(), [reload]);
   const ack = useAcknowledgeHelpRequest(data?.bhw?.id ?? bhwId, reloadToday);
 
@@ -85,12 +87,12 @@ export default function BHWDashboardScreen() {
       {data ? <TodayQueue items={todayItems} cachedAt={cachedAt} onLogVisit={openVisit} /> : null}
       <SectionHeader title="Overview" />
       {data ? <AssignmentCard bhw={data.bhw} admin={data.admin} patientCount={patients.length} /> : null}
-      <View style={styles.stats}>
+      <TileGrid minTileWidth={150} maxColumns={4}>
         <StatTile label="Assigned patients" value={patients.length} />
-        <StatTile label="Waiting to send" value={sync.pendingCount} hint="saved on this device" />
+        <StatTile label={statusLabel('transport.waiting_to_send', lang)} value={sync.pendingCount} hint={statusLabel('transport.saved_on_device', lang)} />
         <StatTile label="Visits (7 days)" value={visitsThisWeek} />
         <StatTile label="Today items" value={todayItems.length + (data?.helpRequests.length ?? 0)} />
-      </View>
+      </TileGrid>
       <Card title="Recent field records" subtitle="Your latest visits, updates and appointments">
         {records.slice(0, 6).map((r) => (
           <RecordListItem key={r.id} record={r} pendingSync={r.pendingSync} context={`for ${patientName.get(r.patient_id) ?? 'patient'}`} />
@@ -107,6 +109,3 @@ export default function BHWDashboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-});
